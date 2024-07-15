@@ -1,6 +1,10 @@
 package com.app.shwe.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,14 +28,31 @@ public class AuthenticationController {
 	    
 
 	    @PostMapping("/register")
-	    public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request){
-	        return ResponseEntity.ok(authenticationService.register(request));
+	    public ResponseEntity<Map<String, String>> register(@RequestBody RegisterRequest request) {
+	        try {
+	            authenticationService.register(request);
+	            Map<String, String> response = new HashMap<>();
+	            response.put("message", "Registration successful");
+	            return ResponseEntity.ok(response);
+	        } catch (RuntimeException e) {
+	            Map<String, String> response = new HashMap<>();
+	            response.put("message", e.getMessage());
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	        }
 	    }
 
 	    
-	    @PostMapping("/authenticate")
-	    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request){
-	        return ResponseEntity.ok(authenticationService.authenticate(request));
+	    @PostMapping("/login")
+	    public ResponseEntity<AuthenticationResponse> Login(@RequestBody AuthenticationRequest request){
+	        return ResponseEntity.ok(authenticationService.login(request));
+	    }
+	    
+	    
+	    @PostMapping("/refresh-token")
+	    public ResponseEntity<AuthenticationResponse> refreshToken(@RequestBody Map<String, String> request) {
+	        String refreshToken = request.get("refreshToken");
+	        AuthenticationResponse response = authenticationService.refreshToken(refreshToken);
+	        return ResponseEntity.ok(response);
 	    }
 
 }

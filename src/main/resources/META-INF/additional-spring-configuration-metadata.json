@@ -1,0 +1,17 @@
+{"properties": [
+  {
+    "name": "JWT_SECRET_KEY",
+    "type": "java.lang.String",
+    "description": "A description for 'JWT_SECRET_KEY'"
+  },
+  {
+    "name": "JWT_EXPIRATION_TIME",
+    "type": "java.lang.String",
+    "description": "A description for 'JWT_EXPIRATION_TIME'"
+  },
+  {
+    "name": "JWT_REFRESH_EXPIRATION_TIME",
+    "type": "java.lang.String",
+    "description": "A description for 'JWT_REFRESH_EXPIRATION_TIME'"
+  }
+]}

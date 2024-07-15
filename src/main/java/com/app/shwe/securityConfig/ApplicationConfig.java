@@ -1,6 +1,5 @@
 package com.app.shwe.securityConfig;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,34 +18,30 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
-	
-	 @Autowired
-	 private  UserRepository userRepostiroy;
 
-	    @Bean
-	    public UserDetailsService userDetailsService(){
-	        return phoneNumber -> userRepostiroy.findByPhoneNumber(phoneNumber)
-	                           .orElseThrow(()-> new UsernameNotFoundException("User not found")) ;
-	                           
-	    }
+    private final UserRepository userRepository;
 
-	    @Bean
-	    public AuthenticationProvider authenticationProvider(){
-	        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-	        authProvider.setUserDetailsService(userDetailsService());
-	        authProvider.setPasswordEncoder(passwordEncoder());
-	        return authProvider;
-	    }
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return userName -> userRepository.findByUserName(userName)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
 
-	    @Bean
-	    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
-	        return config.getAuthenticationManager();
-	    }
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService());
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
+    }
 
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
 
-	    @Bean
-	    public PasswordEncoder passwordEncoder(){
-	        return new BCryptPasswordEncoder();
-	    }
-
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }
