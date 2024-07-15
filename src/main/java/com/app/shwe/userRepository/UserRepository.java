@@ -10,10 +10,8 @@ import com.app.shwe.model.User;
 @Repository
 public interface UserRepository extends JpaRepository<User,Integer>{
 	
-	Optional<User> findByPhoneNumber(String phone_no);
 
 	Optional<User> findByUserName(String username);
-
     boolean existsByPhoneNumber(String phoneNumber);
     boolean existsByUserName(String userName);
 }
