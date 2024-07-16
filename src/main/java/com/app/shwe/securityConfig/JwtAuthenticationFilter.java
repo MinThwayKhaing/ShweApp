@@ -36,6 +36,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String jwt;
         final String userName;
 
+        // Bypass the /api/v1/auth/register endpoint
+        if (request.getRequestURI().equals("/api/v1/auth/register")|| request.getRequestURI().equals("/api/v1/auth/login")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Authorization header is missing or invalid");

@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import com.app.shwe.dto.AuthenticationRequest;
 import com.app.shwe.dto.AuthenticationResponse;
 import com.app.shwe.dto.RegisterRequest;
-import com.app.shwe.model.Role;
 import com.app.shwe.model.User;
 import com.app.shwe.securityConfig.JwtService;
 import com.app.shwe.userRepository.UserRepository;
@@ -55,22 +54,22 @@ public class AuthenticationService {
         if (request == null || request.getPhoneNumber() == null || request.getPassword() == null) {
             throw new IllegalArgumentException("Request and required fields must not be null");
         }
-
+        // Find the user by phone number
+        User authenticatedUser = repository.findByPhoneNumber(request.getPhoneNumber())
+                .orElseThrow(() -> new RuntimeException("User not found or invalid credentials"));
+        System.out.println("authenticatedUser"+authenticatedUser);
+        // Verify the password
+        if (!passwordEncoder.matches(request.getPassword(), authenticatedUser.getPassword())) {
+            throw new RuntimeException("User not found or invalid credentials");
+        }
         UsernamePasswordAuthenticationToken token =
-                new UsernamePasswordAuthenticationToken(request.getPhoneNumber(), request.getPassword());
+                new UsernamePasswordAuthenticationToken(authenticatedUser.getUsername(), request.getPassword());
 
         Authentication authentication = authenticationManager.authenticate(token);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        User authenticatedUser = (User) authentication.getPrincipal();
-        
-        if (authenticatedUser == null) {
-            throw new RuntimeException("Authenticated user is null");
-        }
-
         String jwtToken = jwtService.generateToken(authenticatedUser);
-        String refreshToken = jwtService.generateRefreshToken(authenticatedUser.getUsername());
+        String refreshToken = jwtService.generateRefreshToken(authenticatedUser.getPhoneNumber());
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)
@@ -85,17 +84,17 @@ public class AuthenticationService {
         }
 
         if (jwtService.isRefreshTokenValid(refreshToken)) {
-            String username = jwtService.extractUsernameFromRefreshToken(refreshToken);
+            String phoneNumber = jwtService.extractUsernameFromRefreshToken(refreshToken);
             
-            if (username == null) {
-                throw new RuntimeException("Username extracted from refresh token is null");
+            if (phoneNumber == null) {
+                throw new RuntimeException("Phone number extracted from refresh token is null");
             }
 
-            User user = repository.findByUserName(username)
+            User user = repository.findByPhoneNumber(phoneNumber)
                     .orElseThrow(() -> new RuntimeException("User not found"));
             
             String newAccessToken = jwtService.generateToken(user);
-            String newRefreshToken = jwtService.generateRefreshToken(user.getUsername());
+            String newRefreshToken = jwtService.generateRefreshToken(user.getPhoneNumber());
 
             return AuthenticationResponse.builder()
                     .token(newAccessToken)
