@@ -1,7 +1,5 @@
 package com.app.shwe.dto;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import com.app.shwe.model.Role;
 
 import lombok.AllArgsConstructor;
@@ -13,10 +11,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequest {
+public class UserReportDTO {
+	
+	public String username;
+	public String report;
 
-	private String phoneNumber;
-	private String password;
-	private String userName;
-	private Role role;
 }

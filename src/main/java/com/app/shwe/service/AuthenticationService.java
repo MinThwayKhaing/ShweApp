@@ -1,5 +1,7 @@
 package com.app.shwe.service;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -7,10 +9,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.app.shwe.dto.AuthenticationRequest;
 import com.app.shwe.dto.AuthenticationResponse;
 import com.app.shwe.dto.RegisterRequest;
+import com.app.shwe.model.Role;
 import com.app.shwe.model.User;
 import com.app.shwe.securityConfig.JwtService;
 import com.app.shwe.userRepository.UserRepository;
@@ -29,21 +33,29 @@ public class AuthenticationService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    public void register(RegisterRequest request) {
-        if (request == null || request.getPhoneNumber() == null || request.getUserName() == null || 
-            request.getPassword() == null || request.getRole() == null) {
+    public void register(MultipartFile image,String userName,String phoneNumber,String password,Role role) {
+        if ( userName == null || phoneNumber == null || 
+        		password == null || role == null) {
             throw new IllegalArgumentException("Request and required fields must not be null");
         }
         
+        byte[] imageBytes = null;
+        try {
+            imageBytes = image.getBytes();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read image file", e);
+        }
+        
         var user = User.builder()
-                .phoneNumber(request.getPhoneNumber())
-                .userName(request.getUserName())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(request.getRole())
+                .phoneNumber(phoneNumber)
+                .userName(userName)
+                .password(passwordEncoder.encode(password))
+                .image(imageBytes)
+                .role(role)
                 .build();
         
-        if (repository.existsByPhoneNumber(request.getPhoneNumber()) || 
-            repository.existsByUserName(request.getUserName())) {
+        if (repository.existsByPhoneNumber(phoneNumber) || 
+            repository.existsByUserName(userName)) {
             throw new IllegalArgumentException("User with the same phone number or username already exists");
         }
 

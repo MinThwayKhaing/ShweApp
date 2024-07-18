@@ -9,11 +9,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.app.shwe.dto.AuthenticationRequest;
 import com.app.shwe.dto.AuthenticationResponse;
-import com.app.shwe.dto.RegisterRequest;
+import com.app.shwe.model.Role;
 import com.app.shwe.service.AuthenticationService;
 
 import lombok.RequiredArgsConstructor;
@@ -25,12 +27,13 @@ public class AuthenticationController {
 	
 	    @Autowired
 	    private AuthenticationService authenticationService;
-	    
 
 	    @PostMapping("/register")
-	    public ResponseEntity<Map<String, String>> register(@RequestBody RegisterRequest request) {
+	    public ResponseEntity<Map<String, String>> register(@RequestParam("image")MultipartFile image,
+	    		@RequestParam("userName") String userName,@RequestParam("phoneNumber")String phoneNumber
+	    		 ,@RequestParam("password") String password,@RequestParam("role") Role role) {
 	        try {
-	            authenticationService.register(request);
+	            authenticationService.register(image,userName,phoneNumber,password,role);
 	            Map<String, String> response = new HashMap<>();
 	            response.put("message", "Registration successful");
 	            return ResponseEntity.ok(response);

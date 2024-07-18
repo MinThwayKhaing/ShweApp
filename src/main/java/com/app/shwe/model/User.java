@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.persistence.*;
 
@@ -42,6 +43,10 @@ public class User implements UserDetails {
 
     @Column(nullable = false)
     private String password;
+    
+    @Lob
+    @Column(name = "image", columnDefinition="LONGBLOB")
+    private byte[] image;
 
     @Enumerated(EnumType.STRING)
     private Role role;
