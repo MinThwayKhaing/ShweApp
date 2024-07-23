@@ -3,9 +3,13 @@ package com.app.shwe.service;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.app.shwe.dto.ResponseDTO;
+import com.app.shwe.dto.SearchDTO;
 import com.app.shwe.dto.TranslatorRequestDTO;
 import com.app.shwe.model.Translator;
 import com.app.shwe.userRepository.TranslatorRepository;
@@ -70,6 +74,14 @@ public class TranslatorService {
 		return response;
 	}
 
+	public Page<Translator> searchTranslator(SearchDTO dto){
+		String searchString = dto.getSearchString();
+		int page = (dto.getPage() < 1) ? 0 : dto.getPage() - 1;
+		int size = dto.getSize();
+		Pageable pageable = PageRequest.of(page, size);
+		return translatorRepo.searchTranslator(searchString, pageable);
+		
+	}
 
 
 }

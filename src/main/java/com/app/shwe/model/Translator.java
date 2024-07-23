@@ -24,7 +24,6 @@ public class Translator {
 	
 	private String language;
 	
-	@Enumerated(EnumType.STRING)
-	private Specailist specialist;
+	private String specialist;
 
 }

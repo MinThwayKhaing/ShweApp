@@ -1,7 +1,5 @@
 package com.app.shwe.dto;
 
-import com.app.shwe.model.Specailist;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +13,6 @@ public class TranslatorRequestDTO {
 	
 	private String name;
 	private String language;
-	private Specailist specialist;
+	private String specialist;
 
 }

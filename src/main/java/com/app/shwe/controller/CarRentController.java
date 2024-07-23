@@ -1,11 +1,13 @@
 package com.app.shwe.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.app.shwe.dto.CarRentRequestDTO;
 import com.app.shwe.dto.ResponseDTO;
+import com.app.shwe.dto.SearchDTO;
 import com.app.shwe.model.CarRent;
 import com.app.shwe.service.CarRentService;
 
@@ -38,5 +40,11 @@ public class CarRentController {
 	public ResponseEntity<ResponseDTO> deleteCar(@PathVariable  int id){
 		return ResponseEntity.ok(carService.deleteCar(id));
 	}
+	
+	@GetMapping("/showAllCarsAndSearch")
+	public ResponseEntity<Page<CarRent>> showCars(@RequestBody SearchDTO search){
+		return ResponseEntity.ok(carService.showAllCar(search));
+	}
+	
 
 }

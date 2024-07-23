@@ -1,6 +1,7 @@
 package com.app.shwe.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.shwe.dto.ResponseDTO;
+import com.app.shwe.dto.SearchDTO;
 import com.app.shwe.dto.TranslatorRequestDTO;
 import com.app.shwe.model.Translator;
 import com.app.shwe.service.TranslatorService;
@@ -44,6 +46,11 @@ public class TranslatorController {
 	@DeleteMapping("/deleteTranslator/{id}")
 	public ResponseEntity<ResponseDTO> deletTranslator(@PathVariable int id){
 		return ResponseEntity.ok(translatorService.deteteTranslator(id));
+	}
+	
+	@GetMapping("/searchTranslator")
+	public ResponseEntity<Page<Translator>> searchTranslator(@RequestBody SearchDTO dto){
+		return ResponseEntity.ok(translatorService.searchTranslator(dto));
 	}
 
 }
