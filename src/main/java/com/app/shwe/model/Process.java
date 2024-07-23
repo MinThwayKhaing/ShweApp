@@ -13,20 +13,20 @@ import java.util.Set;
 
 @Entity
 @Data
-public class Service {
+public class Process {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    private int imageorder;
     private String name;
     private String description;
     private double price;
-
+    private String imglink;
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @OneToMany(mappedBy = "service")
-    private Set<Appointment> appointments;
+//    @OneToMany(mappedBy = "service")
+//    private Set<Appointment> appointments;
 
 }

@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.app.shwe.dto.AuthenticationRequest;
 import com.app.shwe.dto.AuthenticationResponse;
+import com.app.shwe.dto.UserRequest;
 import com.app.shwe.model.Role;
 import com.app.shwe.service.AuthenticationService;
 
@@ -29,13 +31,12 @@ public class AuthenticationController {
 	    private AuthenticationService authenticationService;
 
 	    @PostMapping("/register")
-	    public ResponseEntity<Map<String, String>> register(@RequestParam("image")MultipartFile image,
-	    		@RequestParam("userName") String userName,@RequestParam("phoneNumber")String phoneNumber
-	    		 ,@RequestParam("password") String password,@RequestParam("role") Role role) {
+	    public ResponseEntity<Map<String, String>> register(@RequestParam("image") MultipartFile image,
+	    		 @RequestPart("registrationRequest") UserRequest registrationRequest) {
 	        try {
-	            authenticationService.register(image,userName,phoneNumber,password,role);
+	            authenticationService.register(image, registrationRequest);
 	            Map<String, String> response = new HashMap<>();
-	            response.put("message", "Registration successful");
+	            response.put("message", "Registration successful");	
 	            return ResponseEntity.ok(response);
 	        } catch (RuntimeException e) {
 	            Map<String, String> response = new HashMap<>();
@@ -43,7 +44,6 @@ public class AuthenticationController {
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	        }
 	    }
-
 	    
 	    @PostMapping("/login")
 	    public ResponseEntity<AuthenticationResponse> Login(@RequestBody AuthenticationRequest request){

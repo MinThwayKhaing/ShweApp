@@ -45,8 +45,8 @@ public class User implements UserDetails {
     private String password;
     
     @Lob
-    @Column(name = "image", columnDefinition="LONGBLOB")
-    private byte[] image;
+    @Column(name = "image")
+    private String image;
 
     @Enumerated(EnumType.STRING)
     private Role role;
