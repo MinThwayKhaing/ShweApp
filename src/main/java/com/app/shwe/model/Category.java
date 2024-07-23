@@ -18,8 +18,9 @@ public class Category {
     private Long id;
 
     private String name;
-
+    private String label;
+   
     @OneToMany(mappedBy = "category")
-    private Set<Service> services;
+    private Set<Process> services;
 
 }

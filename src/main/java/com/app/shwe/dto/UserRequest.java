@@ -11,9 +11,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserReportDTO {
+public class UserRequest {
 	
-	private String username;
-	private String report;
-
+	private String phoneNumber;
+	private String userName;
+	private String password;
+	private Role role;
+    	
 }

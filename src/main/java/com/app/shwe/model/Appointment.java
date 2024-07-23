@@ -23,8 +23,8 @@ public class Appointment {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "service_id")
-    private Service service;
+//    @ManyToOne
+//    @JoinColumn(name = "service_id")
+//    private Service service;
 
 }
