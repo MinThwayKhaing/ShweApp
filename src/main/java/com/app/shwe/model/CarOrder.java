@@ -16,11 +16,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CarOrder {
+public class CarOrder extends CommonDTO{
 	
-	 @Id
-	    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	    private int id;
 	    private int carType;
 	    private Date fromDate;
 	    private Date toDate;
