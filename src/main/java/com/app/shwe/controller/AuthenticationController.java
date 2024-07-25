@@ -32,9 +32,10 @@ public class AuthenticationController {
 
 	    @PostMapping("/register")
 	    public ResponseEntity<Map<String, String>> register(@RequestParam("image") MultipartFile image,
-	    		 @RequestPart("registrationRequest") UserRequest registrationRequest) {
+	    		@RequestParam("user_name") String user_name,@RequestParam("phone_number") String phone,
+	    		@RequestParam("password") String password,@RequestParam("role") Role role) {
 	        try {
-	            authenticationService.register(image, registrationRequest);
+	            authenticationService.register(image,user_name,phone,password,role );
 	            Map<String, String> response = new HashMap<>();
 	            response.put("message", "Registration successful");	
 	            return ResponseEntity.ok(response);

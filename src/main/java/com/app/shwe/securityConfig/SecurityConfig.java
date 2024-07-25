@@ -3,6 +3,7 @@ package com.app.shwe.securityConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -32,6 +33,7 @@ public class SecurityConfig {
                            .requestMatchers("/api/v1/auth/**").permitAll()
                            .requestMatchers("/api/services/**", "/api/v1/categories/**").hasRole("ADMIN")
                            .requestMatchers("/api/services/**", "/api/v1/process/**").hasRole("ADMIN")
+                           .requestMatchers("/api/v1/carRent/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .exceptionHandling(handling -> handling
                         .authenticationEntryPoint(new BasicAuthenticationEntryPoint() {

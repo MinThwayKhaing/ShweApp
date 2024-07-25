@@ -33,22 +33,22 @@ public class AuthenticationService {
     @Autowired
     private FileUploadService fileUploadService;
 
-    public void register(MultipartFile image, UserRequest userRequest) {
-        if (userRequest== null) {
+    public void register(MultipartFile image,String user_name,String phone_number,String password,Role role) {
+        if (user_name == null && phone_number == null && password == null && role == null) {
             throw new IllegalArgumentException("Request and required fields must not be null");
         }
 
         String imageUrl = fileUploadService.uploadFile(image);
 
         var user = User.builder()
-                .phoneNumber(userRequest.getPhoneNumber())
-                .userName(userRequest.getUserName())
-                .password(passwordEncoder.encode(userRequest.getPassword()))
+                .phoneNumber(phone_number)
+                .userName(user_name)
+                .password(passwordEncoder.encode(password))
                 .image(imageUrl)
-                .role(userRequest.getRole())
+                .role(role)
                 .build();
 
-        if (repository.existsByPhoneNumber(userRequest.getPhoneNumber()) || repository.existsByUserName(userRequest.getPhoneNumber())) {
+        if (repository.existsByPhoneNumber(phone_number) || repository.existsByUserName(phone_number)) {
             throw new IllegalArgumentException("User with the same phone number or username already exists");
         }
 

@@ -1,5 +1,7 @@
 package com.app.shwe.userRepository;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -7,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.app.shwe.dto.CarRentDTO;
 import com.app.shwe.model.CarRent;
 
 @Repository
@@ -21,4 +24,9 @@ public interface CarRentRepository extends JpaRepository<CarRent, Integer> {
 	@Query("SELECT c FROM CarRent c WHERE (:searchString IS NULL OR :searchString = '' OR "
 			+ "c.carName LIKE %:searchString% OR c.ownerName LIKE %:searchString% OR c.carNo LIKE %:searchString%)")
 	Page<CarRent> carSimpleSearch(@Param("searchString") String searchString, Pageable pageable);
+	
+	@Query("SELECT new com.app.shwe.dto.CarRentDTO(c.carName,c.ownerName,c.carNo,c.status,c.license,c.review,c.driverName,c.carColor"
+			+ ",c.carType,p.insideTownPrice,p.outsideTownPrice,p.withDriver)"
+			+ "FROM CarRent c JOIN CarPrice p ON c.id = p.car.id WHERE c.id = :id")
+	Optional<CarRentDTO> getCarById(int id);
 }

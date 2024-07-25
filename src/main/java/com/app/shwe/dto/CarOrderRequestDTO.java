@@ -1,5 +1,7 @@
 package com.app.shwe.dto;
 
+import java.util.Date;
+
 import com.app.shwe.model.User;
 
 import lombok.AllArgsConstructor;
@@ -11,9 +13,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationResponse {
+public class CarOrderRequestDTO {
 	
-	private String token;
-	 private String refreshToken;
-	 private User user;
+	private int carType;
+    private Date fromDate;
+    private Date toDate;
+
 }
