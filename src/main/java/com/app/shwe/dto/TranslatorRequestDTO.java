@@ -14,5 +14,7 @@ public class TranslatorRequestDTO {
 	private String name;
 	private String language;
 	private String specialist;
+	private String content;
+	
 
 }

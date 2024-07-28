@@ -1,5 +1,6 @@
 package com.app.shwe.service;
 
+import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import com.app.shwe.dto.SearchDTO;
 import com.app.shwe.dto.TranslatorRequestDTO;
 import com.app.shwe.model.Translator;
 import com.app.shwe.userRepository.TranslatorRepository;
+import com.app.shwe.utils.SecurityUtils;
 
 @Service
 public class TranslatorService {
@@ -22,11 +24,14 @@ public class TranslatorService {
 	
 	public ResponseDTO saveTranslator(TranslatorRequestDTO dto) {
 		ResponseDTO response = new ResponseDTO();
+		SecurityUtils utils = new SecurityUtils();
 		if(!dto.getName().isEmpty() && !dto.getLanguage().isEmpty() && dto.getSpecialist() != null) {
 			Translator translator = new Translator();
 			translator.setName(dto.getName());
 			translator.setLanguage(dto.getLanguage());
 			translator.setSpecialist(dto.getSpecialist());
+			translator.setCreatedDate(new Date());
+			translator.setCreatedBy(utils.getCurrentUsername());
 			translatorRepo.save(translator);
 			response.setStatus(200);
 			response.setDescription("Translator save successfully");
