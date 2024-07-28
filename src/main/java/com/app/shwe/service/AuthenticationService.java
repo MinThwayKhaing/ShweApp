@@ -14,8 +14,8 @@ import com.app.shwe.dto.AuthenticationResponse;
 import com.app.shwe.dto.UserRequest;
 import com.app.shwe.model.Role;
 import com.app.shwe.model.User;
+import com.app.shwe.repository.UserRepository;
 import com.app.shwe.securityConfig.JwtService;
-import com.app.shwe.userRepository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,7 +33,7 @@ public class AuthenticationService {
     @Autowired
     private FileUploadService fileUploadService;
 
-    public void register(MultipartFile image,String user_name,String phone_number,String password,Role role) {
+    public void register(MultipartFile image, String user_name, String phone_number, String password, Role role) {
         if (user_name == null && phone_number == null && password == null && role == null) {
             throw new IllegalArgumentException("Request and required fields must not be null");
         }
@@ -67,8 +67,8 @@ public class AuthenticationService {
             throw new RuntimeException("User not found or invalid credentials");
         }
 
-        UsernamePasswordAuthenticationToken token =
-                new UsernamePasswordAuthenticationToken(authenticatedUser.getUsername(), request.getPassword());
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                authenticatedUser.getUsername(), request.getPassword());
 
         Authentication authentication = authenticationManager.authenticate(token);
 

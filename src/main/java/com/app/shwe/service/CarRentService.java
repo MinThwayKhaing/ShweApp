@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +20,8 @@ import com.app.shwe.dto.ResponseDTO;
 import com.app.shwe.dto.SearchDTO;
 import com.app.shwe.model.CarPrice;
 import com.app.shwe.model.CarRent;
-import com.app.shwe.userRepository.CarPriceRepository;
-import com.app.shwe.userRepository.CarRentRepository;
+import com.app.shwe.repository.CarPriceRepository;
+import com.app.shwe.repository.CarRentRepository;
 import com.app.shwe.utils.SecurityUtils;
 
 import jakarta.transaction.Transactional;
@@ -33,40 +35,42 @@ public class CarRentService {
 	@Autowired
 	private CarPriceRepository carPriceRepository;
 
-	public ResponseDTO saveCars(CarRentRequestDTO dto) {
+	public ResponseEntity<String> saveCars(CarRentRequestDTO dto) {
 		ResponseDTO response = new ResponseDTO();
 		SecurityUtils utils = new SecurityUtils();
-		CarRent cars = new CarRent();
-		CarPrice price = new CarPrice();
-		if (!dto.getCarName().isEmpty() && !dto.getOwnerName().isEmpty() && !dto.getCarNo().isEmpty()
-				&& !dto.getLicense().isEmpty() && !dto.getDriverName().isEmpty()) {
+		try {
+			CarRent cars = new CarRent();
+			CarPrice price = new CarPrice();
+			if (dto == null) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+						.body("Request data is null.");
+			}
 			cars.setOwnerName(dto.getOwnerName());
 			cars.setCarName(dto.getCarName());
 			cars.setCarNo(dto.getCarNo());
 			cars.setStatus(true);
 			cars.setLicense(dto.getLicense());
-			cars.setReview(dto.getReview());
+			// cars.setReview(dto.getReview());
 			cars.setDriverName(dto.getDriverName());
 			cars.setCarColor(dto.getCarColor());
 			cars.setCarType(dto.getCarType());
 			cars.setCreatedDate(new Date());
 			cars.setCreatedBy(utils.getCurrentUsername());
 			carRentRepository.save(cars);
-			price.setCreatedBy(utils.getCurrentUsername());
+			price.setCreatedBy(cars.getCreatedBy());
 			price.setCreatedDate(new Date());
 			price.setInsideTownPrice(dto.getInsideTownPrice());
 			price.setOutsideTownPrice(dto.getOutsideTownPrice());
-			price.setWithDriver(dto.isWithDriver());
+			// price.setWithDriver(dto.isWithDriver());
 			price.setCar(cars);
 			carPriceRepository.save(price);
-			response.setStatus(200);
-			response.setDescription("Save Car successfully");
-		} else {
-			response.setStatus(403);
-			response.setDescription("Missing some information to save car");
-		}
 
-		return response;
+			return ResponseEntity.status(HttpStatus.OK)
+					.body("Car and price details saved successfully.");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error occurred while saving car and price details: " + e.getMessage());
+		}
 	}
 
 	public Optional<CarRentDTO> findCarById(int id) {
@@ -91,7 +95,7 @@ public class CarRentService {
 			carRent.setCarNo(dto.getCarNo());
 			carRent.setStatus(dto.isStatus());
 			carRent.setLicense(dto.getLicense());
-			carRent.setReview(dto.getReview());
+			// carRent.setReview(dto.getReview());
 			carRent.setDriverName(dto.getDriverName());
 			carRent.setCarColor(dto.getCarColor());
 			carRent.setCarType(dto.getCarType());
@@ -102,12 +106,12 @@ public class CarRentService {
 			if (carPrice != null) {
 				carPrice.setInsideTownPrice(dto.getInsideTownPrice());
 				carPrice.setOutsideTownPrice(dto.getOutsideTownPrice());
-				carPrice.setWithDriver(dto.isWithDriver());
+				// carPrice.setWithDriver(dto.isWithDriver());
 			} else {
 				carPrice = new CarPrice();
 				carPrice.setInsideTownPrice(dto.getInsideTownPrice());
 				carPrice.setOutsideTownPrice(dto.getOutsideTownPrice());
-				carPrice.setWithDriver(dto.isWithDriver());
+				// carPrice.setWithDriver(dto.isWithDriver());
 				carPrice.setCar(carRent);
 				carRent.setCarPrice(carPrice);
 			}

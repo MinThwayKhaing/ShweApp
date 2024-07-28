@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import com.app.shwe.dto.UserReportDTO;
 import com.app.shwe.model.Report;
 import com.app.shwe.model.User;
-import com.app.shwe.userRepository.UserRepository;
+import com.app.shwe.repository.UserRepository;
 
 @Service
 public class UserService {
@@ -35,6 +35,5 @@ public class UserService {
 
 		return result;
 	}
-	
 
 }

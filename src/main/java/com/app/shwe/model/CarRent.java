@@ -23,7 +23,7 @@ public class CarRent extends CommonDTO {
 	private String carNo;
 	private boolean status;
 	private String license;
-	private String review;
+	// private String review;
 	private String driverName;
 	private String carColor;
 	private int carType;

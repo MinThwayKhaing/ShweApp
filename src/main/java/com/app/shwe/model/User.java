@@ -27,11 +27,11 @@ import lombok.NoArgsConstructor;
 public class User implements UserDetails {
 
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
@@ -43,7 +43,7 @@ public class User implements UserDetails {
 
     @Column(nullable = false)
     private String password;
-    
+
     @Lob
     @Column(name = "image")
     private String image;

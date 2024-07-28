@@ -16,18 +16,16 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CarOrder extends CommonDTO{
-	
-	    private int carType;
-	    private Date fromDate;
-	    private Date toDate;
-	    
-	    @ManyToOne
-	    @JoinColumn(name = "car_id")
-	    private CarRent cars;
-	    
-	    @ManyToOne
-	    @JoinColumn(name = "user_id")
-	    private User user;
+public class CarOrder extends CommonDTO {
 
+	private int carType;
+	private Date fromDate;
+	private Date toDate;
+	private boolean driver;
+	// with driver is true;without driver is false;
+	private boolean travelrange;
+	// inside is false;outside is true
+	private boolean orderConfirm;
+	// private Long user_id;
+	private int car;
 }

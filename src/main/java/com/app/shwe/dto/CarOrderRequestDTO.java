@@ -14,9 +14,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CarOrderRequestDTO {
-	
-	private int carType;
+
+    private int carType;
     private Date fromDate;
     private Date toDate;
-
+    private boolean driver;
+    // with driver is true;without driver is false;
+    private boolean travelrange;
+    private boolean orderconfirm;
+    private int carId;
 }

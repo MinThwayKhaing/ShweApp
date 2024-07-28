@@ -1,4 +1,4 @@
-package com.app.shwe.userRepository;
+package com.app.shwe.repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +16,10 @@ import com.app.shwe.model.User;
 public interface UserRepository extends JpaRepository<User, Integer> {
 
 	Optional<User> findByUserName(String username);
+
+	@Query("SELECT id "
+			+ "FROM User WHERE userName = :username")
+	int authUser(String username);
 
 	boolean existsByPhoneNumber(String phoneNumber);
 

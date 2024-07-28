@@ -15,7 +15,7 @@ public class CarPrice extends CommonDTO {
 
 	private double insideTownPrice;
 	private double outsideTownPrice;
-	private boolean withDriver;
+	// private boolean withDriver;
 
 	@OneToOne
 	@JoinColumn(name = "car_id")

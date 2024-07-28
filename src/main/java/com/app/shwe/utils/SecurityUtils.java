@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SecurityUtils {
-	
-	public String getCurrentUsername() {
+
+    public static String getCurrentUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
             return ((UserDetails) authentication.getPrincipal()).getUsername();
