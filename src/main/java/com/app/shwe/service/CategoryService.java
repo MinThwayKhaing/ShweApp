@@ -21,7 +21,7 @@ public class CategoryService {
         return categoryRepository.findAllCategories();
     }
 
-    public Optional<Category> getCategoryById(Long id) {
+    public Optional<Category> getCategoryById(Integer id) {
         if (id == null) {
             throw new IllegalArgumentException("Id cannot be null");
         }
@@ -40,7 +40,7 @@ public class CategoryService {
     }
 
     @Transactional
-    public Category updateCategory(Long id, Category categoryDetails) {
+    public Category updateCategory(int id, Category categoryDetails) {
         if (categoryDetails == null) {
             throw new IllegalArgumentException("Update Category cannot be null");
         }
@@ -50,7 +50,7 @@ public class CategoryService {
     }
 
     @Transactional
-    public void deleteCategory(Long id) {
+    public void deleteCategory(Integer id) {
         if (id == null) {
             throw new IllegalArgumentException("Delete ID cannot be null");
         }

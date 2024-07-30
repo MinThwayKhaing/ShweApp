@@ -21,17 +21,17 @@ public class CarOrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getCarOrderById(@PathVariable Long id) {
+    public ResponseEntity<?> getCarOrderById(@PathVariable int id) {
         return carOrderService.getCarOrderById(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateCarOrder(@PathVariable Long id, @RequestBody CarOrderRequestDTO dto) {
+    public ResponseEntity<?> updateCarOrder(@PathVariable int id, @RequestBody CarOrderRequestDTO dto) {
         return carOrderService.updateCarOrder(id, dto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCarOrder(@PathVariable Long id) {
+    public ResponseEntity<?> deleteCarOrder(@PathVariable int id) {
         return carOrderService.deleteCarOrder(id);
     }
 

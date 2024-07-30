@@ -19,6 +19,7 @@ public class CarRentRequestDTO {
 	private String license;
 	private String review;
 	private String driverName;
+	private String driverPhoneNumber;
 	private String carColor;
 	private int carType;
 	private double insideTownPrice;

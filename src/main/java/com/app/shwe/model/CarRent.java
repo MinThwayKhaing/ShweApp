@@ -25,6 +25,7 @@ public class CarRent extends CommonDTO {
 	private String license;
 	// private String review;
 	private String driverName;
+	private String driverPhoneNumber;
 	private String carColor;
 	private int carType;
 	@OneToOne(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)

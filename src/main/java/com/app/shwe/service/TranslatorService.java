@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.app.shwe.dto.ResponseDTO;
@@ -22,60 +24,66 @@ public class TranslatorService {
 	@Autowired
 	private TranslatorRepository translatorRepo;
 
-	public ResponseDTO saveTranslator(TranslatorRequestDTO dto) {
-		ResponseDTO response = new ResponseDTO();
-		SecurityUtils utils = new SecurityUtils();
-		if (!dto.getName().isEmpty() && !dto.getLanguage().isEmpty() && dto.getSpecialist() != null) {
+	public ResponseEntity<String> saveTranslator(TranslatorRequestDTO dto) {
+		try {
+			if (dto == null) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Request data is null.");
+			}
 			Translator translator = new Translator();
 			translator.setName(dto.getName());
 			translator.setLanguage(dto.getLanguage());
 			translator.setSpecialist(dto.getSpecialist());
 			translator.setCreatedDate(new Date());
-			translator.setCreatedBy(utils.getCurrentUsername());
+			translator.setCreatedBy(SecurityUtils.getCurrentUsername());
 			translatorRepo.save(translator);
-			response.setStatus(200);
-			response.setDescription("Translator save successfully");
-		} else {
-			response.setStatus(403);
-			response.setDescription("Translator save fail");
-		}
+			return ResponseEntity.status(HttpStatus.OK).body("Translator saved successfully.");
 
-		return response;
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error occurred while saving translator: " + e.getMessage());
+		}
 
 	}
 
-	public Optional<Translator> getTranslatorById(int id) {
-		Optional<Translator> translator = translatorRepo.findById(id);
-		if (translator.isEmpty() || translator.get() == null) {
-			return Optional.empty();
+	public Optional<Translator> getTranslatorById(Integer id) {
+		if (id == null) {
+			throw new IllegalArgumentException("Id cannot be null");
 		}
+		Optional<Translator> translator = translatorRepo.findById(id);
 		return translator;
 	}
 
-	public ResponseDTO updateDTO(int id, TranslatorRequestDTO dto) {
-		ResponseDTO response = new ResponseDTO();
+	public ResponseEntity<String> updateTranslator(int id, TranslatorRequestDTO dto) {
 		Optional<Translator> getTranslator = translatorRepo.findById(id);
-		if (getTranslator.isPresent()) {
+		if (!getTranslator.isPresent()) {
+			throw new IllegalArgumentException("ID not found");
+		}
+		try {
 			Translator translator = getTranslator.get();
 			translator.setName(dto.getName());
 			translator.setLanguage(dto.getLanguage());
 			translator.setSpecialist(dto.getSpecialist());
 			translatorRepo.save(translator); // Save the updated translator
-			response.setStatus(200);
-			response.setDescription("Update Translator successfully");
-		} else {
-			response.setStatus(403);
-			response.setDescription("Update Translator fail");
+			return new ResponseEntity<>("CarOrder updated successfully", HttpStatus.OK);
+
+		} catch (Exception e) {
+			return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return response;
+
 	}
 
-	public ResponseDTO deteteTranslator(int id) {
-		ResponseDTO response = new ResponseDTO();
-		translatorRepo.deleteById(id);
-		response.setStatus(200);
-		response.setDescription("Delete translator successfully");
-		return response;
+	public ResponseEntity<?> deteteTranslator(int id) {
+		int count = translatorRepo.checkTranslator(id);
+		if (count == 0) {
+			return new ResponseEntity<>("Translator with ID " + id + " not found", HttpStatus.NOT_FOUND);
+		}
+		try {
+			translatorRepo.deleteById(id);
+			return new ResponseEntity<>("Translator deleted successfully", HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
 	}
 
 	public Page<Translator> searchTranslator(SearchDTO dto) {

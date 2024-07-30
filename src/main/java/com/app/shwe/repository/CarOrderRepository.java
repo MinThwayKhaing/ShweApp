@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import com.app.shwe.model.CarOrder;
 
 @Repository
-public interface CarOrderRepository extends JpaRepository<CarOrder, Long> {
+public interface CarOrderRepository extends JpaRepository<CarOrder, Integer> {
 
     // @Query("SELECT co FROM CarOrder co WHERE (:searchString IS NULL OR
     // :searchString = '' OR " +

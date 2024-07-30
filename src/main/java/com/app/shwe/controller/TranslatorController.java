@@ -29,7 +29,7 @@ public class TranslatorController {
 	private TranslatorService translatorService;
 	
 	@PostMapping("/translatorSave")
-	public ResponseEntity<ResponseDTO> saveTranslator(@RequestBody TranslatorRequestDTO dto){
+	public ResponseEntity<ResponseEntity<String>> saveTranslator(@RequestBody TranslatorRequestDTO dto){
 		return ResponseEntity.ok(translatorService.saveTranslator(dto));
 	}
 	
@@ -39,13 +39,13 @@ public class TranslatorController {
 	}
 	
 	@PutMapping("/updateTranslator/{id}")
-	public ResponseEntity<ResponseDTO> updateTranslator(@PathVariable int id,@RequestBody TranslatorRequestDTO dto){
-		return ResponseEntity.ok(translatorService.updateDTO(id, dto));
+	public ResponseEntity<ResponseEntity<String>> updateTranslator(@PathVariable int id,@RequestBody TranslatorRequestDTO dto){
+		return ResponseEntity.ok(translatorService.updateTranslator(id, dto));
 	}
 	
 	@DeleteMapping("/deleteTranslator/{id}")
-	public ResponseEntity<ResponseDTO> deletTranslator(@PathVariable int id){
-		return ResponseEntity.ok(translatorService.deteteTranslator(id));
+	public ResponseEntity<?> deletTranslator(@PathVariable int id){
+		return translatorService.deteteTranslator(id);
 	}
 	
 	@GetMapping("/searchTranslator")

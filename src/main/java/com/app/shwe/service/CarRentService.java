@@ -1,17 +1,14 @@
 package com.app.shwe.service;
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.Optional;
 
-import org.apache.catalina.security.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.app.shwe.dto.CarRentDTO;
@@ -36,26 +33,23 @@ public class CarRentService {
 	private CarPriceRepository carPriceRepository;
 
 	public ResponseEntity<String> saveCars(CarRentRequestDTO dto) {
-		ResponseDTO response = new ResponseDTO();
-		SecurityUtils utils = new SecurityUtils();
 		try {
+			if (dto == null) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Request data is null.");
+			}
 			CarRent cars = new CarRent();
 			CarPrice price = new CarPrice();
-			if (dto == null) {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-						.body("Request data is null.");
-			}
 			cars.setOwnerName(dto.getOwnerName());
 			cars.setCarName(dto.getCarName());
 			cars.setCarNo(dto.getCarNo());
 			cars.setStatus(true);
 			cars.setLicense(dto.getLicense());
-			// cars.setReview(dto.getReview());
+			cars.setDriverPhoneNumber(dto.getDriverPhoneNumber());
 			cars.setDriverName(dto.getDriverName());
 			cars.setCarColor(dto.getCarColor());
 			cars.setCarType(dto.getCarType());
 			cars.setCreatedDate(new Date());
-			cars.setCreatedBy(utils.getCurrentUsername());
+			cars.setCreatedBy(SecurityUtils.getCurrentUsername());
 			carRentRepository.save(cars);
 			price.setCreatedBy(cars.getCreatedBy());
 			price.setCreatedDate(new Date());
@@ -65,79 +59,80 @@ public class CarRentService {
 			price.setCar(cars);
 			carPriceRepository.save(price);
 
-			return ResponseEntity.status(HttpStatus.OK)
-					.body("Car and price details saved successfully.");
+			return ResponseEntity.status(HttpStatus.OK).body("Car and price details saved successfully.");
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Error occurred while saving car and price details: " + e.getMessage());
 		}
 	}
 
-	public Optional<CarRentDTO> findCarById(int id) {
+	public Optional<CarRentDTO> findCarById(Integer id) {
+		 if (id == null) {
+	            throw new IllegalArgumentException("Id cannot be null");
+	        }
 		Optional<CarRentDTO> cars = carRentRepository.getCarById(id);
-		if (cars.isPresent()) {
-			if (cars.isEmpty() || cars.get() == null) {
-				return Optional.empty();
-			}
-		}
 		return cars;
 	}
 
 	@Transactional
-	public ResponseDTO updateCarRent(int id, CarRentRequestDTO dto) {
-		ResponseDTO response = new ResponseDTO();
-		SecurityUtils utils = new SecurityUtils();
-		Optional<CarRent> cars = carRentRepository.findById(id);
-		if (cars.isPresent()) {
-			CarRent carRent = cars.get();
+	public ResponseEntity<String> updateCarRent(int id, CarRentRequestDTO dto) {
+		// Find the car rent by ID
+		Optional<CarRent> optionalCarRent = carRentRepository.findById(id);
+		if (!optionalCarRent.isPresent()) {
+			throw new IllegalArgumentException("ID not found");
+		}
+		try {
+			CarRent carRent = optionalCarRent.get();
 			carRent.setCarName(dto.getCarName());
 			carRent.setOwnerName(dto.getOwnerName());
 			carRent.setCarNo(dto.getCarNo());
 			carRent.setStatus(dto.isStatus());
 			carRent.setLicense(dto.getLicense());
-			// carRent.setReview(dto.getReview());
 			carRent.setDriverName(dto.getDriverName());
+			carRent.setDriverPhoneNumber(dto.getDriverPhoneNumber());
 			carRent.setCarColor(dto.getCarColor());
 			carRent.setCarType(dto.getCarType());
 			carRent.setUpdatedDate(new Date());
-			carRent.setUpdatedBy(utils.getCurrentUsername());
+			carRent.setUpdatedBy(SecurityUtils.getCurrentUsername());
+
 			carRentRepository.save(carRent);
+
 			CarPrice carPrice = carRent.getCarPrice();
 			if (carPrice != null) {
 				carPrice.setInsideTownPrice(dto.getInsideTownPrice());
 				carPrice.setOutsideTownPrice(dto.getOutsideTownPrice());
-				// carPrice.setWithDriver(dto.isWithDriver());
+				carPrice.setUpdatedBy(carRent.getUpdatedBy());
+				carPrice.setUpdatedDate(carPrice.getCreatedDate());
 			} else {
 				carPrice = new CarPrice();
 				carPrice.setInsideTownPrice(dto.getInsideTownPrice());
 				carPrice.setOutsideTownPrice(dto.getOutsideTownPrice());
-				// carPrice.setWithDriver(dto.isWithDriver());
+				carPrice.setUpdatedBy(carRent.getUpdatedBy());
+				carPrice.setUpdatedDate(carPrice.getCreatedDate());
 				carPrice.setCar(carRent);
 				carRent.setCarPrice(carPrice);
 			}
-
-			response.setStatus(200);
-			response.setDescription("Update Car Successfully");
-		} else {
-			response.setStatus(403);
-			response.setDescription("Update Fail");
+			return ResponseEntity.status(HttpStatus.OK).body("Car and price details updated successfully.");
+		} catch (Exception e) {
+			return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
-		return response;
 	}
 
-	public ResponseDTO deleteCar(int id) {
-		ResponseDTO response = new ResponseDTO();
-		int result = carRentRepository.checkCarById(id);
-		if (result == 1) {
-			carRentRepository.deleteById(id);
-			response.setStatus(200);
-			response.setDescription("Delete Car Successfully");
-		} else {
-			response.setStatus(403);
-			response.setDescription("Car is not found");
+	public ResponseEntity<?> deleteCar(int id) {
+		// Check if the car exists
+		int count = carRentRepository.checkCarById(id);
+
+		if (count == 0) {
+			// Car with the given ID not found
+			return new ResponseEntity<>("Car with ID " + id + " not found", HttpStatus.NOT_FOUND);
 		}
-		return response;
+
+		try {
+			carRentRepository.deleteById(id);
+			return new ResponseEntity<>("Car Details deleted successfully", HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	public Page<CarRent> showAllCar(SearchDTO search) {

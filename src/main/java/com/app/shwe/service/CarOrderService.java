@@ -58,7 +58,7 @@ public class CarOrderService {
 		return user;
 	}
 
-	public ResponseEntity<?> getCarOrderById(Long id) {
+	public ResponseEntity<?> getCarOrderById(int id) {
 		Optional<CarOrder> carOrder = carOrderRepository.findById(id);
 		if (carOrder.isPresent()) {
 			return new ResponseEntity<>(carOrder.get(), HttpStatus.OK);
@@ -67,7 +67,7 @@ public class CarOrderService {
 		}
 	}
 
-	public ResponseEntity<?> updateCarOrder(Long id, CarOrderRequestDTO dto) {
+	public ResponseEntity<?> updateCarOrder(int id, CarOrderRequestDTO dto) {
 		Optional<CarOrder> carOrderOptional = carOrderRepository.findById(id);
 		if (!carOrderOptional.isPresent()) {
 			return new ResponseEntity<>("CarOrder not found", HttpStatus.NOT_FOUND);
@@ -94,7 +94,7 @@ public class CarOrderService {
 		}
 	}
 
-	public ResponseEntity<?> deleteCarOrder(Long id) {
+	public ResponseEntity<?> deleteCarOrder(int id) {
 		try {
 			carOrderRepository.deleteById(id);
 			return new ResponseEntity<>("CarOrder deleted successfully", HttpStatus.OK);

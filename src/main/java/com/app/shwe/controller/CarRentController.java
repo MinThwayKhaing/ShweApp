@@ -2,6 +2,8 @@ package com.app.shwe.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -35,13 +37,14 @@ public class CarRentController {
 	}
 
 	@PutMapping("/updateCarRent/{id}")
-	public ResponseEntity<ResponseDTO> updateCarRent(@PathVariable int id, @RequestBody CarRentRequestDTO dto) {
-		return ResponseEntity.ok(carService.updateCarRent(id, dto));
+	public ResponseEntity<String> updateCarRent(@PathVariable int id, @RequestBody CarRentRequestDTO dto) {
+	    return carService.updateCarRent(id, dto);
 	}
 
+
 	@DeleteMapping("/deleteCar/{id}")
-	public ResponseEntity<ResponseDTO> deleteCar(@PathVariable int id) {
-		return ResponseEntity.ok(carService.deleteCar(id));
+	public ResponseEntity<?> deleteCar(@PathVariable int id) {
+		return carService.deleteCar(id);
 	}
 
 	@GetMapping("/showAllCarsAndSearch")

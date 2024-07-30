@@ -13,10 +13,8 @@ import java.util.Set;
 
 @Entity
 @Data
-public class Process {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Process extends CommonDTO{
+   
     private int imageorder;
     private String name;
     private String description;
