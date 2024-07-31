@@ -16,7 +16,7 @@ public class Report extends CommonDTO {
 	private String content;
 
 	@ManyToOne
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "user_id",referencedColumnName = "id")
 	private User user;
 
 }

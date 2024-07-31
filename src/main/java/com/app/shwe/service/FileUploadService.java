@@ -15,6 +15,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FileUploadService {
@@ -33,6 +35,12 @@ public class FileUploadService {
                 .endpointOverride(URI.create("https://" + endpoint))
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 .build();
+    }
+    
+    public List<String> uploadFiles(List<MultipartFile> files) {
+        return files.stream()
+                    .map(this::uploadFile)
+                    .collect(Collectors.toList());
     }
 
     public String uploadFile(MultipartFile file) {

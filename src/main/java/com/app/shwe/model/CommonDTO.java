@@ -14,7 +14,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @MappedSuperclass
@@ -22,7 +21,7 @@ public class CommonDTO {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private int id;
 	private Date createdDate;
 	private Date updatedDate;
 	private String createdBy;
