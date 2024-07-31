@@ -2,8 +2,6 @@ package com.app.shwe.model;
 
 import java.util.Date;
 
-import com.app.shwe.dto.SearchDTO;
-
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,7 +23,6 @@ public class CommonDTO {
 	private Long id;
 	private Date createdDate;
 	private Date updatedDate;
-	private String createdBy;
-	private String updatedBy;
-
+	private int createdBy;
+	private int updatedBy;
 }

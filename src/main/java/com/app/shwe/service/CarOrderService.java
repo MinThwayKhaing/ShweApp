@@ -1,5 +1,8 @@
 package com.app.shwe.service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,17 +10,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import com.app.shwe.datamapping.CarOrderMapping;
 import com.app.shwe.dto.CarOrderRequestDTO;
+import com.app.shwe.dto.CarOrderResponseDTO;
 import com.app.shwe.model.CarOrder;
-import com.app.shwe.model.User;
 import com.app.shwe.repository.CarOrderRepository;
 import com.app.shwe.repository.UserRepository;
-import com.app.shwe.utils.SecurityUtils;
 
 @Service
 public class CarOrderService {
@@ -26,7 +25,10 @@ public class CarOrderService {
 	private CarOrderRepository carOrderRepository;
 
 	@Autowired
-	private UserRepository userRepository;
+	private CarOrderMapping carOrderMapping;
+
+	// @Autowired
+	// private UserRepository userRepository;
 
 	public ResponseEntity<?> createCarOrder(CarOrderRequestDTO dto) {
 		if (dto == null) {
@@ -34,14 +36,7 @@ public class CarOrderService {
 		}
 
 		try {
-			CarOrder carOrder = new CarOrder();
-			carOrder.setCarType(dto.getCarType());
-			carOrder.setFromDate(dto.getFromDate());
-			carOrder.setToDate(dto.getToDate());
-			carOrder.setDriver(dto.isDriver());
-			carOrder.setTravelrange(dto.isTravelrange());
-			Integer userId = getUserIdFromUsername(SecurityUtils.getCurrentUsername());
-			carOrder.setCreatedBy(userId.toString());
+			CarOrder carOrder = carOrderMapping.mapToCarOrder(dto);
 
 			carOrderRepository.save(carOrder);
 
@@ -49,13 +44,6 @@ public class CarOrderService {
 		} catch (Exception e) {
 			return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-	}
-
-	private int getUserIdFromUsername(String username) {
-		// Implement this method to fetch the user ID from the username
-		// For example, using a UserRepository to find by username
-		int user = userRepository.authUser(username);
-		return user;
 	}
 
 	public ResponseEntity<?> getCarOrderById(int id) {
@@ -75,16 +63,11 @@ public class CarOrderService {
 
 		try {
 			CarOrder carOrder = carOrderOptional.get();
-			if (dto.isOrderconfirm()) {
-				carOrder.setCar(dto.getCarId());
-				carOrder.setOrderConfirm(dto.isOrderconfirm());
+			if (dto.isOrderConfirm()) {
+				carOrder.setCarId(dto.getCarId());
+				carOrder.setOrderConfirm(dto.isOrderConfirm());
 			}
-			carOrder.setCarType(dto.getCarType());
-			carOrder.setFromDate(dto.getFromDate());
-			carOrder.setToDate(dto.getToDate());
-			carOrder.setDriver(dto.isDriver());
-			carOrder.setTravelrange(dto.isTravelrange());
-			// Set other necessary fields like cars and user here
+			carOrder = carOrderMapping.mapToCarOrder(dto);
 
 			carOrderRepository.save(carOrder);
 
@@ -103,15 +86,16 @@ public class CarOrderService {
 		}
 	}
 
-	// public ResponseEntity<?> getAllCarOrders(String searchString, Pageable
+	// public ResponseEntity<?> getCarOrdersWithSearch(String searchString, Pageable
 	// pageable) {
 	// try {
-	// Page<CarOrder> carOrders = carOrderRepository.findAllWithSearch(searchString,
-	// pageable);
+	// Page<CarOrderResponseDTO> carOrders =
+	// carOrderRepository.findAllWithSearch(searchString, pageable);
 	// return new ResponseEntity<>(carOrders, HttpStatus.OK);
 	// } catch (Exception e) {
 	// return new ResponseEntity<>("Error occurred: " + e.getMessage(),
 	// HttpStatus.INTERNAL_SERVER_ERROR);
 	// }
 	// }
+
 }
