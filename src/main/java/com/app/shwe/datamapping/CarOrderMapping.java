@@ -18,7 +18,7 @@ public class CarOrderMapping {
     public CarOrder mapToCarOrder(CarOrderRequestDTO dto) {
         CarOrder carOrder = new CarOrder();
         carOrder.setCarId(dto.getCarId());
-        carOrder.setOrderConfirm(dto.isOrderConfirm());
+        carOrder.setStatus(dto.getStatus());
         carOrder.setFromLocation(dto.getFromLocation());
         carOrder.setToLocation(dto.getToLocation());
         carOrder.setPickUpDate(dto.getPickUpDate());
@@ -27,7 +27,6 @@ public class CarOrderMapping {
         carOrder.setToDate(dto.getToDate());
         carOrder.setCarType(dto.getCarType());
         carOrder.setDriver(dto.isDriver());
-        carOrder.setOrderConfirm(dto.isOrderConfirm());
         carOrder.setCustomerPhoneNumber(dto.getCustomerPhoneNumber());
         carOrder.setCarBrand(dto.getCarBrand());
         carOrder.setCarId(dto.getCarId());

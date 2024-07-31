@@ -28,7 +28,7 @@ public class CarOrder extends CommonDTO {
 	private Date toDate;
 	private int carType;
 	private boolean driver;
-	private boolean orderConfirm;
+	private String status;
 	private String customerPhoneNumber;
 	private String carBrand;
 	private int carId;

@@ -26,7 +26,7 @@ public class CarOrderRequestDTO {
     private int carType;
     private boolean driver;
     // with driver is true;without driver is false;
-    private boolean orderConfirm;
+    private String status;
     private String customerPhoneNumber;
     private String carBrand;
     private int carId;

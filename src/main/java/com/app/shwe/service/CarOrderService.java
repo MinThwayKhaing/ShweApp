@@ -34,7 +34,7 @@ public class CarOrderService {
 		if (dto == null) {
 			return new ResponseEntity<>("Request data is null", HttpStatus.BAD_REQUEST);
 		}
-
+		dto.setStatus("Pending");
 		try {
 			CarOrder carOrder = carOrderMapping.mapToCarOrder(dto);
 
