@@ -63,10 +63,6 @@ public class CarOrderService {
 
 		try {
 			CarOrder carOrder = carOrderOptional.get();
-			if (dto.isOrderConfirm()) {
-				carOrder.setCarId(dto.getCarId());
-				carOrder.setOrderConfirm(dto.isOrderConfirm());
-			}
 			carOrder = carOrderMapping.mapToCarOrder(dto);
 
 			carOrderRepository.save(carOrder);
