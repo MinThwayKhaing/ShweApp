@@ -1,10 +1,8 @@
 package com.app.shwe.dto;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
-
-import com.app.shwe.model.User;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,19 +13,20 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CarOrderRequestDTO {
+public class CarOrderResponseDTO {
 
+    private Integer userId;
+    private String userName;
     private String fromLocation;
     private String toLocation;
     private LocalDate pickUpDate;
     private LocalTime pickUpTime;
     private Date fromDate;
     private Date toDate;
-    private int carType;
+    private Integer carType;
     private boolean driver;
-    // with driver is true;without driver is false;
-    private String status;
+    private boolean orderConfirm;
     private String customerPhoneNumber;
     private String carBrand;
-    private int carId;
+    private Integer carId;
 }

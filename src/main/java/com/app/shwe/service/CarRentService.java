@@ -19,6 +19,7 @@ import com.app.shwe.model.CarPrice;
 import com.app.shwe.model.CarRent;
 import com.app.shwe.repository.CarPriceRepository;
 import com.app.shwe.repository.CarRentRepository;
+import com.app.shwe.repository.UserRepository;
 import com.app.shwe.utils.SecurityUtils;
 
 import jakarta.transaction.Transactional;
@@ -31,6 +32,9 @@ public class CarRentService {
 
 	@Autowired
 	private CarPriceRepository carPriceRepository;
+
+	@Autowired
+	private UserRepository userRepository;
 
 	public ResponseEntity<String> saveCars(CarRentRequestDTO dto) {
 		try {
@@ -49,7 +53,7 @@ public class CarRentService {
 			cars.setCarColor(dto.getCarColor());
 			cars.setCarType(dto.getCarType());
 			cars.setCreatedDate(new Date());
-			cars.setCreatedBy(SecurityUtils.getCurrentUsername());
+			cars.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 			carRentRepository.save(cars);
 			price.setCreatedBy(cars.getCreatedBy());
 			price.setCreatedDate(new Date());
@@ -67,9 +71,9 @@ public class CarRentService {
 	}
 
 	public Optional<CarRentDTO> findCarById(Integer id) {
-		 if (id == null) {
-	            throw new IllegalArgumentException("Id cannot be null");
-	        }
+		if (id == null) {
+			throw new IllegalArgumentException("Id cannot be null");
+		}
 		Optional<CarRentDTO> cars = carRentRepository.getCarById(id);
 		return cars;
 	}
@@ -93,7 +97,7 @@ public class CarRentService {
 			carRent.setCarColor(dto.getCarColor());
 			carRent.setCarType(dto.getCarType());
 			carRent.setUpdatedDate(new Date());
-			carRent.setUpdatedBy(SecurityUtils.getCurrentUsername());
+			carRent.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 
 			carRentRepository.save(carRent);
 

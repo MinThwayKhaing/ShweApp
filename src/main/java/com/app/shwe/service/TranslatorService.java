@@ -16,6 +16,7 @@ import com.app.shwe.dto.SearchDTO;
 import com.app.shwe.dto.TranslatorRequestDTO;
 import com.app.shwe.model.Translator;
 import com.app.shwe.repository.TranslatorRepository;
+import com.app.shwe.repository.UserRepository;
 import com.app.shwe.utils.SecurityUtils;
 
 @Service
@@ -23,6 +24,9 @@ public class TranslatorService {
 
 	@Autowired
 	private TranslatorRepository translatorRepo;
+
+	@Autowired
+	private UserRepository userRepository;
 
 	public ResponseEntity<String> saveTranslator(TranslatorRequestDTO dto) {
 		try {
@@ -34,7 +38,7 @@ public class TranslatorService {
 			translator.setLanguage(dto.getLanguage());
 			translator.setSpecialist(dto.getSpecialist());
 			translator.setCreatedDate(new Date());
-			translator.setCreatedBy(SecurityUtils.getCurrentUsername());
+			translator.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 			translatorRepo.save(translator);
 			return ResponseEntity.status(HttpStatus.OK).body("Translator saved successfully.");
 
@@ -83,7 +87,7 @@ public class TranslatorService {
 		} catch (Exception e) {
 			return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
+
 	}
 
 	public Page<Translator> searchTranslator(SearchDTO dto) {

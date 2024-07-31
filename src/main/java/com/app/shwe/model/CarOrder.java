@@ -1,5 +1,7 @@
 package com.app.shwe.model;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 
 import jakarta.persistence.Entity;
@@ -18,14 +20,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CarOrder extends CommonDTO {
 
-	private int carType;
+	private String fromLocation;
+	private String toLocation;
+	private LocalDate pickUpDate;
+	private LocalTime pickUpTime;
 	private Date fromDate;
 	private Date toDate;
+	private int carType;
 	private boolean driver;
-	// with driver is true;without driver is false;
-	private boolean travelrange;
-	// inside is false;outside is true
-	private boolean orderConfirm;
-	// private Long user_id;
-	private int car;
+	private String status;
+	private String customerPhoneNumber;
+	private String carBrand;
+	private int carId;
+
 }
