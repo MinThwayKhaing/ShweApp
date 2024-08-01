@@ -7,11 +7,13 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.app.shwe.dto.CarRentDTO;
 import com.app.shwe.dto.CarRentRequestDTO;
 import com.app.shwe.dto.ResponseDTO;
 import com.app.shwe.dto.SearchDTO;
+import com.app.shwe.dto.TranslatorRequestDTO;
 import com.app.shwe.model.CarRent;
 import com.app.shwe.service.CarRentService;
 
@@ -27,8 +29,9 @@ public class CarRentController {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/carRentSave")
-	public ResponseEntity<ResponseEntity<String>> saveCars(@RequestBody CarRentRequestDTO dto) {
-		return ResponseEntity.ok(carService.saveCars(dto));
+	public ResponseEntity<ResponseEntity<String>> saveCars(@RequestPart("image") MultipartFile carImage,
+			@RequestPart("dto") CarRentRequestDTO dto) {
+		return ResponseEntity.ok(carService.saveCars(carImage, dto));
 	}
 
 	@GetMapping("/getCarById/{id}")
@@ -37,10 +40,10 @@ public class CarRentController {
 	}
 
 	@PutMapping("/updateCarRent/{id}")
-	public ResponseEntity<String> updateCarRent(@PathVariable int id, @RequestBody CarRentRequestDTO dto) {
-	    return carService.updateCarRent(id, dto);
+	public ResponseEntity<String> updateCarRent(@PathVariable int id, @RequestPart("image") MultipartFile carImage,
+			@RequestPart("request") CarRentRequestDTO dto) {
+		return carService.updateCarRent(id,carImage, dto);
 	}
-
 
 	@DeleteMapping("/deleteCar/{id}")
 	public ResponseEntity<?> deleteCar(@PathVariable int id) {

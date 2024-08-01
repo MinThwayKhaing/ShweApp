@@ -22,5 +22,6 @@ public class CarRentDTO {
 	private int carType;
 	private double insideTownPrice;
 	private double outsideTownPrice;
+	private String image;
 
 }

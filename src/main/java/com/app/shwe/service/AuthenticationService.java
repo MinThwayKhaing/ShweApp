@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.app.shwe.dto.AuthenticationRequest;
 import com.app.shwe.dto.AuthenticationResponse;
+import com.app.shwe.dto.RegisterRequest;
 import com.app.shwe.dto.UserRequest;
 import com.app.shwe.model.Role;
 import com.app.shwe.model.User;
@@ -33,22 +34,22 @@ public class AuthenticationService {
     @Autowired
     private FileUploadService fileUploadService;
 
-    public void register(MultipartFile image, String user_name, String phone_number, String password, Role role) {
-        if (user_name == null && phone_number == null && password == null && role == null) {
+    public void register(MultipartFile image, RegisterRequest request) {
+        if (request == null) {
             throw new IllegalArgumentException("Request and required fields must not be null");
         }
 
         String imageUrl = fileUploadService.uploadFile(image);
 
         var user = User.builder()
-                .phoneNumber(phone_number)
-                .userName(user_name)
-                .password(passwordEncoder.encode(password))
+                .phoneNumber(request.getPhoneNumber())
+                .userName(request.getUserName())
+                .password(passwordEncoder.encode(request.getPassword()))
                 .image(imageUrl)
-                .role(role)
+                .role(request.getRole())
                 .build();
 
-        if (repository.existsByPhoneNumber(phone_number) || repository.existsByUserName(phone_number)) {
+        if (repository.existsByPhoneNumber(request.getPhoneNumber()) || repository.existsByUserName(request.getPhoneNumber())) {
             throw new IllegalArgumentException("User with the same phone number or username already exists");
         }
 

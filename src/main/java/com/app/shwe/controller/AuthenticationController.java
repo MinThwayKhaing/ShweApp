@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.app.shwe.dto.AuthenticationRequest;
 import com.app.shwe.dto.AuthenticationResponse;
+import com.app.shwe.dto.RegisterRequest;
 import com.app.shwe.dto.UserRequest;
 import com.app.shwe.model.Role;
 import com.app.shwe.service.AuthenticationService;
@@ -31,11 +32,9 @@ public class AuthenticationController {
 	    private AuthenticationService authenticationService;
 
 	    @PostMapping("/register")
-	    public ResponseEntity<Map<String, String>> register(@RequestParam("image") MultipartFile image,
-	    		@RequestParam("user_name") String user_name,@RequestParam("phone_number") String phone,
-	    		@RequestParam("password") String password,@RequestParam("role") Role role) {
+	    public ResponseEntity<Map<String, String>> register(@RequestPart("image") MultipartFile image ,@RequestPart("request") RegisterRequest request) {
 	        try {
-	            authenticationService.register(image,user_name,phone,password,role );
+	            authenticationService.register(image,request );
 	            Map<String, String> response = new HashMap<>();
 	            response.put("message", "Registration successful");	
 	            return ResponseEntity.ok(response);

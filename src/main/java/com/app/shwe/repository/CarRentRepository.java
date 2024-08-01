@@ -25,8 +25,8 @@ public interface CarRentRepository extends JpaRepository<CarRent, Integer> {
 			+ "c.carName LIKE %:searchString% OR c.ownerName LIKE %:searchString% OR c.carNo LIKE %:searchString%)")
 	Page<CarRent> carSimpleSearch(@Param("searchString") String searchString, Pageable pageable);
 
-	@Query("SELECT new com.app.shwe.dto.CarRentDTO(c.carName,c.ownerName,c.carNo,c.status,c.license,c.driverName,c.driverPhoneNumber,c.carColor"
-			+ ",c.carType,p.insideTownPrice,p.outsideTownPrice)"
+	@Query("SELECT new com.app.shwe.dto.CarRentDTO(c.carName,c.ownerName,c.carNo,c.status,c.license,c.driverPhoneNumber,c.driverName,c.carColor"
+			+ ",c.carType,p.insideTownPrice,p.outsideTownPrice,c.image)"
 			+ "FROM CarRent c JOIN CarPrice p ON c.id = p.car.id WHERE c.id = :id")
 	Optional<CarRentDTO> getCarById(int id);
 }

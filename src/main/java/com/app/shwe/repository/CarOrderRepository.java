@@ -1,10 +1,15 @@
 package com.app.shwe.repository;
 
 import com.app.shwe.dto.CarOrderResponseDTO;
+import com.app.shwe.dto.TranslatorOrderResponseDTO;
 import com.app.shwe.model.CarOrder;
+
+import jakarta.transaction.Transactional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -21,4 +26,15 @@ public interface CarOrderRepository extends JpaRepository<CarOrder, Integer> {
     //         "JOIN User u ON co.createdBy = u.id " +
     //         "WHERE u.userName LIKE %:searchString% OR co.fromLocation LIKE %:searchString%")
     // Page<CarOrderResponseDTO> findAllWithSearch(@Param("searchString") String searchString, Pageable pageable);
+	
+	@Query("SELECT new com.app.shwe.dto.CarOrderResponseDTO(o.createdDate,o.id,o.carType,o.carBrand,c.driverName,c.image,o.status)"
+			+ " FROM CarRent c JOIN CarOrder o ON c.id = o.carId.id WHERE o.createdBy = :id"
+			+ " AND (LOWER(o.carBrand) LIKE LOWER(CONCAT('%', :searchString, '%'))"
+			+ " OR LOWER(c.driverName) LIKE LOWER(CONCAT('%', :searchString, '%')))")
+	Page<CarOrderResponseDTO> showCarOrder(@Param("id") int id, @Param("searchString") String searchString, Pageable pageable);
+	
+	@Modifying
+    @Transactional
+    @Query("UPDATE CarOrder c SET c.status = :status WHERE c.id = :id")
+    void cancelCarOrder(@Param("id") int id, @Param("status") String status);
 }

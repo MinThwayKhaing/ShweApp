@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,35 +32,32 @@ public class NewsController {
 	@Autowired
 	private NewsService newsService;
 
-	
 	@PostMapping("/saveNews")
-	public ResponseEntity<ResponseEntity<String>> saveNews(@RequestParam("files") List<MultipartFile> files,
-			@RequestParam("description") String description) {
-		return ResponseEntity.ok(newsService.saveNews(files, description));
+	public ResponseEntity<ResponseEntity<String>> saveNews(@RequestPart("images") List<MultipartFile> images,
+			@RequestPart("request") NewsRequestDTO request) {
+		return ResponseEntity.ok(newsService.saveNews(images, request));
 
 	}
-	
+
 	@GetMapping("/getNewsById/{id}")
-	public ResponseEntity<News> getNewsById(@PathVariable int id){
+	public ResponseEntity<News> getNewsById(@PathVariable int id) {
 		return newsService.getNewsById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
-	
-	
+
 	@GetMapping("/showAllNews")
 	public ResponseEntity<Page<News>> showCars(@RequestBody SearchDTO search) {
 		return ResponseEntity.ok(newsService.getAllNewsByDate(search));
 	}
-	
+
 	@PutMapping("/updateNews/{id}")
-	public ResponseEntity<String> updateNews(@PathVariable int id, @RequestParam("files") List<MultipartFile> files,
-			                                 @RequestParam("description") String description) {
-	    return newsService.updateNews(id, files,description);
+	public ResponseEntity<String> updateNews(@PathVariable int id, @RequestPart("images") List<MultipartFile> images,
+			@RequestPart("request") NewsRequestDTO request) {
+		return newsService.updateNews(id, images, request);
 	}
-	
+
 	@DeleteMapping("/deleteNews/{id}")
 	public ResponseEntity<?> deleteCar(@PathVariable int id) {
 		return newsService.deleteNews(id);
 	}
-	
 
 }

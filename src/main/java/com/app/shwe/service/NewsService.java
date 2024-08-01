@@ -21,6 +21,7 @@ import com.app.shwe.model.CarRent;
 import com.app.shwe.model.News;
 import com.app.shwe.model.Translator;
 import com.app.shwe.repository.NewsRepository;
+import com.app.shwe.repository.UserRepository;
 import com.app.shwe.utils.FilesSerializationUtil;
 import com.app.shwe.utils.SecurityUtils;
 
@@ -34,21 +35,24 @@ public class NewsService {
 
 	@Autowired
 	private FileUploadService fileUploadService;
+	
+	@Autowired
+	private UserRepository userRepository;
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@Transactional
-	public ResponseEntity<String> saveNews(List<MultipartFile> files, String description) {
-		if (files == null && description == null) {
+	public ResponseEntity<String> saveNews(List<MultipartFile> images, NewsRequestDTO request) {
+		if (images == null && request == null) {
 			throw new IllegalArgumentException("Request and required fields must not be null");
 		}
 		try {
-			List<String> imageUrl = fileUploadService.uploadFiles(files);
+			List<String> imageUrl = fileUploadService.uploadFiles(images);
 			String serializedIages = FilesSerializationUtil.serializeImages(imageUrl);
 			News news = new News();
 			news.setImages(serializedIages);
 			news.setDate(new Date());
-			news.setDescription(description);
-			news.setCreatedBy(SecurityUtils.getCurrentUsername());
+			news.setDescription(request.getDescription());
+			news.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 			news.setCreatedDate(new Date());
 			newsRepository.save(news);
 			return ResponseEntity.status(HttpStatus.OK).body("News saved successfully.");
@@ -60,7 +64,7 @@ public class NewsService {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@Transactional
-	public ResponseEntity<String> updateNews(int id, List<MultipartFile> files,String description) {
+	public ResponseEntity<String> updateNews(int id, List<MultipartFile> files,NewsRequestDTO request) {
 		Optional<News> getNews = newsRepository.findById(id);
 		if (!getNews.isPresent()) {
 			throw new IllegalArgumentException("ID not found");
@@ -73,12 +77,12 @@ public class NewsService {
 				String serializedImages = FilesSerializationUtil.serializeImages(imageUrl);
 				news.setImages(serializedImages);
 			}
-			news.setDescription(description);
+			news.setDescription(request.getDescription());
 			news.setDate(new Date());
-			news.setUpdatedBy(SecurityUtils.getCurrentUsername());
+			news.setUpdatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 			news.setUpdatedDate(new Date());
 			newsRepository.save(news);
-			return ResponseEntity.status(HttpStatus.OK).body("News updated successfully.");
+			return new ResponseEntity<>("News updated successfully", HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}

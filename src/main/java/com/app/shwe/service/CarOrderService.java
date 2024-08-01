@@ -1,22 +1,24 @@
 package com.app.shwe.service;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.app.shwe.datamapping.CarOrderMapping;
 import com.app.shwe.dto.CarOrderRequestDTO;
 import com.app.shwe.dto.CarOrderResponseDTO;
+import com.app.shwe.dto.SearchDTO;
+import com.app.shwe.dto.TranslatorOrderResponseDTO;
+import com.app.shwe.dto.TranslatorRequestDTO;
 import com.app.shwe.model.CarOrder;
 import com.app.shwe.repository.CarOrderRepository;
-import com.app.shwe.repository.UserRepository;
 
 @Service
 public class CarOrderService {
@@ -30,7 +32,7 @@ public class CarOrderService {
 	// @Autowired
 	// private UserRepository userRepository;
 
-	public ResponseEntity<?> createCarOrder(CarOrderRequestDTO dto) {
+	public ResponseEntity<String> createCarOrder(CarOrderRequestDTO dto) {
 		if (dto == null) {
 			return new ResponseEntity<>("Request data is null", HttpStatus.BAD_REQUEST);
 		}
@@ -93,5 +95,28 @@ public class CarOrderService {
 	// HttpStatus.INTERNAL_SERVER_ERROR);
 	// }
 	// }
+	
+	public Page<CarOrderResponseDTO> showCarOrders(int id, SearchDTO dto) {
+		String searchString = dto.getSearchString();
+		int page = (dto.getPage() < 1) ? 0 : dto.getPage() - 1;
+		int size = dto.getSize();
+		Pageable pageable = PageRequest.of(page, size);
+        return carOrderRepository.showCarOrder(id, searchString, pageable);
+    }
+	
+	public ResponseEntity<String> cancelCarOrder(int id,CarOrderRequestDTO dto){
+		if(dto.getStatus().equals("")) {
+			throw new IllegalArgumentException("Request and required fields must not be null");
+		}
+		try {
+			String status = dto.getStatus();
+			carOrderRepository.cancelCarOrder(id, status);
+			return ResponseEntity.status(HttpStatus.OK).body("Cancel translator order successfully.");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error occurred while saving translator: " + e.getMessage());
+		}
+	}
+	
 
 }

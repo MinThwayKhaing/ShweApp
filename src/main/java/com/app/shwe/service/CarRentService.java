@@ -10,13 +10,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.app.shwe.datamapping.CarRentMapping;
 import com.app.shwe.dto.CarRentDTO;
 import com.app.shwe.dto.CarRentRequestDTO;
 import com.app.shwe.dto.ResponseDTO;
 import com.app.shwe.dto.SearchDTO;
+import com.app.shwe.dto.TranslatorRequestDTO;
 import com.app.shwe.model.CarPrice;
 import com.app.shwe.model.CarRent;
+import com.app.shwe.model.TranslatorOrder;
 import com.app.shwe.repository.CarPriceRepository;
 import com.app.shwe.repository.CarRentRepository;
 import com.app.shwe.repository.UserRepository;
@@ -32,37 +36,22 @@ public class CarRentService {
 
 	@Autowired
 	private CarPriceRepository carPriceRepository;
+	
+	@Autowired
+	private FileUploadService fileUploadService;
 
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired 
+	private CarRentMapping carRentMapping;
 
-	public ResponseEntity<String> saveCars(CarRentRequestDTO dto) {
+	public ResponseEntity<String> saveCars(MultipartFile carImage,CarRentRequestDTO dto) {
 		try {
 			if (dto == null) {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Request data is null.");
 			}
-			CarRent cars = new CarRent();
-			CarPrice price = new CarPrice();
-			cars.setOwnerName(dto.getOwnerName());
-			cars.setCarName(dto.getCarName());
-			cars.setCarNo(dto.getCarNo());
-			cars.setStatus(true);
-			cars.setLicense(dto.getLicense());
-			cars.setDriverPhoneNumber(dto.getDriverPhoneNumber());
-			cars.setDriverName(dto.getDriverName());
-			cars.setCarColor(dto.getCarColor());
-			cars.setCarType(dto.getCarType());
-			cars.setCreatedDate(new Date());
-			cars.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
-			carRentRepository.save(cars);
-			price.setCreatedBy(cars.getCreatedBy());
-			price.setCreatedDate(new Date());
-			price.setInsideTownPrice(dto.getInsideTownPrice());
-			price.setOutsideTownPrice(dto.getOutsideTownPrice());
-			// price.setWithDriver(dto.isWithDriver());
-			price.setCar(cars);
-			carPriceRepository.save(price);
-
+			carRentMapping.mapToCarRent(carImage, dto);
 			return ResponseEntity.status(HttpStatus.OK).body("Car and price details saved successfully.");
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -79,7 +68,7 @@ public class CarRentService {
 	}
 
 	@Transactional
-	public ResponseEntity<String> updateCarRent(int id, CarRentRequestDTO dto) {
+	public ResponseEntity<String> updateCarRent(int id,MultipartFile carImage, CarRentRequestDTO dto) {
 		// Find the car rent by ID
 		Optional<CarRent> optionalCarRent = carRentRepository.findById(id);
 		if (!optionalCarRent.isPresent()) {
@@ -87,6 +76,10 @@ public class CarRentService {
 		}
 		try {
 			CarRent carRent = optionalCarRent.get();
+			if (carImage != null && !carImage.isEmpty()) {
+				String imageUrl = fileUploadService.uploadFile(carImage);
+				carRent.setImage(imageUrl);
+			}
 			carRent.setCarName(dto.getCarName());
 			carRent.setOwnerName(dto.getOwnerName());
 			carRent.setCarNo(dto.getCarNo());
@@ -146,5 +139,6 @@ public class CarRentService {
 		Pageable pageable = PageRequest.of(page, size);
 		return carRentRepository.carSimpleSearch(searchString, pageable);
 	}
+	
 
 }

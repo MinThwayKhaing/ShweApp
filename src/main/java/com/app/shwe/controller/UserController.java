@@ -6,9 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.app.shwe.dto.ChangePasswordDTO;
+import com.app.shwe.dto.TranslatorRequestDTO;
 import com.app.shwe.dto.UserReportDTO;
 import com.app.shwe.service.UserService;
 
@@ -27,5 +30,12 @@ public class UserController {
 		List<UserReportDTO> dto = userService.getReportByUserId(id);
 		return ResponseEntity.ok(dto);
 	}
+	
+	
+	@PostMapping("/changePassword")
+	public ResponseEntity<ResponseEntity<String>> changePassword(@RequestBody ChangePasswordDTO dto){
+		return ResponseEntity.ok(userService.changePassword(dto));
+	}
+	
 
 }

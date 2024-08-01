@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CarOrderRequestDTO {
 
+	private int order_id;
     private String fromLocation;
     private String toLocation;
     private LocalDate pickUpDate;

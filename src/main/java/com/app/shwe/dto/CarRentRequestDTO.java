@@ -25,7 +25,7 @@ public class CarRentRequestDTO {
 	private double insideTownPrice;
 	private double outsideTownPrice;
 	private boolean withDriver;
-	
+	private String checkStatus;
 
 
 }
