@@ -27,7 +27,7 @@ public class ProcessController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Process> getProcessById(@PathVariable Long id) {
+    public ResponseEntity<Process> getProcessById(@PathVariable int id) {
         Optional<Process> process = processService.getProcessById(id);
         return process.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -40,14 +40,14 @@ public class ProcessController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Process> updateProcess(@PathVariable Long id, @RequestBody Process processDetails, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<Process> updateProcess(@PathVariable int id, @RequestBody Process processDetails, @RequestParam("file") MultipartFile file) {
         String imglink = fileUploadService.uploadFile(file);
         processDetails.setImglink(imglink);
         return ResponseEntity.ok(processService.updateProcess(id, processDetails));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProcess(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteProcess(@PathVariable int id) {
         processService.deleteProcess(id);
         return ResponseEntity.noContent().build();
     }

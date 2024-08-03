@@ -101,7 +101,7 @@ public class CarOrderService {
 		int page = (dto.getPage() < 1) ? 0 : dto.getPage() - 1;
 		int size = dto.getSize();
 		Pageable pageable = PageRequest.of(page, size);
-        return carOrderRepository.showCarOrder(id, searchString, pageable);
+        return carOrderRepository.showCarOrder( searchString, pageable);
     }
 	
 	public ResponseEntity<String> cancelCarOrder(int id,CarOrderRequestDTO dto){

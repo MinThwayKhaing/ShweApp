@@ -18,7 +18,7 @@ public class ProcessService {
         return processRepository.findAllByOrderByImageorderAsc();
     }
 
-    public Optional<Process> getProcessById(Long id) {
+    public Optional<Process> getProcessById(Integer id) {
     	  if (id == null) {
               throw new IllegalArgumentException("Id cannot be null");
           } 
@@ -32,7 +32,7 @@ public class ProcessService {
         return processRepository.save(process);
     }
 
-    public Process updateProcess(Long id, Process processDetails) {
+    public Process updateProcess(Integer id, Process processDetails) {
     	  if (processDetails == null) {
                throw new IllegalArgumentException("Process details cannot be null");
            }  
@@ -48,7 +48,7 @@ public class ProcessService {
     }
 
     
-    public void deleteProcess(Long id) {
+    public void deleteProcess(Integer id) {
     	
    	  if (id == null) {
           throw new IllegalArgumentException("Delete Id cannot be null");

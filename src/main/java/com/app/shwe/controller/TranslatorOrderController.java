@@ -34,8 +34,8 @@ public class TranslatorOrderController {
 	}
 	
 	@GetMapping("/getHireTranslator/{id}")
-	public ResponseEntity<Page<TranslatorOrderResponseDTO>> getHireTranslatorById(@PathVariable int id,@RequestBody SearchDTO dto) {
-		return ResponseEntity.ok(translatorService.searchHireTranslator(id, dto));
+	public ResponseEntity<Page<TranslatorOrderResponseDTO>> getHireTranslatorById(@RequestBody SearchDTO dto) {
+		return ResponseEntity.ok(translatorService.searchHireTranslator( dto));
 	}
 	
 	@PostMapping("/cancelOrder")

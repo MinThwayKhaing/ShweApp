@@ -27,9 +27,9 @@ public interface TranslatorOrderRepostitory extends JpaRepository<TranslatorOrde
 	
 	 @Query("SELECT new com.app.shwe.dto.TranslatorOrderResponseDTO(t.id,o.createdDate,t.name,t.specialist,o.status,t.image,t.chatLink) "
 	            + "FROM Translator t JOIN TranslatorOrder o ON t.id = o.translator.id "
-	            + "WHERE o.createdBy = :id "
-	            + "AND (LOWER(t.name) LIKE LOWER(CONCAT('%', :searchString, '%')) "
+	            + "WHERE "
+	            + "(LOWER(t.name) LIKE LOWER(CONCAT('%', :searchString, '%')) "
 	            + "OR LOWER(t.specialist) LIKE LOWER(CONCAT('%', :searchString, '%')))")
-	    Page<TranslatorOrderResponseDTO> searchHireTranslator(@Param("id") int id, @Param("searchString") String searchString, Pageable pageable);
+	    Page<TranslatorOrderResponseDTO> searchHireTranslator(@Param("searchString") String searchString, Pageable pageable);
 
 }

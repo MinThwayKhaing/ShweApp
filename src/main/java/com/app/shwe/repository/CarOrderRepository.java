@@ -28,10 +28,10 @@ public interface CarOrderRepository extends JpaRepository<CarOrder, Integer> {
     // Page<CarOrderResponseDTO> findAllWithSearch(@Param("searchString") String searchString, Pageable pageable);
 	
 	@Query("SELECT new com.app.shwe.dto.CarOrderResponseDTO(o.createdDate,o.id,o.carType,o.carBrand,c.driverName,c.image,o.status)"
-			+ " FROM CarRent c JOIN CarOrder o ON c.id = o.carId.id WHERE o.createdBy = :id"
-			+ " AND (LOWER(o.carBrand) LIKE LOWER(CONCAT('%', :searchString, '%'))"
+			+ " FROM CarRent c JOIN CarOrder o ON c.id = o.carId.id WHERE"
+			+ " (LOWER(o.carBrand) LIKE LOWER(CONCAT('%', :searchString, '%'))"
 			+ " OR LOWER(c.driverName) LIKE LOWER(CONCAT('%', :searchString, '%')))")
-	Page<CarOrderResponseDTO> showCarOrder(@Param("id") int id, @Param("searchString") String searchString, Pageable pageable);
+	Page<CarOrderResponseDTO> showCarOrder( @Param("searchString") String searchString, Pageable pageable);
 	
 	@Modifying
     @Transactional
