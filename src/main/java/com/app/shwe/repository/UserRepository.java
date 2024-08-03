@@ -28,6 +28,11 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
 	boolean existsByPhoneNumber(String phoneNumber);
 
+	// boolean existsByPassword(String password);
+
+	@Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM User u WHERE u.id = :id AND u.password = :password")
+	boolean existsByIdAndPassword(@Param("id") Long id, @Param("password") String password);
+
 	boolean existsByUserName(String userName);
 
 	Optional<User> findByPhoneNumber(String phoneNumber);
@@ -37,10 +42,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 	@Query("SELECT new com.app.shwe.dto.UserReportDTO(u.userName, r.content) "
 			+ "FROM User u JOIN Report r ON r.user.id = u.id WHERE u.id = :id")
 	List<UserReportDTO> findUserContentById(String id);
-	
+
 	@Modifying
-    @Transactional
-    @Query("UPDATE User u SET u.password = :password WHERE u.id = :id")
-    void changePassword(@Param("id") int id, @Param("password") String password);
+	@Transactional
+	@Query("UPDATE User u SET u.password = :password WHERE u.id = :id")
+	void changePassword(@Param("id") int id, @Param("password") String password);
 
 }

@@ -26,10 +26,10 @@ public class UserService {
 
 	@Autowired
 	private UserRepository userRepo;
-	
+
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-	
+
 	public List<UserReportDTO> getReportByUserId(String id) {
 		List<UserReportDTO> dtoList = userRepo.findUserContentById(id);
 
@@ -48,26 +48,32 @@ public class UserService {
 
 		return result;
 	}
-	
-	public ResponseEntity<String> changePassword(ChangePasswordDTO dto){
-		if(dto == null) {
+
+	public ResponseEntity<String> changePassword(ChangePasswordDTO dto) {
+		if (dto == null) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Request data is null.");
 		}
 		try {
-			if(dto.getPassword().equals(dto.getConfrimPasswrod())) {
-				int userId = userRepo.authUser(SecurityUtils.getCurrentUsername());
-				String encodePassword = passwordEncoder.encode(dto.getConfrimPasswrod());
-				userRepo.changePassword(userId, encodePassword);
-				return ResponseEntity.status(HttpStatus.OK).body("Password change successfully.");
-			}else {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password didn't match with confirm password.");
+			int userId = userRepo.authUser(SecurityUtils.getCurrentUsername());
+			User user = userRepo.findById((int) userId).orElse(null);
+
+			if (user == null) {
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
 			}
+
+			if (!passwordEncoder.matches(dto.getOldPassword(), user.getPassword())) {
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Password didn't match");
+			}
+
+			String encodePassword = passwordEncoder.encode(dto.getNewPasswrod());
+			userRepo.changePassword(userId, encodePassword);
+
+			return ResponseEntity.status(HttpStatus.OK).body("Password changed successfully.");
+
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Error occurred while saving translator: " + e.getMessage());
+					.body("Error occurred while changing password: " + e.getMessage());
 		}
 	}
-	
-	
 
 }
