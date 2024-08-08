@@ -27,7 +27,7 @@ public interface CarOrderRepository extends JpaRepository<CarOrder, Integer> {
     //         "WHERE u.userName LIKE %:searchString% OR co.fromLocation LIKE %:searchString%")
     // Page<CarOrderResponseDTO> findAllWithSearch(@Param("searchString") String searchString, Pageable pageable);
 	
-	@Query("SELECT new com.app.shwe.dto.CarOrderResponseDTO(o.createdDate,o.id,o.carType,o.carBrand,c.driverName,c.image,o.status)"
+	@Query("SELECT new com.app.shwe.dto.CarOrderResponseDTO(o.id,c.id,o.createdDate,o.carType,o.carBrand,c.driverName,c.image,o.status)"
 			+ " FROM CarRent c JOIN CarOrder o ON c.id = o.carId.id WHERE"
 			+ " (LOWER(o.carBrand) LIKE LOWER(CONCAT('%', :searchString, '%'))"
 			+ " OR LOWER(c.driverName) LIKE LOWER(CONCAT('%', :searchString, '%')))")
@@ -36,5 +36,5 @@ public interface CarOrderRepository extends JpaRepository<CarOrder, Integer> {
 	@Modifying
     @Transactional
     @Query("UPDATE CarOrder c SET c.status = :status WHERE c.id = :id")
-    void cancelCarOrder(@Param("id") int id, @Param("status") String status);
+    void updateOrder(@Param("id") int id, @Param("status") String status);
 }

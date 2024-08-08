@@ -29,6 +29,7 @@ public class CarOrderRequestDTO {
     // with driver is true;without driver is false;
     private String status;
     private String customerPhoneNumber;
+    private String pickUpLocation;
     private String carBrand;
     private int carId;
 }

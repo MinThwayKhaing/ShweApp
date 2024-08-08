@@ -51,8 +51,8 @@ public class CarRentController {
 	}
 
 	@GetMapping("/showAllCarsAndSearch")
-	public ResponseEntity<Page<CarRent>> showCars(@RequestBody SearchDTO search) {
-		return ResponseEntity.ok(carService.showAllCar(search));
+	public Page<CarRent> showCars(@RequestBody SearchDTO search) {
+		return carService.showAllCar(search);
 	}
 
 }

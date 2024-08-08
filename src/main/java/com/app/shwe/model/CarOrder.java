@@ -31,6 +31,7 @@ public class CarOrder extends CommonDTO {
 	private boolean driver;
 	private String status;
 	private String customerPhoneNumber;
+	private String pickUpLocation;
 	private String carBrand;
 	@ManyToOne
 	@JoinColumn(name = "car_id")

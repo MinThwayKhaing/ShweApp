@@ -1,5 +1,6 @@
 package com.app.shwe.service;
 
+import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,14 @@ import com.app.shwe.dto.SearchDTO;
 import com.app.shwe.dto.TranslatorOrderResponseDTO;
 import com.app.shwe.dto.TranslatorRequestDTO;
 import com.app.shwe.model.CarOrder;
+import com.app.shwe.model.CarRent;
+import com.app.shwe.model.Translator;
 import com.app.shwe.repository.CarOrderRepository;
+import com.app.shwe.repository.CarRentRepository;
+import com.app.shwe.repository.UserRepository;
+import com.app.shwe.utils.SecurityUtils;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class CarOrderService {
@@ -29,9 +37,13 @@ public class CarOrderService {
 	@Autowired
 	private CarOrderMapping carOrderMapping;
 
-	// @Autowired
-	// private UserRepository userRepository;
+	@Autowired
+	private CarRentRepository carRentRepository;
 
+	@Autowired
+	private UserRepository userRepository;
+
+	@Transactional
 	public ResponseEntity<String> createCarOrder(CarOrderRequestDTO dto) {
 		if (dto == null) {
 			return new ResponseEntity<>("Request data is null", HttpStatus.BAD_REQUEST);
@@ -48,6 +60,7 @@ public class CarOrderService {
 		}
 	}
 
+	@Transactional
 	public ResponseEntity<?> getCarOrderById(int id) {
 		Optional<CarOrder> carOrder = carOrderRepository.findById(id);
 		if (carOrder.isPresent()) {
@@ -57,6 +70,7 @@ public class CarOrderService {
 		}
 	}
 
+	@Transactional
 	public ResponseEntity<?> updateCarOrder(int id, CarOrderRequestDTO dto) {
 		Optional<CarOrder> carOrderOptional = carOrderRepository.findById(id);
 		if (!carOrderOptional.isPresent()) {
@@ -75,6 +89,7 @@ public class CarOrderService {
 		}
 	}
 
+	@Transactional
 	public ResponseEntity<?> deleteCarOrder(int id) {
 		try {
 			carOrderRepository.deleteById(id);
@@ -95,28 +110,64 @@ public class CarOrderService {
 	// HttpStatus.INTERNAL_SERVER_ERROR);
 	// }
 	// }
-	
-	public Page<CarOrderResponseDTO> showCarOrders(int id, SearchDTO dto) {
+
+	@Transactional
+	public Page<CarOrderResponseDTO> showCarOrders(SearchDTO dto) {
 		String searchString = dto.getSearchString();
 		int page = (dto.getPage() < 1) ? 0 : dto.getPage() - 1;
 		int size = dto.getSize();
 		Pageable pageable = PageRequest.of(page, size);
-        return carOrderRepository.showCarOrder( searchString, pageable);
-    }
-	
-	public ResponseEntity<String> cancelCarOrder(int id,CarOrderRequestDTO dto){
-		if(dto.getStatus().equals("")) {
-			throw new IllegalArgumentException("Request and required fields must not be null");
+		return carOrderRepository.showCarOrder(searchString, pageable);
+	}
+
+	@Transactional
+	public ResponseEntity<String> cancelCarOrder(int id) {
+		Optional<CarOrder> carOrderOptional = carOrderRepository.findById(id);
+		if (!carOrderOptional.isPresent()) {
+			return new ResponseEntity<>("CarOrder not found", HttpStatus.NOT_FOUND);
 		}
 		try {
-			String status = dto.getStatus();
-			carOrderRepository.cancelCarOrder(id, status);
+			String status = "Cancel Order";
+			carOrderRepository.updateOrder(id, status);
 			return ResponseEntity.status(HttpStatus.OK).body("Cancel translator order successfully.");
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Error occurred while saving translator: " + e.getMessage());
 		}
 	}
-	
+
+	@Transactional
+	public ResponseEntity<String> confrimOrder(int id, CarOrderRequestDTO request) {
+		Optional<CarOrder> carOrderOptional = carOrderRepository.findById(id);
+		if (!carOrderOptional.isPresent()) {
+			return new ResponseEntity<>("CarOrder not found", HttpStatus.NOT_FOUND);
+		}
+		CarRent car = carRentRepository.findById(request.getCarId())
+				.orElseThrow(() -> new RuntimeException("Car not found for ID: " + request.getCarId()));
+		
+		try {
+			CarOrder order = carOrderOptional.get();
+	    	order.setCarBrand(request.getCarBrand());
+			order.setCarType(request.getCarType());
+			order.setFromDate(request.getFromDate());
+			order.setDriver(request.isDriver());
+			order.setCustomerPhoneNumber(request.getCustomerPhoneNumber());
+			order.setUpdatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
+			order.setUpdatedDate(new Date());
+			order.setPickUpDate(request.getPickUpDate());
+			order.setPickUpTime(request.getPickUpTime());
+			order.setFromLocation(request.getFromLocation());
+			order.setPickUpLocation(request.getPickUpLocation());
+			order.setToLocation(request.getToLocation());
+			order.setToDate(request.getToDate());
+			order.setStatus(request.getStatus());
+			order.setCarId(car);
+			carOrderRepository.save(order);
+			return ResponseEntity.status(HttpStatus.OK).body("Confrim car order successfully.");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error occurred while saving translator: " + e.getMessage());
+		}
+	}
 
 }

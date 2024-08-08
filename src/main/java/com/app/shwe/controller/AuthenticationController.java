@@ -46,16 +46,16 @@ public class AuthenticationController {
 	    }
 	    
 	    @PostMapping("/login")
-	    public ResponseEntity<AuthenticationResponse> Login(@RequestBody AuthenticationRequest request){
-	        return ResponseEntity.ok(authenticationService.login(request));
+	    public AuthenticationResponse Login(@RequestBody AuthenticationRequest request){
+	        return authenticationService.login(request);
 	    }
 	    
 	    
 	    @PostMapping("/refresh-token")
-	    public ResponseEntity<AuthenticationResponse> refreshToken(@RequestBody Map<String, String> request) {
+	    public AuthenticationResponse refreshToken(@RequestBody Map<String, String> request) {
 	        String refreshToken = request.get("refreshToken");
 	        AuthenticationResponse response = authenticationService.refreshToken(refreshToken);
-	        return ResponseEntity.ok(response);
+	        return response;
 	    }
 
 }

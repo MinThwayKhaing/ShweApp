@@ -29,17 +29,24 @@ public class TranslatorOrderController {
 	private TranslatorService translatorService;
 	
 	@PostMapping("/hireTranslator")
-	public ResponseEntity<ResponseEntity<String>> hireTranslator(@RequestBody TranslatorRequestDTO dto){
-		return ResponseEntity.ok(translatorService.hireTranslator(dto));
+	public ResponseEntity<String> hireTranslator(@RequestBody TranslatorRequestDTO dto){
+		return translatorService.hireTranslator(dto);
 	}
 	
-	@GetMapping("/getHireTranslator/{id}")
-	public ResponseEntity<Page<TranslatorOrderResponseDTO>> getHireTranslatorById(@RequestBody SearchDTO dto) {
-		return ResponseEntity.ok(translatorService.searchHireTranslator( dto));
+	@GetMapping("/getHireTranslator")
+	public Page<TranslatorOrderResponseDTO> getHireTranslatorById(@RequestBody SearchDTO dto) {
+		return translatorService.searchHireTranslator( dto);
 	}
 	
-	@PostMapping("/cancelOrder")
-	public ResponseEntity<ResponseEntity<String>> cancelOrder(@PathVariable int id,@RequestBody TranslatorRequestDTO dto){
-		return ResponseEntity.ok(translatorService.cancelOrder(id,dto));
+	@PostMapping("/cancelOrder/{id}")
+	public ResponseEntity<String> cancelOrder(@PathVariable int id){
+		return translatorService.cancelOrder(id);
 	}
+	
+	@PostMapping("/updateOrder/{id}")
+	public ResponseEntity<String> confrimOrder(@PathVariable int id,@RequestBody TranslatorRequestDTO request){
+		return translatorService.updateTranslatorOrder(id,request);
+	}
+	
+	
 }

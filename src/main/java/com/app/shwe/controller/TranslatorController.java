@@ -32,8 +32,9 @@ public class TranslatorController {
 	private TranslatorService translatorService;
 
 	@PostMapping("/translatorSave")
-	public ResponseEntity<ResponseEntity<String>> saveTranslator(@RequestPart("image") MultipartFile image,@RequestPart("request") TranslatorRequestDTO request) {
-		return ResponseEntity.ok(translatorService.saveTranslator(image,request));
+	public ResponseEntity<String> saveTranslator(@RequestPart("image") MultipartFile image,
+			@RequestPart("request") TranslatorRequestDTO request) {
+		return translatorService.saveTranslator(image, request);
 	}
 
 	@GetMapping("/getTransaltorById/{id}")
@@ -43,9 +44,9 @@ public class TranslatorController {
 	}
 
 	@PutMapping("/updateTranslator/{id}")
-	public ResponseEntity<ResponseEntity<String>> updateTranslator(@PathVariable int id,
-			@RequestPart("image") MultipartFile image, @RequestPart("request") TranslatorRequestDTO request) {
-		return ResponseEntity.ok(translatorService.updateTranslator(id,image,request));
+	public ResponseEntity<String> updateTranslator(@PathVariable int id, @RequestPart("image") MultipartFile image,
+			@RequestPart("request") TranslatorRequestDTO request) {
+		return translatorService.updateTranslator(id, image, request);
 	}
 
 	@DeleteMapping("/deleteTranslator/{id}")
@@ -54,8 +55,8 @@ public class TranslatorController {
 	}
 
 	@GetMapping("/searchTranslator")
-	public ResponseEntity<Page<Translator>> searchTranslator(@RequestBody SearchDTO dto) {
-		return ResponseEntity.ok(translatorService.searchTranslator(dto));
+	public Page<Translator> searchTranslator(@RequestBody SearchDTO dto) {
+		return translatorService.searchTranslator(dto);
 	}
 
 }

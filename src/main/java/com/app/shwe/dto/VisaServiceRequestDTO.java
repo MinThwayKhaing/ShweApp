@@ -1,5 +1,9 @@
 package com.app.shwe.dto;
 
+import org.springframework.web.multipart.MultipartFile;
+
+import com.app.shwe.model.Role;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,9 +13,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserReportDTO {
+public class VisaServiceRequestDTO {
 	
-	private String username;
-	private String report;
+	String serviceName;
+	MultipartFile image;
 
 }

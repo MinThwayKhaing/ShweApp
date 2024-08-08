@@ -25,8 +25,8 @@ public class CarOrderController {
     private CarOrderService carOrderService;
 
     @PostMapping("/createCarOrder")
-    public ResponseEntity<ResponseEntity<String>> createCarOrder(@RequestBody CarOrderRequestDTO dto) {
-        return ResponseEntity.ok(carOrderService.createCarOrder(dto));
+    public ResponseEntity<String> createCarOrder(@RequestBody CarOrderRequestDTO dto) {
+        return carOrderService.createCarOrder(dto);
     }
 
     @GetMapping("/{id}")
@@ -44,13 +44,18 @@ public class CarOrderController {
         return carOrderService.deleteCarOrder(id);
     }
     
-    @GetMapping("/showCarOrder/{id}")
-	public ResponseEntity<Page<CarOrderResponseDTO>> showCarOrders(@PathVariable int id,@RequestBody SearchDTO dto) {
-		return ResponseEntity.ok(carOrderService.showCarOrders(id, dto));
+    @GetMapping("/showCarOrder")
+	public Page<CarOrderResponseDTO> showCarOrders(@RequestBody SearchDTO dto) {
+		return carOrderService.showCarOrders(dto);
 	}
 
     @PutMapping("/cancelCarOrder/{id}")
-	public ResponseEntity<ResponseEntity<String>> cancelOrder(@PathVariable int id,@RequestBody CarOrderRequestDTO dto){
-		return ResponseEntity.ok(carOrderService.cancelCarOrder(id,dto));
+	public ResponseEntity<String> cancelOrder(@PathVariable int id){
+		return carOrderService.cancelCarOrder(id);
 	}
+    
+    @PutMapping("/updateCarOrder/{id}")
+   	public ResponseEntity<String> updateOrder(@PathVariable int id,@RequestBody CarOrderRequestDTO request){
+   		return carOrderService.confrimOrder(id,request);
+   	}
 }

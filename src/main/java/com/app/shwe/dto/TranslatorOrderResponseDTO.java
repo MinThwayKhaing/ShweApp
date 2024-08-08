@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TranslatorOrderResponseDTO {
 	
+	private int order_id;
 	private int translator_id;
 	private Date createdDate;
 	private String name;

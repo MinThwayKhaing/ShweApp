@@ -34,8 +34,8 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Category> updateCategory(@PathVariable int id, @RequestBody Category categoryDetails) {
-        return ResponseEntity.ok(categoryService.updateCategory(id, categoryDetails));
+    public Category updateCategory(@PathVariable int id, @RequestBody Category categoryDetails) {
+        return categoryService.updateCategory(id, categoryDetails);
     }
 
     @DeleteMapping("/{id}")
