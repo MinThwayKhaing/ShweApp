@@ -19,6 +19,7 @@ import com.app.shwe.dto.ResponseDTO;
 import com.app.shwe.dto.SearchDTO;
 import com.app.shwe.dto.TranslatorOrderResponseDTO;
 import com.app.shwe.dto.TranslatorRequestDTO;
+import com.app.shwe.model.CarRent;
 import com.app.shwe.model.Translator;
 import com.app.shwe.model.TranslatorOrder;
 import com.app.shwe.repository.TranslatorOrderRepostitory;
@@ -50,7 +51,8 @@ public class TranslatorService {
 	@Autowired
 	private UserRepository userRepo;
 
-	public ResponseEntity<String> saveTranslator(MultipartFile image,TranslatorRequestDTO request) {
+	@Transactional
+	public ResponseEntity<String> saveTranslator(MultipartFile image, TranslatorRequestDTO request) {
 		try {
 			if (request == null) {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Request data is null.");
@@ -73,6 +75,7 @@ public class TranslatorService {
 
 	}
 
+	@Transactional
 	public Optional<Translator> getTranslatorById(Integer id) {
 		if (id == null) {
 			throw new IllegalArgumentException("Id cannot be null");
@@ -81,6 +84,7 @@ public class TranslatorService {
 		return translator;
 	}
 
+	@Transactional
 	public ResponseEntity<String> updateTranslator(int id, MultipartFile image, TranslatorRequestDTO request) {
 		Optional<Translator> getTranslator = translatorRepo.findById(id);
 		if (!getTranslator.isPresent()) {
@@ -95,6 +99,8 @@ public class TranslatorService {
 			translator.setName(request.getName());
 			translator.setLanguage(request.getLanguage());
 			translator.setSpecialist(request.getSpecialist());
+			translator.setUpdatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
+			translator.setUpdatedDate(new Date());
 			translatorRepo.save(translator); // Save the updated translator
 			return new ResponseEntity<>("Translator updated successfully", HttpStatus.OK);
 
@@ -104,6 +110,7 @@ public class TranslatorService {
 
 	}
 
+	@Transactional
 	public ResponseEntity<?> deteteTranslator(int id) {
 		int count = translatorRepo.checkTranslator(id);
 		if (count == 0) {
@@ -118,6 +125,7 @@ public class TranslatorService {
 
 	}
 
+	@Transactional
 	public Page<Translator> searchTranslator(SearchDTO dto) {
 		String searchString = dto.getSearchString();
 		int page = (dto.getPage() < 1) ? 0 : dto.getPage() - 1;
@@ -142,22 +150,48 @@ public class TranslatorService {
 		}
 	}
 
-	public Page<TranslatorOrderResponseDTO> searchHireTranslator( SearchDTO dto) {
+	@Transactional
+	public Page<TranslatorOrderResponseDTO> searchHireTranslator(SearchDTO dto) {
 		String searchString = dto.getSearchString();
 		int page = (dto.getPage() < 1) ? 0 : dto.getPage() - 1;
 		int size = dto.getSize();
 		Pageable pageable = PageRequest.of(page, size);
-		return transOrderRepository.searchHireTranslator( searchString, pageable);
+		return transOrderRepository.searchHireTranslator(searchString, pageable);
 	}
 
-	public ResponseEntity<String> cancelOrder(int orderId, TranslatorRequestDTO dto) {
-		if (dto.getStatus().equals("")) {
-			throw new IllegalArgumentException("Request and required fields must not be null");
+	@Transactional
+	public ResponseEntity<String> cancelOrder(int orderId) {
+		Optional<TranslatorOrder> getTranslatorOrder = transOrderRepository.findById(orderId);
+		if (!getTranslatorOrder.isPresent()) {
+			throw new IllegalArgumentException("ID not found");
 		}
 		try {
-			String status = dto.getStatus();
+			String status = "Cancel Order";
 			transOrderRepository.cancelOrder(orderId, status);
 			return ResponseEntity.status(HttpStatus.OK).body("Cancel translator order successfully.");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error occurred while saving translator: " + e.getMessage());
+		}
+	}
+
+	@Transactional
+	public ResponseEntity<String> updateTranslatorOrder(int orderId,TranslatorRequestDTO request) {
+		Optional<TranslatorOrder> getTranslatorOrder = transOrderRepository.findById(orderId);
+		if (!getTranslatorOrder.isPresent()) {
+			throw new IllegalArgumentException("ID not found");
+		}
+		Translator translator = translatorRepo.findById(request.getTranslator_id())
+                .orElseThrow(() -> new RuntimeException("Translator not found for ID: " + request.getTranslator_id()));
+		try {
+			TranslatorOrder order = getTranslatorOrder.get();
+			order.setStatus(request.getStatus());
+			order.setUpdatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
+			order.setUpdatedDate(new Date());
+			translator.setId(request.getTranslator_id());
+			order.setTranslator(translator);
+			transOrderRepository.save(order);
+			return ResponseEntity.status(HttpStatus.OK).body("Confrim translator order successfully.");
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Error occurred while saving translator: " + e.getMessage());

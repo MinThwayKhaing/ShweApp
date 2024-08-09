@@ -40,10 +40,10 @@ public class ProcessController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Process> updateProcess(@PathVariable int id, @RequestBody Process processDetails, @RequestParam("file") MultipartFile file) {
+    public Process updateProcess(@PathVariable int id, @RequestBody Process processDetails, @RequestParam("file") MultipartFile file) {
         String imglink = fileUploadService.uploadFile(file);
         processDetails.setImglink(imglink);
-        return ResponseEntity.ok(processService.updateProcess(id, processDetails));
+        return processService.updateProcess(id, processDetails);
     }
 
     @DeleteMapping("/{id}")

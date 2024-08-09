@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CarRentDTO {
 
+	private int carId;
 	private String carName;
 	private String ownerName;
 	private String carNo;

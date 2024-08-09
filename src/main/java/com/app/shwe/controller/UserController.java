@@ -26,15 +26,15 @@ public class UserController {
 	private UserService userService;
 
 	@PostMapping("/getUserReport/{id}")
-	public ResponseEntity<List<UserReportDTO>> getReportByUserId(@PathVariable String id) {
+	public List<UserReportDTO> getReportByUserId(@PathVariable String id) {
 		List<UserReportDTO> dto = userService.getReportByUserId(id);
-		return ResponseEntity.ok(dto);
+		return dto;
 	}
 	
 	
 	@PostMapping("/changePassword")
-	public ResponseEntity<ResponseEntity<String>> changePassword(@RequestBody ChangePasswordDTO dto){
-		return ResponseEntity.ok(userService.changePassword(dto));
+	public ResponseEntity<String> changePassword(@RequestBody ChangePasswordDTO dto){
+		return userService.changePassword(dto);
 	}
 	
 

@@ -39,16 +39,15 @@ public class CarOrderMapping {
         carOrder.setToDate(dto.getToDate());
         carOrder.setCarType(dto.getCarType());
         carOrder.setDriver(dto.isDriver());
+        carOrder.setPickUpLocation(dto.getPickUpLocation());
         carOrder.setCreatedDate(new Date());
         carOrder.setCustomerPhoneNumber(dto.getCustomerPhoneNumber());
         carOrder.setCarBrand(carRent.getCarName());
         carOrder.setCarId(carRent);
-
-        int userId = userRepository.authUser(SecurityUtils.getCurrentUsername());
-        carOrder.setCreatedBy(userId);
-
+        carOrder.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
         return carOrder;
     }
     
+   
    
 }

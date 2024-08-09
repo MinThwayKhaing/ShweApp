@@ -33,9 +33,9 @@ public class NewsController {
 	private NewsService newsService;
 
 	@PostMapping("/saveNews")
-	public ResponseEntity<ResponseEntity<String>> saveNews(@RequestPart("images") List<MultipartFile> images,
+	public ResponseEntity<String> saveNews(@RequestPart("images") List<MultipartFile> images,
 			@RequestPart("request") NewsRequestDTO request) {
-		return ResponseEntity.ok(newsService.saveNews(images, request));
+		return newsService.saveNews(images, request);
 
 	}
 
@@ -45,8 +45,8 @@ public class NewsController {
 	}
 
 	@GetMapping("/showAllNews")
-	public ResponseEntity<Page<News>> showCars(@RequestBody SearchDTO search) {
-		return ResponseEntity.ok(newsService.getAllNewsByDate(search));
+	public Page<News> showCars(@RequestBody SearchDTO search) {
+		return newsService.getAllNewsByDate(search);
 	}
 
 	@PutMapping("/updateNews/{id}")
