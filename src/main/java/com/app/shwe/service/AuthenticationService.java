@@ -37,76 +37,120 @@ public class AuthenticationService {
     @Autowired
     private FileUploadService fileUploadService;
 
-    public void register(MultipartFile image, RegisterRequest request) {
+    public ResponseEntity<String> registerUser(RegisterRequest request) {
         if (request == null) {
-            throw new IllegalArgumentException("Request and required fields must not be null");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error occurred while saving news: ");
         }
 
-        String imageUrl = fileUploadService.uploadFile(image);
+        // String imageUrl = fileUploadService.uploadFile(image);
+        try {
+            var user = User.builder()
+                    .phoneNumber(request.getPhoneNumber())
+                    .userName(request.getUserName())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .image("")
+                    .role(Role.USER)
+                    .build();
 
-        var user = User.builder()
-                .phoneNumber(request.getPhoneNumber())
-                .userName(request.getUserName())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .image(imageUrl)
-                .role(request.getRole())
-                .build();
+            if (repository.existsByPhoneNumber(request.getPhoneNumber())
+                    || repository.existsByUserName(request.getPhoneNumber())) {
+                throw new IllegalArgumentException("User with the same phone number or username already exists");
+            }
 
-        if (repository.existsByPhoneNumber(request.getPhoneNumber())
-                || repository.existsByUserName(request.getPhoneNumber())) {
-            throw new IllegalArgumentException("User with the same phone number or username already exists");
+            repository.save(user);
+            return ResponseEntity.status(HttpStatus.OK).body("User saved successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error occurred while saving users: " + e.getMessage());
         }
 
-        repository.save(user);
     }
 
-    public ResponseEntity<AuthenticationResponse> login(AuthenticationRequest request) {
+    public ResponseEntity<String> registerAdmin(RegisterRequest request) {
+        if (request == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error occurred while saving news: ");
+        }
+
+        // String imageUrl = fileUploadService.uploadFile(image);
+        try {
+            var user = User.builder()
+                    .phoneNumber(request.getPhoneNumber())
+                    .userName(request.getUserName())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .image("")
+                    .role(Role.ADMIN)
+                    .build();
+
+            if (repository.existsByPhoneNumber(request.getPhoneNumber())
+                    || repository.existsByUserName(request.getPhoneNumber())) {
+                throw new IllegalArgumentException("User with the same phone number or username already exists");
+            }
+
+            repository.save(user);
+            return ResponseEntity.status(HttpStatus.OK).body("User saved successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error occurred while saving users: " + e.getMessage());
+        }
+
+    }
+
+    public ResponseEntity<?> login(AuthenticationRequest request) {
         if (request == null || request.getPhoneNumber() == null || request.getPassword() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request and required fields must not be null");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("request body must not be null ");
         }
+        try {
+            User authenticatedUser = repository.findByPhoneNumber(request.getPhoneNumber());
 
-        User authenticatedUser = repository.findByPhoneNumber(request.getPhoneNumber());
+            if (authenticatedUser == null
+                    || !passwordEncoder.matches(request.getPassword(), authenticatedUser.getPassword())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found or invalid credentials");
+            }
 
-        if (authenticatedUser == null
-                || !passwordEncoder.matches(request.getPassword(), authenticatedUser.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found or invalid credentials");
+            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                    authenticatedUser.getUsername(), request.getPassword());
+
+            Authentication authentication = authenticationManager.authenticate(token);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            String jwtToken = jwtService.generateToken(authenticatedUser);
+            String refreshToken = jwtService.generateRefreshToken(authenticatedUser.getPhoneNumber());
+
+            AuthenticationResponse response = AuthenticationResponse.builder()
+                    .token(jwtToken)
+                    .refreshToken(refreshToken)
+                    .user(authenticatedUser)
+                    .build();
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error occurred while login " + e.getMessage());
         }
-
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                authenticatedUser.getUsername(), request.getPassword());
-
-        Authentication authentication = authenticationManager.authenticate(token);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String jwtToken = jwtService.generateToken(authenticatedUser);
-        String refreshToken = jwtService.generateRefreshToken(authenticatedUser.getPhoneNumber());
-
-        AuthenticationResponse response = AuthenticationResponse.builder()
-                .token(jwtToken)
-                .refreshToken(refreshToken)
-                .user(authenticatedUser)
-                .build();
-
-        return ResponseEntity.ok(response);
     }
 
-    public ResponseEntity<AuthenticationResponse> refreshToken(String refreshToken) {
+    public ResponseEntity<?> refreshToken(String refreshToken) {
         if (refreshToken == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Refresh token must not be null");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("request body must not be null");
         }
 
         if (jwtService.isRefreshTokenValid(refreshToken)) {
             String phoneNumber = jwtService.extractUsernameFromRefreshToken(refreshToken);
 
             if (phoneNumber == null) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                         "Phone number extracted from refresh token is null");
             }
 
             User user = repository.findByPhoneNumber(phoneNumber);
 
             if (user == null) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found or invalid credentials");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found or invalid credentials");
             }
 
             String newAccessToken = jwtService.generateToken(user);
@@ -120,7 +164,7 @@ public class AuthenticationService {
 
             return ResponseEntity.ok(response);
         } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
         }
     }
 }

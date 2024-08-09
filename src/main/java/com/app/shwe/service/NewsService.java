@@ -35,7 +35,7 @@ public class NewsService {
 
 	@Autowired
 	private FileUploadService fileUploadService;
-	
+
 	@Autowired
 	private UserRepository userRepository;
 
@@ -43,7 +43,8 @@ public class NewsService {
 	@Transactional
 	public ResponseEntity<String> saveNews(List<MultipartFile> images, NewsRequestDTO request) {
 		if (images == null && request == null) {
-			throw new IllegalArgumentException("Request and required fields must not be null");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error occurred while saving news: ");
 		}
 		try {
 			List<String> imageUrl = fileUploadService.uploadFiles(images);
@@ -64,7 +65,7 @@ public class NewsService {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@Transactional
-	public ResponseEntity<String> updateNews(int id, List<MultipartFile> files,NewsRequestDTO request) {
+	public ResponseEntity<String> updateNews(int id, List<MultipartFile> files, NewsRequestDTO request) {
 		Optional<News> getNews = newsRepository.findById(id);
 		if (!getNews.isPresent()) {
 			throw new IllegalArgumentException("ID not found");
@@ -97,7 +98,7 @@ public class NewsService {
 		Optional<News> news = newsRepository.findById(id);
 		return news;
 	}
-	
+
 	@PreAuthorize("hasRole('ADMIN')")
 	@Transactional
 	public ResponseEntity<?> deleteNews(int id) {

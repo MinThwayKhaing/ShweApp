@@ -31,30 +31,27 @@ public class AuthenticationController {
 	@Autowired
 	private AuthenticationService authenticationService;
 
-	@PostMapping("/register")
-	public ResponseEntity<Map<String, String>> register(@RequestPart("image") MultipartFile image,
-			@RequestPart("request") RegisterRequest request) {
-		try {
-			authenticationService.register(image, request);
-			Map<String, String> response = new HashMap<>();
-			response.put("message", "Registration successful");
-			return ResponseEntity.ok(response);
-		} catch (RuntimeException e) {
-			Map<String, String> response = new HashMap<>();
-			response.put("message", e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-		}
+	@PostMapping("/register-user")
+	public ResponseEntity<String> registerUser(
+			@RequestBody RegisterRequest request) {
+		return authenticationService.registerUser(request);
+	}
+
+	@PostMapping("/register-admin")
+	public ResponseEntity<String> registerAdmin(
+			@RequestBody RegisterRequest request) {
+		return authenticationService.registerAdmin(request);
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<AuthenticationResponse> Login(@RequestBody AuthenticationRequest request) {
+	public ResponseEntity<?> Login(@RequestBody AuthenticationRequest request) {
 		return authenticationService.login(request);
 	}
 
 	@PostMapping("/refresh-token")
-	public ResponseEntity<AuthenticationResponse> refreshToken(@RequestBody Map<String, String> request) {
+	public ResponseEntity<?> refreshToken(@RequestBody Map<String, String> request) {
 		String refreshToken = request.get("refreshToken");
-		ResponseEntity<AuthenticationResponse> response = authenticationService.refreshToken(refreshToken);
+		ResponseEntity<?> response = authenticationService.refreshToken(refreshToken);
 		return response;
 	}
 

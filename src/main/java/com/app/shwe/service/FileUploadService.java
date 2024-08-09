@@ -1,4 +1,3 @@
-// src/main/java/com/app/shwe/service/FileUploadService.java
 package com.app.shwe.service;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -9,6 +8,7 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.File;
@@ -27,8 +27,8 @@ public class FileUploadService {
     private String bucketName;
 
     public FileUploadService(@Value("${cloud.do.credentials.accessKey}") String accessKey,
-                             @Value("${cloud.do.credentials.secretKey}") String secretKey,
-                             @Value("${cloud.do.endpoint}") String endpoint) {
+            @Value("${cloud.do.credentials.secretKey}") String secretKey,
+            @Value("${cloud.do.endpoint}") String endpoint) {
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create(accessKey, secretKey);
         this.s3Client = S3Client.builder()
                 .region(Region.of("sgp1"))
@@ -36,11 +36,11 @@ public class FileUploadService {
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 .build();
     }
-    
+
     public List<String> uploadFiles(List<MultipartFile> files) {
         return files.stream()
-                    .map(this::uploadFile)
-                    .collect(Collectors.toList());
+                .map(this::uploadFile)
+                .collect(Collectors.toList());
     }
 
     public String uploadFile(MultipartFile file) {
@@ -55,6 +55,15 @@ public class FileUploadService {
 
         s3Client.putObject(putObjectRequest, RequestBody.fromFile(convertedFile));
         return s3Client.utilities().getUrl(builder -> builder.bucket(bucketName).key(fileName)).toExternalForm();
+    }
+
+    public void deleteFile(String fileName) {
+        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                .bucket(bucketName)
+                .key(fileName)
+                .build();
+
+        s3Client.deleteObject(deleteObjectRequest);
     }
 
     private File convertMultiPartToFile(MultipartFile file) {
