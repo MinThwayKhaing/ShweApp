@@ -14,15 +14,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TranslatorOrderResponseDTO {
-	
-	private int translator_id;
-	private Date createdDate;
-	private String name;
-	private String specialist;
-	private String status;
-	private String image;
-	private String chatLink;
-	
-	
+    private int translator_id;
+    private Date createdDate;
+    private String name;
+    private String specialist;
+    private String status;
+    private String image;
+    private String chatLink;
 
 }
