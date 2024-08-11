@@ -18,5 +18,6 @@ public class TranslatorOrder extends CommonDTO{
 	@JoinColumn(name = "translator_id")
 	private Translator translator;
 	private String status;
+	private String sysKey;
 
 }

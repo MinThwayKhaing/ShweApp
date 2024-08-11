@@ -42,6 +42,9 @@ public class CarOrderService {
 
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private CarOrderIdGeneratorService carOrderIdGeneratorService;
 
 	@Transactional
 	public ResponseEntity<String> createCarOrder(CarOrderRequestDTO dto) {
@@ -51,7 +54,7 @@ public class CarOrderService {
 		dto.setStatus("Pending");
 		try {
 			CarOrder carOrder = carOrderMapping.mapToCarOrder(dto);
-
+			carOrder.setSysKey(carOrderIdGeneratorService.generateNextCarOrderId());
 			carOrderRepository.save(carOrder);
 
 			return new ResponseEntity<>("CarOrder created successfully", HttpStatus.OK);
@@ -118,6 +121,15 @@ public class CarOrderService {
 		int size = dto.getSize();
 		Pageable pageable = PageRequest.of(page, size);
 		return carOrderRepository.showCarOrder(searchString, pageable);
+	}
+	
+	@Transactional
+	public Page<CarOrderResponseDTO> findOrderByUserId(int id,SearchDTO dto) {
+		String searchString = dto.getSearchString();
+		int page = (dto.getPage() < 1) ? 0 : dto.getPage() - 1;
+		int size = dto.getSize();
+		Pageable pageable = PageRequest.of(page, size);
+		return carOrderRepository.findOrderByUserId(id,searchString, pageable);
 	}
 
 	@Transactional
