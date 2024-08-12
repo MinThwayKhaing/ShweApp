@@ -64,7 +64,7 @@ public class FileUploadService {
 
     public boolean deleteFile(String fileUrl) {
         try {
-
+            // Extract the file key from the URL
             String fileKey = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
 
             DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
