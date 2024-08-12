@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.app.shwe.datamapping.TranslatorOrderMapping;
 import com.app.shwe.dto.ChangePasswordDTO;
@@ -26,6 +27,9 @@ public class UserService {
 
 	@Autowired
 	private UserRepository userRepo;
+
+	@Autowired
+	private FileUploadService fileUploadService;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -74,6 +78,36 @@ public class UserService {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Error occurred while changing password: " + e.getMessage());
 		}
+	}
+
+	public ResponseEntity<String> updateImages(MultipartFile images) {
+
+		try {
+			if (images == null) {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+						.body("Error occurred while saving news: ");
+			}
+
+			int userId = userRepo.authUser(SecurityUtils.getCurrentUsername());
+
+			String recentImage = userRepo.selectImage(userId);
+
+			boolean status = fileUploadService.deleteFile(recentImage);
+			if (!status) {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+						.body("Error occured when deleting s3 link");
+			}
+
+			String imageUrl = fileUploadService.uploadFile(images);
+
+			userRepo.imageUpdate(userId, imageUrl);
+			return ResponseEntity.status(HttpStatus.OK).body("Image Updaet  successfully.");
+
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error occurred while changing password: " + e.getMessage());
+		}
+
 	}
 
 }

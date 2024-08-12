@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import com.app.shwe.dto.TranslatorOrderResponseDTO;
 import com.app.shwe.model.TranslatorOrder;
 
+import jakarta.persistence.LockModeType;
 import jakarta.transaction.Transactional;
 
 public interface TranslatorOrderRepostitory extends JpaRepository<TranslatorOrder, Integer> {
@@ -38,8 +39,11 @@ public interface TranslatorOrderRepostitory extends JpaRepository<TranslatorOrde
 			+ "(LOWER(t.name) LIKE LOWER(CONCAT('%', :searchString, '%')) "
 			+ "OR LOWER(t.specialist) LIKE LOWER(CONCAT('%', :searchString, '%')))"
 			+ " AND o.createdBy = :userId")
-	Page<TranslatorOrderResponseDTO> findOrderByUserId(@Param("userId") int userId,@Param("searchString") String searchString,
+	Page<TranslatorOrderResponseDTO> findOrderByUserId(@Param("userId") int userId,
+			@Param("searchString") String searchString,
 			Pageable pageable);
+
+	TranslatorOrder find(Class<TranslatorOrder> class1, int id, LockModeType pessimisticWrite);
 
 	@Query("SELECT COALESCE(MAX(c.sysKey), 'CR00000000') FROM TranslatorOrder c")
 	String findMaxSysKey();

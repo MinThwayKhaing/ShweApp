@@ -10,6 +10,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -57,13 +58,19 @@ public class FileUploadService {
         return s3Client.utilities().getUrl(builder -> builder.bucket(bucketName).key(fileName)).toExternalForm();
     }
 
-    public void deleteFile(String fileName) {
-        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
-                .bucket(bucketName)
-                .key(fileName)
-                .build();
+    public boolean deleteFile(String fileName) {
+        try {
+            DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(fileName)
+                    .build();
 
-        s3Client.deleteObject(deleteObjectRequest);
+            s3Client.deleteObject(deleteObjectRequest);
+            return true;
+        } catch (S3Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
     }
 
     private File convertMultiPartToFile(MultipartFile file) {

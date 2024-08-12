@@ -39,6 +39,15 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
 	Optional<User> findByPhoneNumberAndPassword(String phoneNumber, String password);
 
+	@Query("SELECT image "
+			+ "FROM User u  WHERE u.id = :id")
+	String selectImage(@Param("id") int id);
+
+	@Modifying
+	@Transactional
+	@Query("UPDATE User u SET u.image = :img WHERE u.id = :id")
+	void imageUpdate(@Param("id") int id, @Param("img") String image);
+
 	@Query("SELECT new com.app.shwe.dto.UserReportDTO(u.userName, r.content) "
 			+ "FROM User u JOIN Report r ON r.user.id = u.id WHERE u.id = :id")
 	List<UserReportDTO> findUserContentById(String id);
