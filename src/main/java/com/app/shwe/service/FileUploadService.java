@@ -72,7 +72,14 @@ public class FileUploadService {
             s3Client.deleteObject(deleteObjectRequest);
             return true;
         } catch (S3Exception e) {
-            System.out.println(e.getMessage());
+            System.err.println("S3Exception occurred: " + e.awsErrorDetails().errorMessage());
+            System.err.println("HTTP Status Code: " + e.statusCode());
+            System.err.println("AWS Error Code: " + e.awsErrorDetails().errorCode());
+            System.err.println("Error Type: " + e.awsErrorDetails().errorMessage());
+            System.err.println("Request ID: " + e.requestId());
+            return false;
+        } catch (Exception e) {
+            System.err.println("General Exception occurred: " + e.getMessage());
             return false;
         }
     }
