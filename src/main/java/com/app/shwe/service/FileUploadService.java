@@ -62,11 +62,14 @@ public class FileUploadService {
         }
     }
 
-    public boolean deleteFile(String fileName) {
+    public boolean deleteFile(String fileUrl) {
         try {
+
+            String fileKey = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
+
             DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
                     .bucket(bucketName)
-                    .key(fileName)
+                    .key(fileKey)
                     .build();
 
             s3Client.deleteObject(deleteObjectRequest);
