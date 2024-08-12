@@ -19,7 +19,7 @@ import com.app.shwe.utils.SecurityUtils;
 public class CarOrderMapping {
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
     
     @Autowired
     private CarRentRepository carRentRepository;

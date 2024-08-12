@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CarOrderResponseDTO {
 
-	private int orderId;
+	private String orderId;
 	private int car_id;
 	private Date createdDate;
 	private int carType;

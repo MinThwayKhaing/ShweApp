@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CarOrder extends CommonDTO {
 
+	private String sysKey;
 	private String fromLocation;
 	private String toLocation;
 	private LocalDate pickUpDate;

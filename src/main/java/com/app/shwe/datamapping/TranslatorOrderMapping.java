@@ -14,6 +14,7 @@ import com.app.shwe.model.TranslatorOrder;
 import com.app.shwe.repository.TranslatorOrderRepostitory;
 import com.app.shwe.repository.TranslatorRepository;
 import com.app.shwe.repository.UserRepository;
+import com.app.shwe.service.TranslatorOrderIdGenerator;
 import com.app.shwe.utils.SecurityUtils;
 
 @Service
@@ -25,6 +26,9 @@ public class TranslatorOrderMapping {
 	@Autowired
 	private TranslatorRepository translatorRepository;
 	
+	@Autowired
+	private TranslatorOrderIdGenerator idGenerator;
+	
 
 	 public TranslatorOrder mapToTranslatorOrder(TranslatorRequestDTO dto) {
 	    	TranslatorOrder order = new TranslatorOrder();
@@ -34,6 +38,7 @@ public class TranslatorOrderMapping {
 	    	order.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 	    	order.setCreatedDate(new Date());
 	    	order.setTranslator(translator);
+	    	order.setSysKey(idGenerator.generateNextCarOrderId());
 	    	return order;
 	    }
 	 

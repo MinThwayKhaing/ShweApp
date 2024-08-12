@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.app.shwe.datamapping.TranslatorOrderMapping;
+import com.app.shwe.dto.CarOrderResponseDTO;
 import com.app.shwe.dto.ResponseDTO;
 import com.app.shwe.dto.SearchDTO;
 import com.app.shwe.dto.TranslatorOrderResponseDTO;
@@ -159,6 +160,15 @@ public class TranslatorService {
 		int size = dto.getSize();
 		Pageable pageable = PageRequest.of(page, size);
 		return transOrderRepository.searchHireTranslator(searchString, pageable);
+	}
+	
+	@Transactional
+	public Page<TranslatorOrderResponseDTO> findOrderByUserId(int id,SearchDTO dto) {
+		String searchString = dto.getSearchString();
+		int page = (dto.getPage() < 1) ? 0 : dto.getPage() - 1;
+		int size = dto.getSize();
+		Pageable pageable = PageRequest.of(page, size);
+		return transOrderRepository.findOrderByUserId(id, searchString, pageable);
 	}
 
 	@Transactional
