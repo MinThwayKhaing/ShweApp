@@ -95,7 +95,7 @@ public class CarOrderService {
 
 	@Transactional
 	public CarOrder getOrderForUpdate(int orderId) {
-		return carOrderRepository.find(CarOrder.class, orderId, LockModeType.PESSIMISTIC_WRITE);
+		return carOrderRepository.findByIdForUpdate(orderId);
 	}
 
 	@Transactional

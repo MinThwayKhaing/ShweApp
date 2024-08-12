@@ -10,6 +10,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -49,7 +50,10 @@ public interface CarOrderRepository extends JpaRepository<CarOrder, Integer> {
     @Query("UPDATE CarOrder c SET c.status = :status WHERE c.id = :id")
     void updateOrder(@Param("id") int id, @Param("status") String status);
 
-    CarOrder find(Class<CarOrder> class1, int orderId, LockModeType pessimisticWrite);
+   
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT c FROM CarOrder c WHERE c.id = :id")
+    CarOrder findByIdForUpdate(@Param("id") int id);
 
     @Query("SELECT COALESCE(MAX(t.sysKey), 'CR00000000') FROM CarOrder t")
     String findMaxSysKey();

@@ -91,15 +91,15 @@ public class UserService {
 			int userId = userRepo.authUser(SecurityUtils.getCurrentUsername());
 
 			String recentImage = userRepo.selectImage(userId);
-
-			boolean status = fileUploadService.deleteFile(recentImage);
-			if (!status) {
-				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-						.body("Error occured when deleting s3 link");
+            if( !recentImage.equals("")){
+				boolean status = fileUploadService.deleteFile(recentImage);
+				if (!status) {
+					return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+							.body("Error occured when deleting s3 link");
+				}
 			}
-
 			String imageUrl = fileUploadService.uploadFile(images);
-
+            System.out.println("This is image url" + imageUrl);
 			userRepo.imageUpdate(userId, imageUrl);
 			return ResponseEntity.status(HttpStatus.OK).body("Image Updaet  successfully.");
 

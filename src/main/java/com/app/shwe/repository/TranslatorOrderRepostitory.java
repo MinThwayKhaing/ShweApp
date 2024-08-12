@@ -5,11 +5,13 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.app.shwe.dto.TranslatorOrderResponseDTO;
+import com.app.shwe.model.CarOrder;
 import com.app.shwe.model.TranslatorOrder;
 
 import jakarta.persistence.LockModeType;
@@ -43,7 +45,11 @@ public interface TranslatorOrderRepostitory extends JpaRepository<TranslatorOrde
 			@Param("searchString") String searchString,
 			Pageable pageable);
 
-	TranslatorOrder find(Class<TranslatorOrder> class1, int id, LockModeType pessimisticWrite);
+	
+
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT t FROM TranslatorOrder t WHERE t.id = :id")
+    TranslatorOrder findByIdForUpdate(@Param("id") int id);
 
 	@Query("SELECT COALESCE(MAX(c.sysKey), 'CR00000000') FROM TranslatorOrder c")
 	String findMaxSysKey();

@@ -214,7 +214,7 @@ public class TranslatorService {
 
 	@Transactional
 	public TranslatorOrder getOrderForUpdate(int id) {
-		return transOrderRepository.find(TranslatorOrder.class, id, LockModeType.PESSIMISTIC_WRITE);
+		return transOrderRepository.findByIdForUpdate(id);
 	}
 
 }
