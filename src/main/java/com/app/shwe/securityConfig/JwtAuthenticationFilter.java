@@ -37,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String userName;
 
         // Bypass the /api/v1/auth/register endpoint
-        if (request.getRequestURI().equals("/api/v1/auth/register")|| request.getRequestURI().equals("/api/v1/auth/login")) {
+        if (request.getRequestURI().equals("/api/v1/auth/register-user")|| request.getRequestURI().equals("/api/v1/auth/register-admin") || request.getRequestURI().equals("/api/v1/auth/login")) {
             filterChain.doFilter(request, response);
             return;
         }

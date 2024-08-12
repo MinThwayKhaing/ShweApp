@@ -25,8 +25,8 @@ public class DemoController {
     // }
 
     @GetMapping
-    public boolean testdeleteimage(@PathVariable String id) {
-        return fileUploadService.deleteFile(id);
+    public boolean testdeleteimage() {
+        return fileUploadService.deleteFile("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJLZyBLZyIsImlhdCI6MTcyMzQ3OTkzMCwiZXhwIjoxNzIzNTY2MzMwfQ.Pz_mPppDVG9PI8ylBecqhu4q0tbmEj0W2EQM6Rs-hCw");
     }
 
 }
