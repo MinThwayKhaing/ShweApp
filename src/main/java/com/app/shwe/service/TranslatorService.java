@@ -19,6 +19,7 @@ import com.app.shwe.dto.ResponseDTO;
 import com.app.shwe.dto.SearchDTO;
 import com.app.shwe.dto.TranslatorOrderResponseDTO;
 import com.app.shwe.dto.TranslatorRequestDTO;
+import com.app.shwe.model.CarOrder;
 import com.app.shwe.model.CarRent;
 import com.app.shwe.model.Translator;
 import com.app.shwe.model.TranslatorOrder;
@@ -28,6 +29,7 @@ import com.app.shwe.repository.UserRepository;
 import com.app.shwe.utils.FilesSerializationUtil;
 import com.app.shwe.utils.SecurityUtils;
 
+import jakarta.persistence.LockModeType;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -163,7 +165,8 @@ public class TranslatorService {
 	public ResponseEntity<String> cancelOrder(int orderId) {
 		Optional<TranslatorOrder> getTranslatorOrder = transOrderRepository.findById(orderId);
 		if (!getTranslatorOrder.isPresent()) {
-			throw new IllegalArgumentException("ID not found");
+			return new ResponseEntity<>("Error occurred: ", HttpStatus.INTERNAL_SERVER_ERROR);
+
 		}
 		try {
 			String status = "Cancel Order";
@@ -176,13 +179,14 @@ public class TranslatorService {
 	}
 
 	@Transactional
-	public ResponseEntity<String> updateTranslatorOrder(int orderId,TranslatorRequestDTO request) {
-		Optional<TranslatorOrder> getTranslatorOrder = transOrderRepository.findById(orderId);
+	public ResponseEntity<String> updateTranslatorOrder(int orderId, TranslatorRequestDTO request) {
+		Optional<TranslatorOrder> getTranslatorOrder = Optional.ofNullable(getOrderForUpdate(orderId));
 		if (!getTranslatorOrder.isPresent()) {
-			throw new IllegalArgumentException("ID not found");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Id not found ");
 		}
 		Translator translator = translatorRepo.findById(request.getTranslator_id())
-                .orElseThrow(() -> new RuntimeException("Translator not found for ID: " + request.getTranslator_id()));
+				.orElseThrow(() -> new RuntimeException("Translator not found for ID: " + request.getTranslator_id()));
 		try {
 			TranslatorOrder order = getTranslatorOrder.get();
 			order.setStatus(request.getStatus());
@@ -196,6 +200,11 @@ public class TranslatorService {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Error occurred while saving translator: " + e.getMessage());
 		}
+	}
+
+	@Transactional
+	public TranslatorOrder getOrderForUpdate(int id) {
+		return transOrderRepository.find(TranslatorOrder.class, id, LockModeType.PESSIMISTIC_WRITE);
 	}
 
 }

@@ -26,6 +26,7 @@ import com.app.shwe.repository.CarRentRepository;
 import com.app.shwe.repository.UserRepository;
 import com.app.shwe.utils.SecurityUtils;
 
+import jakarta.persistence.LockModeType;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -72,7 +73,7 @@ public class CarOrderService {
 
 	@Transactional
 	public ResponseEntity<?> updateCarOrder(int id, CarOrderRequestDTO dto) {
-		Optional<CarOrder> carOrderOptional = carOrderRepository.findById(id);
+		Optional<CarOrder> carOrderOptional = Optional.ofNullable(getOrderForUpdate(id));
 		if (!carOrderOptional.isPresent()) {
 			return new ResponseEntity<>("CarOrder not found", HttpStatus.NOT_FOUND);
 		}
@@ -87,6 +88,11 @@ public class CarOrderService {
 		} catch (Exception e) {
 			return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+
+	@Transactional
+	public CarOrder getOrderForUpdate(int orderId) {
+		return carOrderRepository.find(CarOrder.class, orderId, LockModeType.PESSIMISTIC_WRITE);
 	}
 
 	@Transactional
@@ -144,10 +150,10 @@ public class CarOrderService {
 		}
 		CarRent car = carRentRepository.findById(request.getCarId())
 				.orElseThrow(() -> new RuntimeException("Car not found for ID: " + request.getCarId()));
-		
+
 		try {
 			CarOrder order = carOrderOptional.get();
-	    	order.setCarBrand(request.getCarBrand());
+			order.setCarBrand(request.getCarBrand());
 			order.setCarType(request.getCarType());
 			order.setFromDate(request.getFromDate());
 			order.setDriver(request.isDriver());
