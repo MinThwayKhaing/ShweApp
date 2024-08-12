@@ -15,6 +15,7 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,16 +47,19 @@ public class FileUploadService {
 
     public String uploadFile(MultipartFile file) {
         String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        File convertedFile = convertMultiPartToFile(file);
 
-        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(bucketName)
-                .key(fileName)
-                .acl("public-read")
-                .build();
+        try (InputStream inputStream = file.getInputStream()) {
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(fileName)
+                    .acl("public-read")
+                    .build();
 
-        s3Client.putObject(putObjectRequest, RequestBody.fromFile(convertedFile));
-        return s3Client.utilities().getUrl(builder -> builder.bucket(bucketName).key(fileName)).toExternalForm();
+            s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(inputStream, file.getSize()));
+            return s3Client.utilities().getUrl(builder -> builder.bucket(bucketName).key(fileName)).toExternalForm();
+        } catch (IOException e) {
+            throw new RuntimeException("Error while uploading file to S3", e);
+        }
     }
 
     public boolean deleteFile(String fileName) {
