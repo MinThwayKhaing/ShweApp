@@ -84,9 +84,7 @@ public class CarOrderService {
 		try {
 			CarOrder carOrder = carOrderOptional.get();
 			carOrder = carOrderMapping.mapToCarOrder(dto);
-
 			carOrderRepository.save(carOrder);
-
 			return new ResponseEntity<>("CarOrder updated successfully", HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

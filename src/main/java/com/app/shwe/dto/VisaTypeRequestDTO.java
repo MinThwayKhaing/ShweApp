@@ -16,4 +16,6 @@ public class VisaTypeRequestDTO {
     private double price;
 
     private String duration;
+    
+    private int subVisaId;
 }
