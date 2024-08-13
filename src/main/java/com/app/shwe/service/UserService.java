@@ -9,16 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.app.shwe.datamapping.TranslatorOrderMapping;
 import com.app.shwe.dto.ChangePasswordDTO;
-import com.app.shwe.dto.TranslatorRequestDTO;
 import com.app.shwe.dto.UserReportDTO;
 import com.app.shwe.model.Report;
-import com.app.shwe.model.TranslatorOrder;
 import com.app.shwe.model.User;
-import com.app.shwe.repository.TranslatorOrderRepostitory;
-import com.app.shwe.repository.TranslatorRepository;
 import com.app.shwe.repository.UserRepository;
 import com.app.shwe.utils.SecurityUtils;
 
