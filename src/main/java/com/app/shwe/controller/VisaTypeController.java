@@ -34,7 +34,6 @@ public class VisaTypeController {
     @PostMapping("/saveVisaType")
 	public ResponseEntity<String> saveVisaTypes(@RequestBody VisaTypeRequestDTO request) {
 		return visaTypeService.saveVisaType(request);
-
 	}
 
     @GetMapping("/getVisaByType")

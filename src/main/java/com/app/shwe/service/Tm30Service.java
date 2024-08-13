@@ -21,9 +21,12 @@ import com.app.shwe.model.CarRent;
 import com.app.shwe.model.News;
 import com.app.shwe.model.Tm30;
 import com.app.shwe.model.User;
+import com.app.shwe.model.VisaOrder;
 import com.app.shwe.model.VisaServices;
+import com.app.shwe.repository.OrderKeyGeneratorService;
 import com.app.shwe.repository.Tm30Repository;
 import com.app.shwe.repository.UserRepository;
+import com.app.shwe.repository.VisaOrderRepository;
 import com.app.shwe.repository.VisaServicesRepository;
 import com.app.shwe.utils.SecurityUtils;
 
@@ -43,6 +46,12 @@ public class Tm30Service {
 
 	@Autowired
 	private VisaServicesRepository visaRepo;
+	
+	@Autowired
+	private OrderKeyGeneratorService keyGenerator;
+	
+	@Autowired
+	private VisaOrderRepository visaOrderRepository;
 
 	@Transactional
 	public ResponseEntity<String> saveTm30(MultipartFile passport, MultipartFile visa, Tm30RequestDTO request) {
@@ -60,6 +69,7 @@ public class Tm30Service {
 			String imageUrl1 = fileUploadService.uploadFile(passport);
 			String imageUrl2 = fileUploadService.uploadFile(visa);
 			Tm30 tm30 = new Tm30();
+			VisaOrder order = new VisaOrder();
 			tm30.setPeriod(request.getPeriod());
 			tm30.setPassportBio(imageUrl1);
 			tm30.setVisaPage(imageUrl2);
@@ -70,6 +80,9 @@ public class Tm30Service {
 			tm30.setCreatedDate(new Date());
 			tm30.setUser(user);
 			tm30Repo.save(tm30);
+			order.setOrder_id(keyGenerator.generateNextCarOrderId());
+			order.setMain_visa_id(request.getVisa_id());
+			visaOrderRepository.save(order);
 			return ResponseEntity.status(HttpStatus.OK).body("Tm-30 saved successfully.");
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
