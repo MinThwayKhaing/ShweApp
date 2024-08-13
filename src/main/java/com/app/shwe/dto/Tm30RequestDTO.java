@@ -18,7 +18,6 @@ public class Tm30RequestDTO {
 	private String passportBio;
 	private String visaPage;
 	private String contactNumber;
-	@ElementCollection
 	private String duration;
 	private int visa_id;
 

@@ -34,9 +34,9 @@ public class VisaServicesController {
 	private VisaService visaService;
 	
 	@PostMapping("/saveVisa")
-	public ResponseEntity<ResponseEntity<String>> saveNews(@RequestPart("images") MultipartFile images,
+	public ResponseEntity<String> saveNews(@RequestPart("images") MultipartFile images,
 			@RequestPart("request") VisaServiceRequestDTO request) {
-		return ResponseEntity.ok(visaService.saveVisa(images, request));
+		return visaService.saveVisa(images, request);
 
 	}
 	

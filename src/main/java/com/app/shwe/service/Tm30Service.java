@@ -17,14 +17,14 @@ import org.springframework.web.multipart.MultipartFile;
 import com.app.shwe.dto.NewsRequestDTO;
 import com.app.shwe.dto.SearchDTO;
 import com.app.shwe.dto.Tm30RequestDTO;
+import com.app.shwe.model.CarRent;
 import com.app.shwe.model.News;
 import com.app.shwe.model.Tm30;
+import com.app.shwe.model.User;
 import com.app.shwe.model.VisaServices;
 import com.app.shwe.repository.Tm30Repository;
 import com.app.shwe.repository.UserRepository;
 import com.app.shwe.repository.VisaServicesRepository;
-import com.app.shwe.utils.DurationConfig;
-import com.app.shwe.utils.FilesSerializationUtil;
 import com.app.shwe.utils.SecurityUtils;
 
 import jakarta.transaction.Transactional;
@@ -42,9 +42,6 @@ public class Tm30Service {
 	private UserRepository userRepository;
 
 	@Autowired
-	private DurationConfig durationConfig;
-
-	@Autowired
 	private VisaServicesRepository visaRepo;
 
 	@Transactional
@@ -53,12 +50,10 @@ public class Tm30Service {
 			throw new IllegalArgumentException("Request and required fields must not be null");
 		}
 		try {
-			List<String> validDurations = durationConfig.durationList();
-			String requestDuration = request.getDuration();
-			if (!validDurations.contains(requestDuration)) {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-						.body("Invalid duration provided: " + requestDuration);
-			}
+			int userId = userRepository.authUser(SecurityUtils.getCurrentUsername());
+			User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found for ID: " + userId));
+			
 			VisaServices visaServices = visaRepo.findById(request.getVisa_id())
 					.orElseThrow(() -> new IllegalArgumentException("Visa not found with id: " + request.getVisa_id()));
 
@@ -69,10 +64,11 @@ public class Tm30Service {
 			tm30.setPassportBio(imageUrl1);
 			tm30.setVisaPage(imageUrl2);
 			tm30.setContactNumber(request.getContactNumber());
-			tm30.setDuration(requestDuration);
+			tm30.setDuration(request.getDuration());
 			tm30.setVisa(visaServices);
 			tm30.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 			tm30.setCreatedDate(new Date());
+			tm30.setUser(user);
 			tm30Repo.save(tm30);
 			return ResponseEntity.status(HttpStatus.OK).body("Tm-30 saved successfully.");
 		} catch (Exception e) {
@@ -98,7 +94,6 @@ public class Tm30Service {
 		return tm30Repo.getAllTm30(pageable);
 	}
 
-	@PreAuthorize("hasRole('ADMIN')")
 	@Transactional
 	public ResponseEntity<String> updateTm30(int id, MultipartFile passportPage, MultipartFile visaPage,
 			Tm30RequestDTO request) {
@@ -109,17 +104,11 @@ public class Tm30Service {
 
 		try {
 			Tm30 tm30 = getTm30.get();
-			List<String> validDurations = durationConfig.durationList();
-			String requestDuration = request.getDuration();
-			if (!validDurations.contains(requestDuration)) {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-						.body("Invalid duration provided: " + requestDuration);
-			}
 			String passportImage = fileUploadService.uploadFile(passportPage);
 			String visaImage = fileUploadService.uploadFile(visaPage);
 			tm30.setPeriod(request.getPeriod());
 			tm30.setContactNumber(request.getContactNumber());
-			tm30.setDuration(requestDuration);
+			tm30.setDuration(request.getDuration());
 			tm30.setPassportBio(passportImage);
 			tm30.setVisaPage(visaImage);
 			tm30.setUpdatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));

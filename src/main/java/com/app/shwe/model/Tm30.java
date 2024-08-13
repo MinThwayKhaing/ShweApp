@@ -28,6 +28,15 @@ public class Tm30 extends CommonDTO{
 	@ManyToOne
     @JoinColumn(name = "visa_id")
 	private VisaServices visa;
+
+	@ManyToOne
+    @JoinColumn(name = "user_id")
+	private User user;
+    
+	@ManyToOne
+    @JoinColumn(name = "price_id")
+	private Price price;
+
 	
 
 }
