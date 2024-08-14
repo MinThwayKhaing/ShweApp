@@ -13,4 +13,5 @@ public class VisaServices extends CommonDTO{
 
 	String serviceName;
 	String image;
+	
 }

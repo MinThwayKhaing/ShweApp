@@ -1,5 +1,6 @@
 package com.app.shwe.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.app.shwe.dto.NewsRequestDTO;
 import com.app.shwe.dto.SearchDTO;
 import com.app.shwe.dto.Tm30RequestDTO;
+import com.app.shwe.dto.Tm30ResponseDTO;
+import com.app.shwe.dto.VisaResponseDTO;
 import com.app.shwe.model.CarRent;
 import com.app.shwe.model.News;
 import com.app.shwe.model.Tm30;
@@ -81,7 +84,19 @@ public class Tm30Service {
 			tm30.setUser(user);
 			tm30Repo.save(tm30);
 			order.setOrder_id(keyGenerator.generateNextCarOrderId());
-			order.setMain_visa_id(request.getVisa_id());
+			
+			if(request.getOption1() == 1) {
+				order.setSub_visa_id(request.getOption1());
+				order.setMain_visa_id(request.getVisa_id());
+			}
+			if(request.getOption2() == 2) {
+				order.setSub_visa_id(request.getOption2());
+				order.setMain_visa_id(request.getVisa_id());
+			}
+			if(request.getOption3() == 3) {
+				order.setSub_visa_id(request.getOption3());
+				order.setMain_visa_id(request.getVisa_id());
+			}
 			visaOrderRepository.save(order);
 			return ResponseEntity.status(HttpStatus.OK).body("Tm-30 saved successfully.");
 		} catch (Exception e) {
@@ -100,12 +115,30 @@ public class Tm30Service {
 	}
 
 	@Transactional
-	public Page<Tm30> getAllTm30(SearchDTO search) {
+	public Page<Tm30> getTm30(SearchDTO search) {
 		int page = (search.getPage() < 1) ? 0 : search.getPage() - 1;
 		int size = search.getSize();
 		Pageable pageable = PageRequest.of(page, size);
 		return tm30Repo.getAllTm30(pageable);
 	}
+	
+	@Transactional
+	public Page<VisaResponseDTO> getAllTm30(SearchDTO search) {
+		int page = (search.getPage() < 1) ? 0 : search.getPage() - 1;
+		int size = search.getSize();
+		Tm30ResponseDTO dto = new Tm30ResponseDTO();
+		Pageable pageable = PageRequest.of(page, size);
+		Page<Tm30> tm30 = tm30Repo.getAllTm30(pageable);
+		List<VisaResponseDTO> response = new ArrayList<VisaResponseDTO>(); 
+		for (Tm30 tm : tm30) {
+			VisaResponseDTO visa = new VisaResponseDTO();
+			visa = tm30Repo.getTM30(tm.getId());
+			response.add(visa);
+		}
+		dto.setVisa(response);
+		return dto;
+	}
+
 
 	@Transactional
 	public ResponseEntity<String> updateTm30(int id, MultipartFile passportPage, MultipartFile visaPage,

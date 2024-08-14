@@ -77,7 +77,9 @@ public class VisaTypeService {
 		for (VisaTypeResponseDTO visaTypeResponseDTO : visaList) {
 			VisaTypeResponseDTO dto = new VisaTypeResponseDTO();
 			VisaType type = new VisaType();
+			type.setId(dto.getId());
 			type.setVisaType(dto.getVisaType());
+			dto.setId(visaTypeResponseDTO.getId());
 			dto.setVisaType(visaTypeResponseDTO.getVisaType());
 			SubVisaType sub = new SubVisaType();
 			sub.setDuration(dto.getDuration());
@@ -98,7 +100,9 @@ public class VisaTypeService {
 		for (VisaTypeResponseDTO visaTypeResponseDTO : visaList) {
 			VisaTypeResponseDTO dto = new VisaTypeResponseDTO();
 			VisaType type = new VisaType();
+			type.setId(dto.getId());
 			type.setVisaType(dto.getVisaType());
+			dto.setId(visaTypeResponseDTO.getId());
 			dto.setVisaType(visaTypeResponseDTO.getVisaType());
 			SubVisaType sub = new SubVisaType();
 			sub.setDuration(dto.getDuration());
