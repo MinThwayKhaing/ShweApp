@@ -50,7 +50,7 @@ public class Tm30Controller {
 	
 	
 	@GetMapping("/getAllTm30Order")
-	public Page<VisaResponseDTO> showCars(@RequestBody SearchDTO search) {
+	public Page<VisaResponseDTO> getAllTm30Order(@RequestBody SearchDTO search) {
 		return tm30Service.getAllTm30(search);
 	}
 
