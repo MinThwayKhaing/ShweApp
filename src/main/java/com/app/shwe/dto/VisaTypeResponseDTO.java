@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class VisaTypeResponseDTO {
     
+	private int id;
+	
     private String visaType;
     
     private double price;

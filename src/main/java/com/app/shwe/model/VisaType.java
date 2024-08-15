@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class VisaType extends CommonDTO{
-    private String visaType;
+public class VisaType extends CommonDTO {
+	private String visaType;
 }

@@ -17,12 +17,12 @@ import jakarta.transaction.Transactional;
 @Repository
 public interface VsiaTypeRepository extends JpaRepository<VisaType,Integer>{
     
-    @Query("SELECT new com.app.shwe.dto.VisaTypeResponseDTO(v.visaType,s.price,s.duration) "
+    @Query("SELECT new com.app.shwe.dto.VisaTypeResponseDTO(v.id,v.visaType,s.price,s.duration) "
 			+ "FROM VisaType v JOIN SubVisaType s ON s.visa.id = v.id WHERE v.visaType = :type")
 	List<VisaTypeResponseDTO> findVisaByType(String type);
     
     
-    @Query("SELECT new com.app.shwe.dto.VisaTypeResponseDTO(v.visaType,s.price,s.duration) "
+    @Query("SELECT new com.app.shwe.dto.VisaTypeResponseDTO(v.id,v.visaType,s.price,s.duration) "
 			+ "FROM VisaType v JOIN SubVisaType s ON s.visa.id = v.id")
 	List<VisaTypeResponseDTO> findAllVisaType();
     

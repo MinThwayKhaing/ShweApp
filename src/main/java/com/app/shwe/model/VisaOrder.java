@@ -14,5 +14,6 @@ public class VisaOrder extends CommonDTO{
 	private String order_id;
 	private int sub_visa_id;
 	private int main_visa_id;
+	
 
 }
