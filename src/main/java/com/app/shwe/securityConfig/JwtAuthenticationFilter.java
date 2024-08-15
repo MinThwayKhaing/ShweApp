@@ -30,14 +30,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
-                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
+            @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userName;
 
         // Bypass the /api/v1/auth/register endpoint
-        if (request.getRequestURI().equals("/api/v1/auth/register-user")|| request.getRequestURI().equals("/api/v1/auth/register-admin") || request.getRequestURI().equals("/api/v1/auth/login")) {
+        if (request.getRequestURI().equals("/api/v1/auth/register-user")
+                || request.getRequestURI().equals("/api/v1/auth/register-admin")
+                || request.getRequestURI().equals("/api/v1/auth/login")
+                || request.getRequestURI().equals("/api/v1/otp")) {
             filterChain.doFilter(request, response);
             return;
         }
