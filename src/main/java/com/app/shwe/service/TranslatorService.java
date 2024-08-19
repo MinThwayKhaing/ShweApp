@@ -207,7 +207,7 @@ public class TranslatorService {
 			order.setMeetingDate(request.getMeetingDate());
 			order.setMeetingTime(request.getMeetingTime());
 			order.setPhoneNumber(request.getPhoneNumber());
-			order.setStatus("Pending");
+			order.setStatus(request.getStatus());
 			order.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 			order.setCreatedDate(new Date());
 			order.setTranslator(translator);
@@ -219,9 +219,7 @@ public class TranslatorService {
 					.body("Error occurred while saving translator: " + e.getMessage());
 		}
 	}
-	
-	
-	
+
 	@Transactional
 	public Page<TranslatorOrderResponseDTO> getHireTranslatorById(SearchDTO dto) {
 		String searchString = dto.getSearchString();
