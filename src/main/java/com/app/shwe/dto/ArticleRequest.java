@@ -18,8 +18,5 @@ public class ArticleRequest {
     // private String categoryTag;
     private int activity_id;
 
-    public void setActivity(Activity activity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setActivity'");
-    }
+    
 }

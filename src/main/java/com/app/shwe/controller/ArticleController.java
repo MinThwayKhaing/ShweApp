@@ -21,10 +21,9 @@ public class ArticleController {
 
     @PostMapping("/create")
     public ResponseEntity<String> createArticle(
-            @RequestBody ArticleRequest article) {
+            @RequestPart("image") MultipartFile imageFile,  @RequestPart("request") ArticleRequest article) {
         try {
-
-            return articleService.saveArticle(article);
+            return articleService.saveArticle(imageFile,article);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error occurred while saving Article: " + e.getMessage());

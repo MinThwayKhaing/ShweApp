@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
@@ -26,20 +27,23 @@ public class ArticleService {
     @Autowired
     private FileUploadService fileUploadService;
 
-    public ResponseEntity<String> saveArticle(ArticleRequest article) {
+    public ResponseEntity<String> saveArticle(MultipartFile image, ArticleRequest article) {
         try {
             Article act = new Article();
             act.setTitle(article.getTitle());
             act.setDescription(article.getDescription());
 
-            Optional<Activity> activityOptional = activityRepository.findById(article.getActivity_id());
-            String imageUrl = fileUploadService.uploadFile(article.getImageFile());
+            // Optional<Activity> activityOptional =
+            // activityRepository.findById(article.getActivity_id());
+            // Activity act1=activityOptional.get();
+            String imageUrl = fileUploadService.uploadFile(image);
             act.setImageUrl(imageUrl);
-            if (!activityOptional.isPresent()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Invalid activity ID: " + article.getActivity_id());
-            }
-            article.setActivity(activityOptional.get());
+            // if (!activityOptional.isPresent()) {
+            // return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            // .body("Invalid activity ID: " + article.getActivity_id());
+            // }
+
+            article.setActivity_id(article.getActivity_id());
 
             articleRepository.save(act);
             return ResponseEntity.status(HttpStatus.OK).body("Article save  successfully.");

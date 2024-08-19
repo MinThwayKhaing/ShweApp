@@ -22,8 +22,6 @@ public class Article extends CommonDTO {
 
     private String imageUrl;
 
-    // private String categoryTag;
-
     @ManyToOne
     @JoinColumn(name = "activity_id")
     private Activity activity;

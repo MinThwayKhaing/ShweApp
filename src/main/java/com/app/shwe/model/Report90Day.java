@@ -22,5 +22,9 @@ public class Report90Day extends CommonDTO{
 	@ManyToOne
     @JoinColumn(name = "user_id")
 	private User user;
+	
+	@ManyToOne
+    @JoinColumn(name = "visa_id")
+	private VisaServices visa;
 
 }
