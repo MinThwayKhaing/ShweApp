@@ -1,8 +1,11 @@
 package com.app.shwe.model;
 
+import java.util.Date;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,23 +14,22 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Report90Day extends CommonDTO{
+public class EmbassyLetter extends CommonDTO{
 	
 	private String syskey;
-	private String visaType;
-	private String tm6Photo;
-	private String expireDatePhoto;
+	private String type;
 	private String passportBio;
 	private String visaPage;
 	private String contactNumber;
+	private String address;
 	private String status;
-	
-	@ManyToOne
-    @JoinColumn(name = "user_id")
-	private User user;
 	
 	@ManyToOne
     @JoinColumn(name = "visa_id")
 	private VisaServices visa;
+
+	@ManyToOne
+    @JoinColumn(name = "user_id")
+	private User user;
 
 }
