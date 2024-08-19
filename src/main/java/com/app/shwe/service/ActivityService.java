@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -45,8 +47,14 @@ public class ActivityService {
         activityRepository.deleteById(id);
     }
 
-    public Page<Activity> getAllActivities(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return activityRepository.findAll(pageable);
+    public ResponseEntity<?> getAllActivities(int page, int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            return ResponseEntity.status(HttpStatus.OK).body(activityRepository.findAll(pageable));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error occurred while selecting Activities: " + e.getMessage());
+        }
+
     }
 }

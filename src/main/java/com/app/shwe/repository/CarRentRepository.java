@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.app.shwe.dto.CarRentDTO;
+import com.app.shwe.dto.CarRentRatingDTO;
 import com.app.shwe.model.CarOrder;
 import com.app.shwe.model.CarRent;
 
@@ -28,6 +29,17 @@ public interface CarRentRepository extends JpaRepository<CarRent, Integer> {
 
 	@Query("SELECT c FROM CarRent c")
 	Page<CarRent> showAllCar(Pageable pageable);
+
+	@Query("SELECT new com.app.shwe.dto.CarRentRatingDTO(c.id, c.carName, AVG(r.rating)) " +
+			"FROM CarRent c JOIN Rating r ON c.id = r.carRent.id " +
+			"WHERE c.id = :carId " +
+			"GROUP BY c.id, c.carName")
+	Optional<CarRentRatingDTO> findByIdWithRating(int carId);
+
+	@Query("SELECT new com.app.shwe.dto.CarRentRatingDTO(c.id, c.carName, AVG(r.rating)) " +
+			"FROM CarRent c JOIN Rating r ON c.id = r.carRent.id " +
+			"GROUP BY c.id, c.carName HAVING AVG(r.rating) >= 4.5")
+	Page<CarRentRatingDTO> findAllWithHighRating(Pageable pageable);
 
 	@Query("SELECT new com.app.shwe.dto.CarRentDTO(c.id,c.carName,c.ownerName,c.carNo,c.status,c.license,c.driverPhoneNumber,c.driverName,c.carColor"
 			+ ",c.carType,p.insideTownPrice,p.outsideTownPrice,c.image)"
