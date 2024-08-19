@@ -54,10 +54,9 @@ public class ArticleController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<Article>> getAllArticles(
+    public ResponseEntity<?> getAllArticles(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Page<Article> articles = articleService.getAllArticles(page, size);
-        return new ResponseEntity<>(articles, HttpStatus.OK);
+        return articleService.getAllArticles(page, size);
     }
 }

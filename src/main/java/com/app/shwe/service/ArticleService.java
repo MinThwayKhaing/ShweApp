@@ -81,9 +81,15 @@ public class ArticleService {
                 .body("Deleted successfully");
 
     }
+    
 
-    public Page<Article> getAllArticles(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return articleRepository.findAll(pageable);
+    public ResponseEntity<?> getAllArticles(int page, int size) {
+        try {
+        	Pageable pageable = PageRequest.of(page, size);
+        	return ResponseEntity.status(HttpStatus.OK).body(articleRepository.findAll(pageable));
+		} catch (Exception e) {
+			 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                    .body("Error occurred while selecting Activities: " + e.getMessage());
+		}
     }
 }
