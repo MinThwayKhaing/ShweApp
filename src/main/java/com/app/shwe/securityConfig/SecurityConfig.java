@@ -28,12 +28,12 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(requests -> requests
-                		   .requestMatchers("/api/v1/auth/register").permitAll()
-                           .requestMatchers("/api/v1/auth/login").permitAll()
-                           .requestMatchers("/api/v1/auth/**").permitAll()
-                           .requestMatchers("/api/services/**", "/api/v1/categories/**").hasRole("ADMIN")
-                           .requestMatchers("/api/services/**", "/api/v1/process/**").hasRole("ADMIN")
-                           .requestMatchers("/api/v1/carRent/**").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/auth/register").permitAll()
+                        .requestMatchers("/api/v1/auth/login").permitAll()
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/services/**", "/api/v1/categories/**").hasRole("ADMIN")
+                        .requestMatchers("/api/services/**", "/api/v1/process/**").hasRole("ADMIN")
+
                         .anyRequest().authenticated())
                 .exceptionHandling(handling -> handling
                         .authenticationEntryPoint(new BasicAuthenticationEntryPoint() {
@@ -55,7 +55,8 @@ public class SecurityConfig {
     public AccessDeniedHandler accessDeniedHandler() {
         return (request, response, accessDeniedException) -> {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            response.getWriter().write("Access Denied: You do not have the necessary permissions to access this resource.");
+            response.getWriter()
+                    .write("Access Denied: You do not have the necessary permissions to access this resource.");
         };
     }
 }

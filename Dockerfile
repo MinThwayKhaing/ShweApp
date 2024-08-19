@@ -9,7 +9,6 @@ COPY target/shwe-0.0.1-SNAPSHOT.jar /app/shwe.jar
 
 # Expose the port the app runs on
 EXPOSE 8080
-
 # Set environment variables for Spring Boot application
 ENV SPRING_APPLICATION_NAME=shwe \
     SPRING_DATASOURCE_URL=jdbc:mysql://178.128.25.88:3306/shwe \

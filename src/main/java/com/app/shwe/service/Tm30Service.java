@@ -49,10 +49,10 @@ public class Tm30Service {
 
 	@Autowired
 	private VisaServicesRepository visaRepo;
-	
+
 	@Autowired
 	private OrderKeyGeneratorService keyGenerator;
-	
+
 	@Autowired
 	private VisaOrderRepository visaOrderRepository;
 
@@ -64,8 +64,8 @@ public class Tm30Service {
 		try {
 			int userId = userRepository.authUser(SecurityUtils.getCurrentUsername());
 			User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found for ID: " + userId));
-			
+					.orElseThrow(() -> new RuntimeException("User not found for ID: " + userId));
+
 			VisaServices visaServices = visaRepo.findById(request.getVisa_id())
 					.orElseThrow(() -> new IllegalArgumentException("Visa not found with id: " + request.getVisa_id()));
 
@@ -84,16 +84,16 @@ public class Tm30Service {
 			tm30.setUser(user);
 			tm30Repo.save(tm30);
 			order.setOrder_id(keyGenerator.generateNextCarOrderId());
-			
-			if(request.getOption1() == 1) {
+
+			if (request.getOption1() == 1) {
 				order.setSub_visa_id(request.getOption1());
 				order.setMain_visa_id(request.getVisa_id());
 			}
-			if(request.getOption2() == 2) {
+			if (request.getOption2() == 2) {
 				order.setSub_visa_id(request.getOption2());
 				order.setMain_visa_id(request.getVisa_id());
 			}
-			if(request.getOption3() == 3) {
+			if (request.getOption3() == 3) {
 				order.setSub_visa_id(request.getOption3());
 				order.setMain_visa_id(request.getVisa_id());
 			}
@@ -121,24 +121,23 @@ public class Tm30Service {
 		Pageable pageable = PageRequest.of(page, size);
 		return tm30Repo.getAllTm30(pageable);
 	}
-	
-	@Transactional
-	public Page<VisaResponseDTO> getAllTm30(SearchDTO search) {
-		int page = (search.getPage() < 1) ? 0 : search.getPage() - 1;
-		int size = search.getSize();
-		Tm30ResponseDTO dto = new Tm30ResponseDTO();
-		Pageable pageable = PageRequest.of(page, size);
-		Page<Tm30> tm30 = tm30Repo.getAllTm30(pageable);
-		List<VisaResponseDTO> response = new ArrayList<VisaResponseDTO>(); 
-		for (Tm30 tm : tm30) {
-			VisaResponseDTO visa = new VisaResponseDTO();
-			visa = tm30Repo.getTM30(tm.getId());
-			response.add(visa);
-		}
-		dto.setVisa(response);
-		return dto;
-	}
 
+	// @Transactional
+	// public Page<VisaResponseDTO> getAllTm30(SearchDTO search) {
+	// int page = (search.getPage() < 1) ? 0 : search.getPage() - 1;
+	// int size = search.getSize();
+	// Tm30ResponseDTO dto = new Tm30ResponseDTO();
+	// Pageable pageable = PageRequest.of(page, size);
+	// Page<Tm30> tm30 = tm30Repo.getAllTm30(pageable);
+	// List<VisaResponseDTO> response = new ArrayList<VisaResponseDTO>();
+	// for (Tm30 tm : tm30) {
+	// VisaResponseDTO visa = new VisaResponseDTO();
+	// visa = tm30Repo.getTM30(tm.getId());
+	// response.add(visa);
+	// }
+	// dto.setVisa(response);
+	// return dto;
+	// }
 
 	@Transactional
 	public ResponseEntity<String> updateTm30(int id, MultipartFile passportPage, MultipartFile visaPage,
@@ -166,8 +165,7 @@ public class Tm30Service {
 		}
 
 	}
-	
-	
+
 	@Transactional
 	public ResponseEntity<?> deleteTm30(int id) {
 		int count = tm30Repo.checkTm30ById(id);

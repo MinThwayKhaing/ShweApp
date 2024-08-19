@@ -43,7 +43,7 @@ public class CarOrderService {
 
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private CarOrderIdGeneratorService carOrderIdGeneratorService;
 
@@ -66,7 +66,7 @@ public class CarOrderService {
 
 	@Transactional
 	public ResponseEntity<?> getCarOrderById(int id) {
-		Optional<CarOrder> carOrder = carOrderRepository.findById(id);
+		Optional<CarOrder> carOrder = carOrderRepository.findCarOrderById(id);
 		if (carOrder.isPresent()) {
 			return new ResponseEntity<>(carOrder.get(), HttpStatus.OK);
 		} else {
@@ -126,14 +126,14 @@ public class CarOrderService {
 		Pageable pageable = PageRequest.of(page, size);
 		return carOrderRepository.showCarOrder(searchString, pageable);
 	}
-	
+
 	@Transactional
-	public Page<CarOrderResponseDTO> findOrderByUserId(int id,SearchDTO dto) {
+	public Page<CarOrderResponseDTO> findOrderByUserId(int id, SearchDTO dto) {
 		String searchString = dto.getSearchString();
 		int page = (dto.getPage() < 1) ? 0 : dto.getPage() - 1;
 		int size = dto.getSize();
 		Pageable pageable = PageRequest.of(page, size);
-		return carOrderRepository.findOrderByUserId(id,searchString, pageable);
+		return carOrderRepository.findOrderByUserId(id, searchString, pageable);
 	}
 
 	@Transactional
@@ -145,7 +145,7 @@ public class CarOrderService {
 		try {
 			String status = "Cancel Order";
 			carOrderRepository.updateOrder(id, status);
-			return ResponseEntity.status(HttpStatus.OK).body("Cancel translator order successfully.");
+			return ResponseEntity.status(HttpStatus.OK).body("Cancel Car Order successfully.");
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Error occurred while saving translator: " + e.getMessage());
@@ -179,7 +179,7 @@ public class CarOrderService {
 			order.setStatus(request.getStatus());
 			order.setCarId(car);
 			carOrderRepository.save(order);
-			return ResponseEntity.status(HttpStatus.OK).body("Confrim car order successfully.");
+			return ResponseEntity.status(HttpStatus.OK).body("Update car order successfully.");
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Error occurred while saving translator: " + e.getMessage());

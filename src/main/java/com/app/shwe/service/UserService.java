@@ -15,6 +15,8 @@ import com.app.shwe.model.Report;
 import com.app.shwe.model.User;
 import com.app.shwe.repository.UserRepository;
 import com.app.shwe.utils.SecurityUtils;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class UserService {
@@ -27,6 +29,9 @@ public class UserService {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private AuthenticationService authRepo;
 
 	public List<UserReportDTO> getReportByUserId(String id) {
 		List<UserReportDTO> dtoList = userRepo.findUserContentById(id);
@@ -85,7 +90,7 @@ public class UserService {
 			int userId = userRepo.authUser(SecurityUtils.getCurrentUsername());
 
 			String recentImage = userRepo.selectImage(userId);
-            if( !recentImage.equals("")){
+			if (!recentImage.equals("")) {
 				boolean status = fileUploadService.deleteFile(recentImage);
 				if (!status) {
 					return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -93,7 +98,7 @@ public class UserService {
 				}
 			}
 			String imageUrl = fileUploadService.uploadFile(images);
-            System.out.println("This is image url" + imageUrl);
+			System.out.println("This is image url" + imageUrl);
 			userRepo.imageUpdate(userId, imageUrl);
 			return ResponseEntity.status(HttpStatus.OK).body("Image Updaet  successfully.");
 
@@ -102,6 +107,36 @@ public class UserService {
 					.body("Error occurred while changing password: " + e.getMessage());
 		}
 
+	}
+
+	public ResponseEntity<String> handleParsedResponseForUserRegister(ResponseEntity<String> response,
+			String phoneNumber) {
+		int responseCode = response.getStatusCodeValue();
+		String responseBody = response.getBody();
+
+		System.out.println("Response code: " + responseCode);
+		System.out.println("Response body: " + responseBody);
+
+		try {
+			// Parse the response JSON
+			ObjectMapper objectMapper = new ObjectMapper();
+			JsonNode jsonNode = objectMapper.readTree(responseBody);
+
+			boolean isValid = jsonNode.path("data").path("is_valid").asBoolean();
+			String message = jsonNode.path("data").path("message").asText();
+
+			if (isValid) {
+
+				return authRepo.registerUser(phoneNumber);
+			} else {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid OTP: " + message);
+			}
+
+		} catch (Exception e) {
+			// Handle any JSON parsing errors
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to parse the response.");
+		}
 	}
 
 }

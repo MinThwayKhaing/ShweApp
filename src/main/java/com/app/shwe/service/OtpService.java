@@ -1,13 +1,13 @@
 package com.app.shwe.service;
 
+import com.app.shwe.model.Otp;
+import com.app.shwe.repository.OtpRepository;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
-import com.app.shwe.model.Otp;
-import com.app.shwe.repository.OtpRepository;
-
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -15,24 +15,28 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 
 import java.util.Date;
-import java.util.Optional;
 import java.util.Random;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class OtpService {
 
-    // @Value("${sms.api.url.send}")
-    // private String sendOtpUrl;
+    @Value("${sms.api.url.send}")
     private String sendOtpUrl;
-    // @Value("${sms.api.url.verify}")
-    // private String verifyOtpUrl;
+
+    @Value("${sms.api.url.verify}")
     private String verifyOtpUrl;
-    // @Value("${sms.api.key}")
-    // private String apiKey;
+
+    @Value("${sms.api.key}")
     private String apiKey;
+
     @Autowired
     private OtpRepository otpRepository;
+
+    @Autowired
+    private UserService userService;
 
     private static final int OTP_EXPIRATION_MINUTES = 3;
 
@@ -47,51 +51,81 @@ public class OtpService {
         otp.setExpiryTime(expiryTime);
 
         otpRepository.save(otp);
+        refCode = "shwe" + refCode;
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", "application/json");
         headers.set("Authorization", "Bearer " + apiKey);
-        headers.set("Content-Type", "application/json");
+        headers.set("Content-Type", "application/x-www-form-urlencoded"); // Form data
 
+        // Custom message with placeholders
         String customMessage = "Your OTP code is {otp}. It is valid for {validity} minutes. Ref: {refcode}";
-        String payload = String.format("{"
-                + "\"recipient\": \"%s\","
-                + "\"sender_name\": \"%s\","
-                + "\"ref_code\": \"%s\","
-                + "\"digit\": %d,"
-                + "\"validity\": %d,"
-                + "\"custom_message\": \"%s\""
-                + "}", recipient, senderName, refCode, 6, OTP_EXPIRATION_MINUTES,
-                customMessage.replace("{otp}", otpCode).replace("{validity}", String.valueOf(OTP_EXPIRATION_MINUTES))
-                        .replace("{refcode}", refCode));
+
+        // Prepare the request payload as form data (key-value pairs)
+        String payload = String.format("recipient=%s&sender_name=%s&ref_code=%s&digit=%d&validity=%d&custom_message=%s",
+                recipient, senderName, refCode, 6, OTP_EXPIRATION_MINUTES, customMessage);
+
+        System.out.println("payload is " + payload);
 
         HttpEntity<String> entity = new HttpEntity<>(payload, headers);
         ResponseEntity<String> response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, entity, String.class);
 
-        if (response.getStatusCode() == HttpStatus.OK) {
-            return "OTP sent successfully.";
+        if (response.getStatusCode() == HttpStatus.CREATED) {
+            // Parse the JSON response to extract the `token`
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode jsonNode = objectMapper.readTree(response.getBody());
+                String token = jsonNode.path("data").path("token").asText();
+
+                System.out.println("Token is: " + token);
+                return token;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "Failed to parse response: " + e.getMessage();
+            }
         } else {
             return "Failed to send OTP. Response Code: " + response.getStatusCode();
         }
     }
 
-    public ResponseEntity<Void> verifyOtp(String recipient, String otpCode) {
-        Optional<Otp> otpOptional = otpRepository.findByRecipientAndOtpCode(recipient, otpCode);
+    public ResponseEntity<String> verifyOtp(String token, String otpCode, String phoneNumber) {
 
-        if (otpOptional.isPresent()) {
-            Otp otp = otpOptional.get();
-            if (new Date().before(otp.getExpiryTime())) {
-                return ResponseEntity.ok().build(); // HTTP 200 OK
-            } else {
-                return ResponseEntity.status(HttpStatus.GONE).build(); // HTTP 410 Gone
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // HTTP 401 Unauthorized
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Accept", "application/json");
+        headers.set("Authorization", "Bearer " + apiKey);
+        headers.set("Content-Type", "application/json");
+
+        // Prepare the payload
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("token", token);
+        payload.put("otp_code", otpCode);
+
+        // Create the request entity
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
+
+        try {
+            // Send the request
+            ResponseEntity<String> response = restTemplate.exchange(verifyOtpUrl, HttpMethod.POST, entity,
+                    String.class);
+
+            System.out.println("Full response: " + response.getBody());
+
+            // Handle the response by parsing JSON
+            return userService.handleParsedResponseForUserRegister(response, phoneNumber);
+
+        } catch (Exception e) {
+            // Log any exception that occurs during the process
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while verifying the OTP.");
         }
     }
 
-    private String generateOtp(int length) {
+    public String generateOtp(int length) {
         Random random = new Random();
         StringBuilder otp = new StringBuilder();
 
@@ -102,7 +136,7 @@ public class OtpService {
         return otp.toString();
     }
 
-    private Date calculateExpiryTime(int expiryMinutes) {
+    public Date calculateExpiryTime(int expiryMinutes) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MINUTE, expiryMinutes);
         return calendar.getTime();

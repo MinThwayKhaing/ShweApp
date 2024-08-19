@@ -1,6 +1,7 @@
 package com.app.shwe.service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,17 +37,17 @@ public class CarRentService {
 
 	@Autowired
 	private CarPriceRepository carPriceRepository;
-	
+
 	@Autowired
 	private FileUploadService fileUploadService;
 
 	@Autowired
 	private UserRepository userRepository;
-	
-	@Autowired 
+
+	@Autowired
 	private CarRentMapping carRentMapping;
 
-	public ResponseEntity<String> saveCars(MultipartFile carImage,CarRentRequestDTO dto) {
+	public ResponseEntity<String> saveCars(MultipartFile carImage, CarRentRequestDTO dto) {
 		try {
 			if (dto == null) {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Request data is null.");
@@ -67,8 +68,29 @@ public class CarRentService {
 		return cars;
 	}
 
+	public ResponseEntity<?> getAllCarTypes() {
+		try {
+			List<Integer> types = carRentRepository.findAllCarTypes();
+			return ResponseEntity.status(HttpStatus.OK).body(types);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error occurred while saving car and price details: " + e.getMessage());
+		}
+	}
+
+	public ResponseEntity<?> findAllBrands() {
+		try {
+			List<String> brands = carRentRepository.findAllCarNames();
+			return ResponseEntity.status(HttpStatus.OK).body(brands);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error occurred while saving car and price details: " + e.getMessage());
+		}
+
+	}
+
 	@Transactional
-	public ResponseEntity<String> updateCarRent(int id,MultipartFile carImage, CarRentRequestDTO dto) {
+	public ResponseEntity<String> updateCarRent(int id, MultipartFile carImage, CarRentRequestDTO dto) {
 		// Find the car rent by ID
 		Optional<CarRent> optionalCarRent = carRentRepository.findById(id);
 		if (!optionalCarRent.isPresent()) {
@@ -139,6 +161,5 @@ public class CarRentService {
 		Pageable pageable = PageRequest.of(page, size);
 		return carRentRepository.carSimpleSearch(searchString, pageable);
 	}
-	
 
 }

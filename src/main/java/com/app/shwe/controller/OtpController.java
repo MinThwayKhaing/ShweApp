@@ -3,10 +3,12 @@ package com.app.shwe.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.app.shwe.dto.OtpVerificationRequest;
 import com.app.shwe.service.OtpService;
 
 @RestController
@@ -14,16 +16,6 @@ import com.app.shwe.service.OtpService;
 public class OtpController {
     @Autowired
     private OtpService smsOtpService;
-
-    @PostMapping("/verify")
-    public ResponseEntity<Void> verifyOtp(@RequestParam String recipient,
-            @RequestParam String otpCode) {
-        try {
-            return smsOtpService.verifyOtp(recipient, otpCode);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
-        }
-    }
 
     @PostMapping("/send")
     public ResponseEntity<String> sendOtp(@RequestParam String recipient, @RequestParam String senderName,

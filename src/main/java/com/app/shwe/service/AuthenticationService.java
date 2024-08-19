@@ -1,6 +1,10 @@
 package com.app.shwe.service;
 
+import java.util.Date;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,8 +20,10 @@ import com.app.shwe.dto.AuthenticationRequest;
 import com.app.shwe.dto.AuthenticationResponse;
 import com.app.shwe.dto.RegisterRequest;
 import com.app.shwe.dto.UserRequest;
+import com.app.shwe.model.PendingRegistration;
 import com.app.shwe.model.Role;
 import com.app.shwe.model.User;
+import com.app.shwe.repository.PendingRegistrationRepository;
 import com.app.shwe.repository.UserRepository;
 import com.app.shwe.securityConfig.JwtService;
 
@@ -36,35 +42,64 @@ public class AuthenticationService {
     private AuthenticationManager authenticationManager;
     @Autowired
     private FileUploadService fileUploadService;
+    @Autowired
+    @Lazy
+    private OtpService otpService;
+    @Autowired
+    private PendingRegistrationRepository pendingRegistrationRepo;
 
-    public ResponseEntity<String> registerUser(RegisterRequest request) {
-        if (request == null) {
+    public ResponseEntity<String> initiateRegistration(RegisterRequest request) {
+        if (repository.existsByPhoneNumber(request.getPhoneNumber())) {
+            throw new RuntimeException("Phone number already registered.");
+        }
+        String otpCode = otpService.generateOtp(6);
+        Date expiryTime = otpService.calculateExpiryTime(3);
+
+        PendingRegistration pendingRegistration = new PendingRegistration();
+        pendingRegistration.setName(request.getUserName());
+        pendingRegistration.setPhoneNumber(request.getPhoneNumber());
+        pendingRegistration.setPasswordHash(request.getPassword());
+        pendingRegistration.setOtp(otpCode);
+        pendingRegistration.setOtpExpiry(expiryTime);
+
+        pendingRegistrationRepo.save(pendingRegistration);
+
+        String token = otpService.sendOtp(request.getPhoneNumber(), "SHWEAPPS", otpCode);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(token);
+    }
+
+    public ResponseEntity<String> registerUser(String phoneNumber) {
+        if (repository.existsByPhoneNumber(phoneNumber)
+                || repository.existsByUserName(phoneNumber)) {
+            throw new IllegalArgumentException("User with the same phone number or username already exists");
+        }
+        Optional<PendingRegistration> pendingUserOptional = pendingRegistrationRepo.findByPhoneNumber(phoneNumber);
+
+        // Check if pendingUserOptional contains a value
+        if (!pendingUserOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error occurred while saving news: ");
+                    .body("Error occurred while saving User: Pending registration not found.");
         }
 
-        // String imageUrl = fileUploadService.uploadFile(image);
+        PendingRegistration pendingUser = pendingUserOptional.get();
+
         try {
             var user = User.builder()
-                    .phoneNumber(request.getPhoneNumber())
-                    .userName(request.getUserName())
-                    .password(passwordEncoder.encode(request.getPassword()))
+                    .phoneNumber(pendingUser.getPhoneNumber())
+                    .userName(pendingUser.getName())
+                    .password(passwordEncoder.encode(pendingUser.getPasswordHash()))
                     .image("")
                     .role(Role.USER)
                     .build();
 
-            if (repository.existsByPhoneNumber(request.getPhoneNumber())
-                    || repository.existsByUserName(request.getPhoneNumber())) {
-                throw new IllegalArgumentException("User with the same phone number or username already exists");
-            }
-
             repository.save(user);
+            pendingRegistrationRepo.delete(pendingUser);
             return ResponseEntity.status(HttpStatus.OK).body("User saved successfully.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error occurred while saving users: " + e.getMessage());
         }
-
     }
 
     public ResponseEntity<String> registerAdmin(RegisterRequest request) {
