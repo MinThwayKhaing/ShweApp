@@ -23,7 +23,7 @@ public class CarOrder extends CommonDTO {
 
 	private String sysKey;
 	private String fromLocation;
-	private String toLocation;
+	private int toLocation;
 	private LocalDate pickUpDate;
 	private LocalTime pickUpTime;
 	private Date fromDate;
@@ -34,6 +34,7 @@ public class CarOrder extends CommonDTO {
 	private String customerPhoneNumber;
 	private String pickUpLocation;
 	private String carBrand;
+	private double price;
 	@ManyToOne
 	@JoinColumn(name = "car_id")
 	private CarRent carId;

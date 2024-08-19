@@ -32,6 +32,7 @@ public class CarOrderMapping {
         carOrder.setStatus(dto.getStatus());
         carOrder.setFromLocation(dto.getFromLocation());
         carOrder.setToLocation(dto.getToLocation());
+        carOrder.setPrice(dto.getPrice());
         carOrder.setPickUpDate(dto.getPickUpDate());
         carOrder.setPickUpTime(dto.getPickUpTime());
         carOrder.setFromDate(dto.getFromDate());

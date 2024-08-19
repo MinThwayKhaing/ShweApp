@@ -33,7 +33,5 @@ public class CarRent extends CommonDTO {
 	private String driverPhoneNumber;
 	private String carColor;
 	private int carType;
-	@OneToOne(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
-	private CarPrice carPrice;
 
 }

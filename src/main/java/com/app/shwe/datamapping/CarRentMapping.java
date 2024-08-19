@@ -47,12 +47,6 @@ public class CarRentMapping {
 		cars.setCreatedDate(new Date());
 		cars.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 		carRentRepository.save(cars);
-		price.setCreatedBy(cars.getCreatedBy());
-		price.setCreatedDate(new Date());
-		price.setInsideTownPrice(dto.getInsideTownPrice());
-		price.setOutsideTownPrice(dto.getOutsideTownPrice());
-		// price.setWithDriver(dto.isWithDriver());
-		price.setCar(cars);
 		carPriceRepository.save(price);
 		return cars;
 	}

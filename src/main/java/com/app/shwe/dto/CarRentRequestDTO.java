@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CarRentRequestDTO {
-	
+
 	private int id;
 	private String carName;
 	private String ownerName;
@@ -22,10 +22,7 @@ public class CarRentRequestDTO {
 	private String driverPhoneNumber;
 	private String carColor;
 	private int carType;
-	private double insideTownPrice;
-	private double outsideTownPrice;
 	private boolean withDriver;
 	private String checkStatus;
-
 
 }

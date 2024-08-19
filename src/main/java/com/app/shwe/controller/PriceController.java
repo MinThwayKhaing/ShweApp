@@ -24,33 +24,32 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PriceController {
 
-    @Autowired
+	@Autowired
 	private PriceService priceService;
 
 	@PostMapping("/savePrice")
-	public ResponseEntity<String> saveNews( @RequestBody PriceRequestDTO request) {
-		return priceService.savePriec(request);
+	public ResponseEntity<String> savePrice(@RequestBody PriceRequestDTO request) {
+		return priceService.savePrice(request);
 	}
 
-    @GetMapping("/getPriceById/{id}")
-	public ResponseEntity<Price> getTm30ById(@PathVariable int id) {
+	@GetMapping("/getPriceById/{id}")
+	public ResponseEntity<Price> getPriceById(@PathVariable int id) {
 		return priceService.getPriceById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
 
-    @GetMapping("/getAllPrice")
+	@GetMapping("/getAllPrice")
 	public Page<Price> showPrice(@RequestBody SearchDTO search) {
 		return priceService.getAllPrice(search);
 	}
-    
-    @PutMapping("/updatePirce/{id}")
-	public ResponseEntity<String> updatePrice(@PathVariable int id,@RequestBody PriceRequestDTO request) {
+
+	@PutMapping("/updatePirce/{id}")
+	public ResponseEntity<String> updatePrice(@PathVariable int id, @RequestBody PriceRequestDTO request) {
 		return priceService.updatePrice(id, request);
 	}
 
-    @DeleteMapping("/deletePriceById/{id}")
+	@DeleteMapping("/deletePriceById/{id}")
 	public ResponseEntity<?> deletePrice(@PathVariable int id) {
 		return priceService.deletePirceById(id);
 	}
-
 
 }
