@@ -55,10 +55,10 @@ public class ActivityController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<Activity>> getAllActivities(
+    public ResponseEntity<?> getAllActivities(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Page<Activity> activities = activityService.getAllActivities(page, size);
-        return new ResponseEntity<>(activities, HttpStatus.OK);
+        return activityService.getAllActivities(page, size);
+
     }
 }
