@@ -22,6 +22,7 @@ import com.app.shwe.model.VisaServices;
 import com.app.shwe.model.VisaType;
 import com.app.shwe.repository.SubVisaTypeRepository;
 import com.app.shwe.repository.UserRepository;
+import com.app.shwe.repository.VisaServicesRepository;
 import com.app.shwe.repository.VsiaTypeRepository;
 import com.app.shwe.utils.SecurityUtils;
 
@@ -39,6 +40,9 @@ public class VisaTypeService {
 	@Autowired
 	private UserRepository userRepository;
 
+	@Autowired
+	private VisaServicesRepository visaService;
+
 	@Transactional
 	public ResponseEntity<String> saveVisaType(VisaTypeRequestDTO request) {
 		if (request == null) {
@@ -46,8 +50,11 @@ public class VisaTypeService {
 		}
 
 		try {
+			VisaServices visaServices = visaService.findById(request.getVisa_service_id())
+					.orElseThrow(() -> new RuntimeException("CarRent not found for ID: " + request.getVisa_service_id()));
 			VisaType visaType = new VisaType();
-			visaType.setVisaType(request.getVisaType());
+			visaType.setDescription(request.getDescription());
+			visaType.setVisa(visaServices);
 			visaType.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 			visaType.setCreatedDate(new Date());
 			vsiaTypeRepository.save(visaType);
@@ -72,15 +79,15 @@ public class VisaTypeService {
 		if (request == null) {
 			throw new IllegalArgumentException("Request and required fields must not be null");
 		}
-		List<VisaTypeResponseDTO> visaList = vsiaTypeRepository.findVisaByType(request.getVisaType());
+		List<VisaTypeResponseDTO> visaList = vsiaTypeRepository.findVisaByType(request.getDescription());
 		List<VisaTypeResponseDTO> response = new ArrayList<>();
 		for (VisaTypeResponseDTO visaTypeResponseDTO : visaList) {
 			VisaTypeResponseDTO dto = new VisaTypeResponseDTO();
 			VisaType type = new VisaType();
 			type.setId(dto.getId());
-			type.setVisaType(dto.getVisaType());
+			type.setDescription(dto.getDescription());
 			dto.setId(visaTypeResponseDTO.getId());
-			dto.setVisaType(visaTypeResponseDTO.getVisaType());
+			dto.setDescription(visaTypeResponseDTO.getDescription());
 			SubVisaType sub = new SubVisaType();
 			sub.setDuration(dto.getDuration());
 			sub.setPrice(dto.getPrice());
@@ -101,9 +108,9 @@ public class VisaTypeService {
 			VisaTypeResponseDTO dto = new VisaTypeResponseDTO();
 			VisaType type = new VisaType();
 			type.setId(dto.getId());
-			type.setVisaType(dto.getVisaType());
+			type.setDescription(dto.getDescription());
 			dto.setId(visaTypeResponseDTO.getId());
-			dto.setVisaType(visaTypeResponseDTO.getVisaType());
+			dto.setDescription(visaTypeResponseDTO.getDescription());
 			SubVisaType sub = new SubVisaType();
 			sub.setDuration(dto.getDuration());
 			sub.setPrice(dto.getPrice());
@@ -127,7 +134,7 @@ public class VisaTypeService {
 
 		try {
 			VisaType visaType = getVisa.get();
-			visaType.setVisaType(request.getVisaType());
+			visaType.setDescription(request.getDescription());
 			visaType.setUpdatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 			visaType.setUpdatedDate(new Date());
 			vsiaTypeRepository.save(visaType);
@@ -143,24 +150,25 @@ public class VisaTypeService {
 			return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
-	 @Transactional
-	    public ResponseEntity<String> deleteVisaType(int id) {
-	        // Check if VisaType exists
-	        if (vsiaTypeRepository.checkVisaTypeById(id) == 0) {
-	            return new ResponseEntity<>("VisaType with ID " + id + " not found.", HttpStatus.NOT_FOUND);
-	        }
 
-	        try {
-	            // Delete associated SubVisaType records
-	        	subVisaTypeRepository.deleteSubVisaTypesByVisaId(id);
+	@Transactional
+	public ResponseEntity<String> deleteVisaType(int id) {
+		// Check if VisaType exists
+		if (vsiaTypeRepository.checkVisaTypeById(id) == 0) {
+			return new ResponseEntity<>("VisaType with ID " + id + " not found.", HttpStatus.NOT_FOUND);
+		}
 
-	            // Delete VisaType
-	            vsiaTypeRepository.deleteVisaTypeById(id);
+		try {
+			// Delete associated SubVisaType records
+			subVisaTypeRepository.deleteSubVisaTypesByVisaId(id);
 
-	            return new ResponseEntity<>("VisaType deleted successfully.", HttpStatus.OK);
-	        } catch (Exception e) {
-	            return new ResponseEntity<>("Error occurred while deleting VisaType: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-	        }
-	    }
+			// Delete VisaType
+			vsiaTypeRepository.deleteVisaTypeById(id);
+
+			return new ResponseEntity<>("VisaType deleted successfully.", HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>("Error occurred while deleting VisaType: " + e.getMessage(),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }

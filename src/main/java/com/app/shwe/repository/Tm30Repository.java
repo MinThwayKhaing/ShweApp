@@ -45,8 +45,10 @@ public interface Tm30Repository extends JpaRepository<Tm30, Integer> {
 	@Query("SELECT new com.app.shwe.dto.Tm30ProjectionDTO(t.id,t.syskey,t.period, t.passportBio, t.visaPage, t.contactNumber,t.user.userName,t.status) FROM Tm30 t WHERE t.user.id = :id ORDER BY t.id DESC")
 	List<Tm30ProjectionDTO> getTm30OrderByUserId(int id);
 
-	@Query("SELECT new com.app.shwe.dto.VisaResponseDTO(vo.order_id, vo.main_visa_id, vo.sub_visa_id, vt.visaType, svt.price, svt.duration) "
-			+ "FROM VisaOrder vo JOIN VisaType vt ON vo.main_visa_id = vt.id "
+	@Query("SELECT new com.app.shwe.dto.VisaResponseDTO(vo.order_id,vs.serviceName, vo.main_visa_id, vo.sub_visa_id, vt.description, svt.price, svt.duration) "
+			+ "FROM VisaType vt "
+			+ "JOIN VisaServices vs ON vt.visa.id = vs.id "
+			+ "JOIN VisaOrder vo ON vo.main_visa_id = vs.id "
 			+ "JOIN SubVisaType svt ON svt.id = vo.sub_visa_id "
 			+ "WHERE vo.order_id = :orderId")
 	List<VisaResponseDTO> getVisaOrderByOrderId(@Param("orderId") int orderId);

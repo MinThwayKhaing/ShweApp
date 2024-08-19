@@ -13,7 +13,7 @@ public class VisaTypeResponseDTO {
     
 	private int id;
 	
-    private String visaType;
+    private String description;
     
     private double price;
 

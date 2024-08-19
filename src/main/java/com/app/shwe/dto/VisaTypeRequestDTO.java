@@ -11,11 +11,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class VisaTypeRequestDTO {
     
-    private String visaType;
+    private String description;
     
     private double price;
 
     private String duration;
     
     private int subVisaId;
+    
+    private int visa_service_id;
 }

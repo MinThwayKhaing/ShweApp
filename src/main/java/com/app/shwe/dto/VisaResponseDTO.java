@@ -20,9 +20,10 @@ public class VisaResponseDTO implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 	private int order_id;
+	private String visa_service;
 	private int main_visa_id;
 	private int sub_visa_id;
-	private String visa_type;
+	private String description;
 	private double price;
 	private String duration;
 
