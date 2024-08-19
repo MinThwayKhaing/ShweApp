@@ -19,7 +19,8 @@ import jakarta.transaction.Transactional;
 
 public interface TranslatorOrderRepostitory extends JpaRepository<TranslatorOrder, Integer> {
 
-	@Query("SELECT new com.app.shwe.dto.TranslatorOrderResponseDTO(o.sysKey,t.id,o.createdDate,t.name,t.specialist,o.status,t.image,t.chatLink)"
+	@Query("SELECT new com.app.shwe.dto.TranslatorOrderResponseDTO(o.sysKey,t.id,o.createdDate,t.name,t.specialist,o.status,t.image,"
+			+ "o.fromDate,o.toDate,o.meetingDate,o.meetingPoint,o.meetingTime,o.phoneNumber,o.usedFor,t.chatLink)"
 			+ " FROM Translator t JOIN TranslatorOrder o ON t.id=o.translator.id WHERE o.createdBy = :id")
 	List<TranslatorOrderResponseDTO> getHireTranslator(int id);
 
@@ -28,7 +29,8 @@ public interface TranslatorOrderRepostitory extends JpaRepository<TranslatorOrde
 	@Query("UPDATE TranslatorOrder t SET t.status = :status WHERE t.id = :id")
 	void cancelOrder(@Param("id") int id, @Param("status") String status);
 
-	@Query("SELECT new com.app.shwe.dto.TranslatorOrderResponseDTO(o.sysKey,t.id,o.createdDate,t.name,t.specialist,o.status,t.image,t.chatLink) "
+	@Query("SELECT new com.app.shwe.dto.TranslatorOrderResponseDTO(o.sysKey,t.id,o.createdDate,t.name,t.specialist,o.status,t.image,"
+			+ "o.fromDate,o.toDate,o.meetingDate,o.meetingPoint,o.meetingTime,o.phoneNumber,o.usedFor,t.chatLink) "
 			+ "FROM Translator t JOIN TranslatorOrder o ON t.id = o.translator.id " + "WHERE "
 			+ "(LOWER(t.name) LIKE LOWER(CONCAT('%', :searchString, '%')) "
 			+ "OR LOWER(t.specialist) LIKE LOWER(CONCAT('%', :searchString, '%')))"
@@ -36,7 +38,8 @@ public interface TranslatorOrderRepostitory extends JpaRepository<TranslatorOrde
 	Page<TranslatorOrderResponseDTO> searchHireTranslator(@Param("searchString") String searchString,
 			Pageable pageable);
 
-	@Query("SELECT new com.app.shwe.dto.TranslatorOrderResponseDTO(o.sysKey,t.id,o.createdDate,t.name,t.specialist,o.status,t.image,t.chatLink) "
+	@Query("SELECT new com.app.shwe.dto.TranslatorOrderResponseDTO(o.sysKey,t.id,o.createdDate,t.name,t.specialist,o.status,t.image,"
+			+ "o.fromDate,o.toDate,o.meetingDate,o.meetingPoint,o.meetingTime,o.phoneNumber,o.usedFor,t.chatLink) "
 			+ "FROM Translator t JOIN TranslatorOrder o ON t.id = o.translator.id " + "WHERE "
 			+ "(LOWER(t.name) LIKE LOWER(CONCAT('%', :searchString, '%')) "
 			+ "OR LOWER(t.specialist) LIKE LOWER(CONCAT('%', :searchString, '%')))"

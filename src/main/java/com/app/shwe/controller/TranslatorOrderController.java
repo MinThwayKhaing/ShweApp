@@ -32,7 +32,7 @@ public class TranslatorOrderController {
 	}
 	
 	@GetMapping("/getHireTranslator")
-	public Page<TranslatorOrderResponseDTO> getHireTranslatorById(@RequestBody SearchDTO dto) {
+	public Page<TranslatorOrderResponseDTO> getHireTranslator(@RequestBody SearchDTO dto) {
 		return translatorService.searchHireTranslator( dto);
 	}
 	
@@ -46,5 +46,9 @@ public class TranslatorOrderController {
 		return translatorService.updateTranslatorOrder(id,request);
 	}
 	
+	@GetMapping("/getHireTranslatorByUserId")
+	public Page<TranslatorOrderResponseDTO> getHireTranslatorByUserId(@RequestBody SearchDTO dto) {
+		return translatorService.getHireTranslatorById(dto);
+	}
 	
 }

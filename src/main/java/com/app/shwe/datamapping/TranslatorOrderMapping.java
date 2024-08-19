@@ -37,6 +37,13 @@ public class TranslatorOrderMapping {
 	    	order.setStatus("Pending");
 	    	order.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 	    	order.setCreatedDate(new Date());
+	    	order.setFromDate(dto.getFromDate());
+	    	order.setToDate(dto.getToDate());
+	    	order.setMeetingDate(dto.getMeetingDate());
+	    	order.setMeetingPoint(dto.getMeetingPoint());
+	    	order.setMeetingTime(dto.getMeetingTime());
+	    	order.setPhoneNumber(dto.getPhoneNumber());
+	    	order.setUsedFor(dto.getUsedFor());
 	    	order.setTranslator(translator);
 	    	order.setSysKey(idGenerator.generateNextCarOrderId());
 	    	return order;

@@ -1,5 +1,7 @@
 package com.app.shwe.model;
 
+import java.util.Date;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -19,5 +21,14 @@ public class TranslatorOrder extends CommonDTO{
 	private Translator translator;
 	private String status;
 	private String sysKey;
+	private Date fromDate;
+	private Date toDate;
+	private Date meetingDate;
+	private String meetingPoint;
+	private String meetingTime;
+	private String phoneNumber;
+	private String usedFor;
+	
+	
 
 }

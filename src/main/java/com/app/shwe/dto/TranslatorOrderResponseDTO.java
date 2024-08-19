@@ -21,6 +21,14 @@ public class TranslatorOrderResponseDTO {
 	private String specialist;
 	private String status;
 	private String image;
+	private Date fromDate;
+	private Date toDate;
+	private Date meetingDate;
+	private String meetingPoint;
+	private String meetingTime;
+	private String phoneNumber;
+	private String usedFor;
 	private String chatLink;
+	
 
 }

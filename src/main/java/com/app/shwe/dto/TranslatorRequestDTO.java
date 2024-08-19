@@ -1,5 +1,7 @@
 package com.app.shwe.dto;
 
+import java.util.Date;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +19,13 @@ public class TranslatorRequestDTO {
 	private String specialist;
 	private int translator_id;
 	private String status;
+	private Date fromDate;
+	private Date toDate;
+	private Date meetingDate;
+	private String meetingPoint;
+	private String meetingTime;
+	private String phoneNumber;
+	private String usedFor;
 	
 
 }

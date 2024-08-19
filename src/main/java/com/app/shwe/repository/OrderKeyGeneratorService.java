@@ -15,7 +15,7 @@ public class OrderKeyGeneratorService {
 	private static final int PAD_LENGTH = 8;
 
 	@Transactional
-	public String generateNextCarOrderId() {
+	public String generateVisaOrderId() {
 		// Fetch the maximum sysKey from the database
 		String maxSysKey = visaOrderRepository.findMaxSysKey();
 

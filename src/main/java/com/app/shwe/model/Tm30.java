@@ -19,12 +19,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Tm30 extends CommonDTO{
 	
+	private String syskey;
 	private String period;
 	private String passportBio;
 	private String visaPage;
 	//@Convert(converter = StringListConverter.class)
 	private String duration;
 	private String contactNumber;
+	private String status;
 	@ManyToOne
     @JoinColumn(name = "visa_id")
 	private VisaServices visa;

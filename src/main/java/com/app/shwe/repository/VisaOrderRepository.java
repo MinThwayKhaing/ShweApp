@@ -7,6 +7,6 @@ import com.app.shwe.model.VisaOrder;
 
 public interface VisaOrderRepository extends JpaRepository<VisaOrder, Integer>{
 
-	 @Query("SELECT COALESCE(MAX(v.order_id), 'TM00000000') FROM VisaOrder v")
+	 @Query("SELECT COALESCE(MAX(t.syskey), 'TM00000000') FROM Tm30 t")
 	    String findMaxSysKey();
 }

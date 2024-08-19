@@ -13,15 +13,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Tm30ResponseDTO {
 
-	private String period;
-
-	private String passportBio;
+	private Tm30ProjectionDTO tm30Order;
 	
-	private String visaPage;
-
-	private String contactNumber;
-	
-	private List<VisaResponseDTO> visa;
+	private List<VisaResponseDTO> visaOrder;
 
 
 }

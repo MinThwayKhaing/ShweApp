@@ -1,5 +1,7 @@
 package com.app.shwe.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +34,7 @@ public class Tm30Controller {
 	private Tm30Service tm30Service;
 
 	@PostMapping("/saveTm30")
-	public ResponseEntity<String> saveNews(@RequestPart("passport") MultipartFile passportPage,
+	public ResponseEntity<String> saveTm30(@RequestPart("passport") MultipartFile passportPage,
 			@RequestPart("visa") MultipartFile visaPage, @RequestPart("request") Tm30RequestDTO request) {
 		return tm30Service.saveTm30(passportPage, visaPage, request);
 
@@ -49,10 +51,10 @@ public class Tm30Controller {
 	}
 	
 	
-	@GetMapping("/getAllTm30Order")
-	public Page<VisaResponseDTO> getAllTm30Order(@RequestBody SearchDTO search) {
-		return tm30Service.getAllTm30(search);
-	}
+//	@GetMapping("/getAllTm30Order")
+//	public Page<VisaResponseDTO> getAllTm30Order(@RequestBody SearchDTO search) {
+//		return tm30Service.getAllTm30(search);
+//	}
 
 //	@GetMapping("/getAllTm30")
 //	public Page<Tm30ResponseDTO> showTm30s(@RequestBody SearchDTO search) {
@@ -69,4 +71,15 @@ public class Tm30Controller {
 	public ResponseEntity<?> deleteCar(@PathVariable int id) {
 		return tm30Service.deleteTm30(id);
 	}
+	
+	@GetMapping("/getTm30OrderByUserId")
+	public List<Tm30ResponseDTO> getTm30OrderByuserId() {
+		return tm30Service.getTm30OrderByUserId();
+	}
+	
+	@GetMapping("/getAllTm30Order")
+	public List<Tm30ResponseDTO> getAllTm30Order() {
+		return tm30Service.getAllTm30Order();
+	}
+	
 }

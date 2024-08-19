@@ -211,6 +211,18 @@ public class TranslatorService {
 					.body("Error occurred while saving translator: " + e.getMessage());
 		}
 	}
+	
+	
+	
+	@Transactional
+	public Page<TranslatorOrderResponseDTO> getHireTranslatorById(SearchDTO dto) {
+		String searchString = dto.getSearchString();
+		int userId = userRepo.authUser(SecurityUtils.getCurrentUsername());
+		int page = (dto.getPage() < 1) ? 0 : dto.getPage() - 1;
+		int size = dto.getSize();
+		Pageable pageable = PageRequest.of(page, size);
+		return transOrderRepository.findOrderByUserId(userId, searchString, pageable);
+	}
 
 	@Transactional
 	public TranslatorOrder getOrderForUpdate(int id) {

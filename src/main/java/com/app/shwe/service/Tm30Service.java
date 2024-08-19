@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.app.shwe.dto.NewsRequestDTO;
 import com.app.shwe.dto.SearchDTO;
+import com.app.shwe.dto.Tm30ProjectionDTO;
 import com.app.shwe.dto.Tm30RequestDTO;
 import com.app.shwe.dto.Tm30ResponseDTO;
 import com.app.shwe.dto.VisaResponseDTO;
@@ -73,9 +74,11 @@ public class Tm30Service {
 			String imageUrl2 = fileUploadService.uploadFile(visa);
 			Tm30 tm30 = new Tm30();
 			VisaOrder order = new VisaOrder();
+			tm30.setSyskey(keyGenerator.generateVisaOrderId());
 			tm30.setPeriod(request.getPeriod());
 			tm30.setPassportBio(imageUrl1);
 			tm30.setVisaPage(imageUrl2);
+			tm30.setStatus("Pending");
 			tm30.setContactNumber(request.getContactNumber());
 			tm30.setDuration(request.getDuration());
 			tm30.setVisa(visaServices);
@@ -83,20 +86,15 @@ public class Tm30Service {
 			tm30.setCreatedDate(new Date());
 			tm30.setUser(user);
 			tm30Repo.save(tm30);
-			order.setOrder_id(keyGenerator.generateNextCarOrderId());
-			
+			order.setOrder_id(tm30.getId());
 			if(request.getOption1() == 1) {
-				order.setSub_visa_id(request.getOption1());
-				order.setMain_visa_id(request.getVisa_id());
+			    order.setSub_visa_id(request.getOption1());
+			} else if(request.getOption2() == 2) {
+			    order.setSub_visa_id(request.getOption2());
+			} else if(request.getOption3() == 3) {
+			    order.setSub_visa_id(request.getOption3());
 			}
-			if(request.getOption2() == 2) {
-				order.setSub_visa_id(request.getOption2());
-				order.setMain_visa_id(request.getVisa_id());
-			}
-			if(request.getOption3() == 3) {
-				order.setSub_visa_id(request.getOption3());
-				order.setMain_visa_id(request.getVisa_id());
-			}
+			order.setMain_visa_id(request.getVisa_id());
 			visaOrderRepository.save(order);
 			return ResponseEntity.status(HttpStatus.OK).body("Tm-30 saved successfully.");
 		} catch (Exception e) {
@@ -122,23 +120,23 @@ public class Tm30Service {
 		return tm30Repo.getAllTm30(pageable);
 	}
 	
-	@Transactional
-	public Page<VisaResponseDTO> getAllTm30(SearchDTO search) {
-		int page = (search.getPage() < 1) ? 0 : search.getPage() - 1;
-		int size = search.getSize();
-		Tm30ResponseDTO dto = new Tm30ResponseDTO();
-		Pageable pageable = PageRequest.of(page, size);
-		Page<Tm30> tm30 = tm30Repo.getAllTm30(pageable);
-		List<VisaResponseDTO> response = new ArrayList<VisaResponseDTO>(); 
-		for (Tm30 tm : tm30) {
-			VisaResponseDTO visa = new VisaResponseDTO();
-			visa = tm30Repo.getTM30(tm.getId());
-			response.add(visa);
-		}
-		dto.setVisa(response);
-		return dto;
-	}
-
+//	@Transactional
+//	public Page<VisaResponseDTO> getAllTm30(SearchDTO search) {
+//		int page = (search.getPage() < 1) ? 0 : search.getPage() - 1;
+//		int size = search.getSize();
+//		Tm30ResponseDTO dto = new Tm30ResponseDTO();
+//		Pageable pageable = PageRequest.of(page, size);
+//		Page<Tm30> tm30 = tm30Repo.getAllTm30(pageable);
+//		List<VisaResponseDTO> response = new ArrayList<VisaResponseDTO>(); 
+//		for (Tm30 tm : tm30) {
+//			VisaResponseDTO visa = new VisaResponseDTO();
+//			visa = tm30Repo.getTM30(tm.getId());
+//			response.add(visa);
+//		}
+//		dto.setVisa(response);
+//		return dto;
+//	}
+//
 
 	@Transactional
 	public ResponseEntity<String> updateTm30(int id, MultipartFile passportPage, MultipartFile visaPage,
@@ -183,5 +181,39 @@ public class Tm30Service {
 			return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	@Transactional
+	public List<Tm30ResponseDTO> getTm30OrderByUserId() {
+	    int userId = userRepository.authUser(SecurityUtils.getCurrentUsername());
+	    List<Tm30ProjectionDTO> tm30List = tm30Repo.getTm30OrderByUserId(userId);
+	    
+	    List<Tm30ResponseDTO> responseList = new ArrayList<>();
+	    for (Tm30ProjectionDTO tm30 : tm30List) {
+	        List<VisaResponseDTO> visaOrders = tm30Repo.getVisaOrderByOrderId(tm30.getId());
+	        Tm30ResponseDTO response = new Tm30ResponseDTO();
+	        response.setTm30Order(tm30);
+	        response.setVisaOrder(visaOrders);
+	        responseList.add(response);
+	    }
+	    return responseList;
+	}
+	
+	@Transactional
+	public List<Tm30ResponseDTO> getAllTm30Order() {
+	    List<Tm30ProjectionDTO> tm30List = tm30Repo.getAllTm30Order();
+	    
+	    List<Tm30ResponseDTO> responseList = new ArrayList<>();
+	    for (Tm30ProjectionDTO tm30 : tm30List) {
+	        List<VisaResponseDTO> visaOrders = tm30Repo.getVisaOrderByOrderId(tm30.getId());
+	        Tm30ResponseDTO response = new Tm30ResponseDTO();
+	        response.setTm30Order(tm30);
+	        response.setVisaOrder(visaOrders);
+	        responseList.add(response);
+	    }
+	    return responseList;
+	}
+
+	
+	
 
 }

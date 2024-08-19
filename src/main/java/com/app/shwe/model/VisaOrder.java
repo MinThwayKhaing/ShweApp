@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class VisaOrder extends CommonDTO{
 	
-	private String order_id;
+	private int order_id;
 	private int sub_visa_id;
 	private int main_visa_id;
 	
