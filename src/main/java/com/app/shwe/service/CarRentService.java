@@ -115,22 +115,6 @@ public class CarRentService {
 			carRent.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 
 			carRentRepository.save(carRent);
-
-			CarPrice carPrice = carRent.getCarPrice();
-			if (carPrice != null) {
-				carPrice.setInsideTownPrice(dto.getInsideTownPrice());
-				carPrice.setOutsideTownPrice(dto.getOutsideTownPrice());
-				carPrice.setUpdatedBy(carRent.getUpdatedBy());
-				carPrice.setUpdatedDate(carPrice.getCreatedDate());
-			} else {
-				carPrice = new CarPrice();
-				carPrice.setInsideTownPrice(dto.getInsideTownPrice());
-				carPrice.setOutsideTownPrice(dto.getOutsideTownPrice());
-				carPrice.setUpdatedBy(carRent.getUpdatedBy());
-				carPrice.setUpdatedDate(carPrice.getCreatedDate());
-				carPrice.setCar(carRent);
-				carRent.setCarPrice(carPrice);
-			}
 			return ResponseEntity.status(HttpStatus.OK).body("Car and price details updated successfully.");
 		} catch (Exception e) {
 			return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

@@ -2,7 +2,7 @@ package com.app.shwe.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,12 +13,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CarPrice extends CommonDTO {
 
-	private double insideTownPrice;
-	private double outsideTownPrice;
-	// private boolean withDriver;
+	private double price;
+	private int type;
 
-	@OneToOne
-	@JoinColumn(name = "car_id")
-	private CarRent car;
-
+	@ManyToOne
+	@JoinColumn(name = "location_id")
+	private CarRentLocation carRentLocation;
 }

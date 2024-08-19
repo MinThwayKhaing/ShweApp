@@ -17,12 +17,10 @@ public class CarRentDTO {
 	private String carNo;
 	private boolean status;
 	private String license;
-    private String driverPhoneNumber;
+	private String driverPhoneNumber;
 	private String driverName;
 	private String carColor;
 	private int carType;
-	private double insideTownPrice;
-	private double outsideTownPrice;
 	private String image;
 
 }

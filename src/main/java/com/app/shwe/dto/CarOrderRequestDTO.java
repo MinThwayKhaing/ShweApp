@@ -17,9 +17,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CarOrderRequestDTO {
 
-	private int order_id;
+    private int order_id;
     private String fromLocation;
-    private String toLocation;
+    private int toLocation;
     private LocalDate pickUpDate;
     private LocalTime pickUpTime;
     private Date fromDate;
@@ -32,4 +32,5 @@ public class CarOrderRequestDTO {
     private String pickUpLocation;
     private String carBrand;
     private int carId;
+    private double price;
 }
