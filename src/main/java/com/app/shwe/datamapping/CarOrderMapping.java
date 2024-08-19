@@ -20,10 +20,9 @@ public class CarOrderMapping {
 
     @Autowired
     private UserRepository userRepository;
-    
+
     @Autowired
     private CarRentRepository carRentRepository;
-    
 
     public CarOrder mapToCarOrder(CarOrderRequestDTO dto) {
         CarOrder carOrder = new CarOrder();
@@ -47,7 +46,5 @@ public class CarOrderMapping {
         carOrder.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
         return carOrder;
     }
-    
-   
-   
+
 }

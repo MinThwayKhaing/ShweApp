@@ -1,6 +1,7 @@
 package com.app.shwe.dto;
 
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,7 +26,7 @@ public class TranslatorOrderResponseDTO {
 	private Date toDate;
 	private Date meetingDate;
 	private String meetingPoint;
-	private String meetingTime;
+	private TimeZone meetingTime;
 	private String phoneNumber;
 	private String usedFor;
 	private String chatLink;

@@ -56,10 +56,15 @@ public class Tm30Controller {
 //		return tm30Service.getAllTm30(search);
 //	}
 
-//	@GetMapping("/getAllTm30")
-//	public Page<Tm30ResponseDTO> showTm30s(@RequestBody SearchDTO search) {
-//		return tm30Service.getAllTm30(search);
-//	}
+	// @GetMapping("/getAllTm30Order")
+	// public Page<VisaResponseDTO> getAllTm30Order(@RequestBody SearchDTO search) {
+	// return tm30Service.getAllTm30(search);
+	// }
+
+	// @GetMapping("/getAllTm30")
+	// public Page<Tm30ResponseDTO> showTm30s(@RequestBody SearchDTO search) {
+	// return tm30Service.getAllTm30(search);
+	// }
 
 	@PutMapping("/updateTm30/{id}")
 	public ResponseEntity<String> updateNews(@PathVariable int id, @RequestPart("passport") MultipartFile passportPage,

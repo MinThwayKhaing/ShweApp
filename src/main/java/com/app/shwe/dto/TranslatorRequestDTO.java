@@ -1,6 +1,7 @@
 package com.app.shwe.dto;
 
 import java.util.Date;
+import java.util.TimeZone;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TranslatorRequestDTO {
-	
+
 	private int order_id;
 	private String name;
 	private String language;
@@ -23,7 +24,7 @@ public class TranslatorRequestDTO {
 	private Date toDate;
 	private Date meetingDate;
 	private String meetingPoint;
-	private String meetingTime;
+	private TimeZone meetingTime;
 	private String phoneNumber;
 	private String usedFor;
 	

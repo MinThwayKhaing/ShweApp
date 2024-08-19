@@ -18,6 +18,7 @@ import com.app.shwe.datamapping.TranslatorOrderMapping;
 import com.app.shwe.dto.CarOrderResponseDTO;
 import com.app.shwe.dto.ResponseDTO;
 import com.app.shwe.dto.SearchDTO;
+import com.app.shwe.dto.TranslatorOrderRequestDTO;
 import com.app.shwe.dto.TranslatorOrderResponseDTO;
 import com.app.shwe.dto.TranslatorRequestDTO;
 import com.app.shwe.model.CarOrder;
@@ -139,7 +140,7 @@ public class TranslatorService {
 	}
 
 	@Transactional
-	public ResponseEntity<String> hireTranslator(TranslatorRequestDTO dto) {
+	public ResponseEntity<String> hireTranslator(TranslatorOrderRequestDTO dto) {
 		if (dto == null) {
 			throw new IllegalArgumentException("Request and required fields must not be null");
 		}
@@ -161,9 +162,9 @@ public class TranslatorService {
 		Pageable pageable = PageRequest.of(page, size);
 		return transOrderRepository.searchHireTranslator(searchString, pageable);
 	}
-	
+
 	@Transactional
-	public Page<TranslatorOrderResponseDTO> findOrderByUserId(int id,SearchDTO dto) {
+	public Page<TranslatorOrderResponseDTO> findOrderByUserId(int id, SearchDTO dto) {
 		String searchString = dto.getSearchString();
 		int page = (dto.getPage() < 1) ? 0 : dto.getPage() - 1;
 		int size = dto.getSize();
@@ -189,7 +190,7 @@ public class TranslatorService {
 	}
 
 	@Transactional
-	public ResponseEntity<String> updateTranslatorOrder(int orderId, TranslatorRequestDTO request) {
+	public ResponseEntity<String> updateTranslatorOrder(int orderId, TranslatorOrderRequestDTO request) {
 		Optional<TranslatorOrder> getTranslatorOrder = Optional.ofNullable(getOrderForUpdate(orderId));
 		if (!getTranslatorOrder.isPresent()) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -199,13 +200,20 @@ public class TranslatorService {
 				.orElseThrow(() -> new RuntimeException("Translator not found for ID: " + request.getTranslator_id()));
 		try {
 			TranslatorOrder order = getTranslatorOrder.get();
-			order.setStatus(request.getStatus());
-			order.setUpdatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
-			order.setUpdatedDate(new Date());
-			translator.setId(request.getTranslator_id());
+			order.setFromDate(request.getFromDate());
+			order.setToDate(request.getToDate());
+			order.setUsedFor(request.getUsedFor());
+			order.setMeetingPoint(request.getMeetingPoint());
+			order.setMeetingDate(request.getMeetingDate());
+			order.setMeetingTime(request.getMeetingTime());
+			order.setPhoneNumber(request.getPhoneNumber());
+			order.setStatus("Pending");
+			order.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
+			order.setCreatedDate(new Date());
 			order.setTranslator(translator);
+
 			transOrderRepository.save(order);
-			return ResponseEntity.status(HttpStatus.OK).body("Confrim translator order successfully.");
+			return ResponseEntity.status(HttpStatus.OK).body("Update translator order successfully.");
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Error occurred while saving translator: " + e.getMessage());

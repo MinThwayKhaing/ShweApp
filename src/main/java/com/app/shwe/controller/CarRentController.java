@@ -1,5 +1,7 @@
 package com.app.shwe.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -39,10 +41,20 @@ public class CarRentController {
 		return carService.findCarById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
 
+	@GetMapping("/types")
+	public ResponseEntity<?> getAllCarTypes() {
+		return carService.getAllCarTypes();
+	}
+
+	@GetMapping("/brands")
+	public ResponseEntity<?> findAllBrands() {
+		return carService.findAllBrands();
+	}
+
 	@PutMapping("/updateCarRent/{id}")
 	public ResponseEntity<String> updateCarRent(@PathVariable int id, @RequestPart("image") MultipartFile carImage,
 			@RequestPart("request") CarRentRequestDTO dto) {
-		return carService.updateCarRent(id,carImage, dto);
+		return carService.updateCarRent(id, carImage, dto);
 	}
 
 	@DeleteMapping("/deleteCar/{id}")

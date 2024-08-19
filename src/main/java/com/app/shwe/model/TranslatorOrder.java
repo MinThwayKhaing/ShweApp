@@ -1,6 +1,7 @@
 package com.app.shwe.model;
 
 import java.util.Date;
+import java.util.TimeZone;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -14,8 +15,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TranslatorOrder extends CommonDTO{
-	
+public class TranslatorOrder extends CommonDTO {
+
 	@ManyToOne
 	@JoinColumn(name = "translator_id")
 	private Translator translator;
@@ -25,10 +26,7 @@ public class TranslatorOrder extends CommonDTO{
 	private Date toDate;
 	private Date meetingDate;
 	private String meetingPoint;
-	private String meetingTime;
 	private String phoneNumber;
 	private String usedFor;
-	
-	
-
+	private TimeZone meetingTime;
 }
