@@ -6,6 +6,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,4 +26,15 @@ public class CommonDTO {
 	private Date updatedDate;
 	private int createdBy;
 	private int updatedBy;
+
+	@PrePersist
+	protected void onCreate() {
+		createdDate = new Date();
+		updatedDate = new Date();
+	}
+
+	@PreUpdate
+	protected void onUpdate() {
+		updatedDate = new Date();
+	}
 }
