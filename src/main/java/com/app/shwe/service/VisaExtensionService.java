@@ -16,6 +16,7 @@ import com.app.shwe.dto.Report90DayTypeResponseType;
 import com.app.shwe.dto.Report90ResponseDTO;
 import com.app.shwe.dto.VisaExtensionOrderResponseDTO;
 import com.app.shwe.dto.VisaExtensionProjectionDTO;
+import com.app.shwe.dto.VisaExtensionRequestDTO;
 import com.app.shwe.dto.VisaExtensionResponseDTO;
 import com.app.shwe.dto.VisaExtensionTypeResponseDTO;
 import com.app.shwe.dto.VisaResponseDTO;
@@ -60,7 +61,7 @@ public class VisaExtensionService {
 	@Autowired
 	private VisaExtensionOrderRepository orderRepository;
 	
-	public ResponseEntity<String> saveVisaExtension(MultipartFile passportBio, MultipartFile visaPage,Report90DayRequestDTO request){
+	public ResponseEntity<String> saveVisaExtension(MultipartFile passportBio, MultipartFile visaPage,VisaExtensionRequestDTO request){
 		if (passportBio == null &&  visaPage == null &&  request == null) {
 			throw new IllegalArgumentException("Request and required fields must not be null");
 		}
@@ -78,7 +79,6 @@ public class VisaExtensionService {
 			visaExtension.setSyskey(orderGeneratorService.generateVisaExtensionOrderId());
 			visaExtension.setPassportBio(passport_bio);
 			visaExtension.setVisaPage(visa_page);
-			visaExtension.setVisaType(request.getVisaType());
 			visaExtension.setStatus("Pending");
 			visaExtension.setUser(user);
 			visaExtension.setVisa(visaServices);

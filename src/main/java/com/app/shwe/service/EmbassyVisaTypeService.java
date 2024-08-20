@@ -10,17 +10,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.app.shwe.dto.Report90DayTypeRequestDTO;
-import com.app.shwe.dto.Report90DayTypeResponseType;
-import com.app.shwe.dto.VisaTypeRequestDTO;
-import com.app.shwe.dto.VisaTypeResponseDTO;
-import com.app.shwe.model.Report90DaySubVisaType;
-import com.app.shwe.model.Report90DayVisaType;
+import com.app.shwe.dto.EmbassyVisaTypeRequestDTO;
+import com.app.shwe.dto.EmbassyVisaTypeResponseDTO;
+import com.app.shwe.model.EmbassySubVisaType;
+import com.app.shwe.model.EmbassyVisaType;
 import com.app.shwe.model.SubVisaType;
+import com.app.shwe.model.VisaExtensionSubType;
 import com.app.shwe.model.VisaServices;
 import com.app.shwe.model.VisaType;
-import com.app.shwe.repository.Report90DaySubVisaRepository;
-import com.app.shwe.repository.Report90DayTypeRepository;
+import com.app.shwe.repository.EmbassySubVisaTypeRepository;
+import com.app.shwe.repository.EmbassyVisaTypeRepository;
 import com.app.shwe.repository.UserRepository;
 import com.app.shwe.repository.VisaServicesRepository;
 import com.app.shwe.utils.SecurityUtils;
@@ -28,13 +27,13 @@ import com.app.shwe.utils.SecurityUtils;
 import jakarta.transaction.Transactional;
 
 @Service
-public class Report90DayVisaTypeService {
+public class EmbassyVisaTypeService {
 	
 	@Autowired
-	private Report90DayTypeRepository vsiaTypeRepository;
+	private EmbassyVisaTypeRepository vsiaTypeRepository;
 
 	@Autowired
-	private Report90DaySubVisaRepository subVisaTypeRepository;
+	private EmbassySubVisaTypeRepository subVisaTypeRepository;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -43,7 +42,7 @@ public class Report90DayVisaTypeService {
 	private VisaServicesRepository visaService;
 
 	
-	public ResponseEntity<String> saveVisaType(Report90DayTypeRequestDTO request) {
+	public ResponseEntity<String> saveVisaType(EmbassyVisaTypeRequestDTO request) {
 	    if (request == null) {
 	        throw new IllegalArgumentException("Request and required fields must not be null");
 	    }
@@ -52,7 +51,7 @@ public class Report90DayVisaTypeService {
 	        VisaServices visaServices = visaService.findById(request.getVisa_service_id())
 	                .orElseThrow(() -> new RuntimeException("Visa service not found for ID: " + request.getVisa_service_id()));
 	        
-	        Report90DayVisaType visaType = new Report90DayVisaType();
+	        EmbassyVisaType visaType = new EmbassyVisaType();
 	        visaType.setDescription(request.getDescription());
 	        visaType.setVisa(visaServices);
 	        visaType.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
@@ -62,7 +61,7 @@ public class Report90DayVisaTypeService {
 	        vsiaTypeRepository.save(visaType);
 
 	        // Now create and save the subVisaType
-	        Report90DaySubVisaType subVisaType = new Report90DaySubVisaType();
+	        EmbassySubVisaType subVisaType = new EmbassySubVisaType();
 	        subVisaType.setPrice(request.getPrice());
 	        subVisaType.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 	        subVisaType.setCreatedDate(new Date());
@@ -70,23 +69,23 @@ public class Report90DayVisaTypeService {
 	        
 	        subVisaTypeRepository.save(subVisaType);
 
-	        return ResponseEntity.status(HttpStatus.OK).body("Visa type saved successfully.");
+	        return ResponseEntity.status(HttpStatus.OK).body("Embassy Recommendation Letter saved successfully.");
 	    } catch (Exception e) {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Error occurred while saving visa type: " + e.getMessage());
+	                .body("Error occurred while saving Embassy Recommendation Letter: " + e.getMessage());
 	    }
 	}
 
 
 	@Transactional
-	public List<Report90DayTypeResponseType> getVisaByType(Report90DayTypeRequestDTO request) {
+	public List<EmbassyVisaTypeResponseDTO> getVisaByType(EmbassyVisaTypeRequestDTO request) {
 		if (request == null) {
 			throw new IllegalArgumentException("Request and required fields must not be null");
 		}
-		List<Report90DayTypeResponseType> visaList = vsiaTypeRepository.findVisaByType(request.getDescription());
-		List<Report90DayTypeResponseType> response = new ArrayList<>();
-		for (Report90DayTypeResponseType visaTypeResponseDTO : visaList) {
-			VisaTypeResponseDTO dto = new VisaTypeResponseDTO();
+		List<EmbassyVisaTypeResponseDTO> visaList = vsiaTypeRepository.findVisaByType(request.getDescription());
+		List<EmbassyVisaTypeResponseDTO> response = new ArrayList<>();
+		for (EmbassyVisaTypeResponseDTO visaTypeResponseDTO : visaList) {
+			EmbassyVisaTypeResponseDTO dto = new EmbassyVisaTypeResponseDTO();
 			VisaType type = new VisaType();
 			type.setId(dto.getId());
 			type.setDescription(dto.getDescription());
@@ -103,17 +102,17 @@ public class Report90DayVisaTypeService {
 	}
 
 	@Transactional
-	public List<Report90DayTypeResponseType> getAllVisaType() {
-		List<Report90DayTypeResponseType> visaList = vsiaTypeRepository.findAllVisaType();
-		List<Report90DayTypeResponseType> response = new ArrayList<>();
-		for (Report90DayTypeResponseType visaTypeResponseDTO : visaList) {
-			VisaTypeResponseDTO dto = new VisaTypeResponseDTO();
-			Report90DayVisaType type = new Report90DayVisaType();
+	public List<EmbassyVisaTypeResponseDTO> getAllVisaType() {
+		List<EmbassyVisaTypeResponseDTO> visaList = vsiaTypeRepository.findAllVisaType();
+		List<EmbassyVisaTypeResponseDTO> response = new ArrayList<>();
+		for (EmbassyVisaTypeResponseDTO visaTypeResponseDTO : visaList) {
+			EmbassyVisaTypeResponseDTO dto = new EmbassyVisaTypeResponseDTO();
+			EmbassyVisaType type = new EmbassyVisaType();
 			type.setId(dto.getId());
 			type.setDescription(dto.getDescription());
 			dto.setId(visaTypeResponseDTO.getId());
 			dto.setDescription(visaTypeResponseDTO.getDescription());
-			SubVisaType sub = new SubVisaType();
+			VisaExtensionSubType sub = new VisaExtensionSubType();
 			sub.setPrice(dto.getPrice());
 			dto.setPrice(visaTypeResponseDTO.getPrice());
 			response.add(visaTypeResponseDTO);
@@ -124,16 +123,16 @@ public class Report90DayVisaTypeService {
 	}
 
 	@Transactional
-	public ResponseEntity<String> updateVisaType(int id, Report90DayTypeRequestDTO request) {
-		Optional<Report90DayVisaType> getVisa = vsiaTypeRepository.findById(id);
+	public ResponseEntity<String> updateVisaType(int id, EmbassyVisaTypeRequestDTO request) {
+		Optional<EmbassyVisaType> getVisa = vsiaTypeRepository.findById(id);
 		if (!getVisa.isPresent()) {
 			throw new IllegalArgumentException("ID not found");
 		}
-		Report90DaySubVisaType subVisa = subVisaTypeRepository.findById(request.getSubVisaId())
+		EmbassySubVisaType subVisa = subVisaTypeRepository.findById(request.getSubVisaId())
 				.orElseThrow(() -> new RuntimeException("SubVisaType not found for ID: " + request.getSubVisaId()));
 
 		try {
-			Report90DayVisaType visaType = getVisa.get();
+			EmbassyVisaType visaType = getVisa.get();
 			visaType.setDescription(request.getDescription());
 			visaType.setUpdatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 			visaType.setUpdatedDate(new Date());

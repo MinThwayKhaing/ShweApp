@@ -11,8 +11,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.app.shwe.dto.Report90DayRequestDTO;
-import com.app.shwe.dto.Report90DayTypeResponseType;
+import com.app.shwe.dto.VisaExtensionRequestDTO;
 import com.app.shwe.dto.VisaExtensionResponseDTO;
 import com.app.shwe.service.VisaExtensionService;
 
@@ -28,7 +27,7 @@ public class VisaExtensionController {
 
 	@PostMapping("/saveVisaExtension")
 	public ResponseEntity<String> saveTm30(@RequestPart("passportBio") MultipartFile passportBio,
-			@RequestPart("visaPage") MultipartFile visaPage, @RequestPart("request") Report90DayRequestDTO request) {
+			@RequestPart("visaPage") MultipartFile visaPage, @RequestPart("request") VisaExtensionRequestDTO request) {
 		return visaService.saveVisaExtension(passportBio, visaPage, request);
 
 	}
