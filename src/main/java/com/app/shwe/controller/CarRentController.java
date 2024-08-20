@@ -31,9 +31,9 @@ public class CarRentController {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/carRentSave")
-	public ResponseEntity<ResponseEntity<String>> saveCars(@RequestPart("image") MultipartFile carImage,
+	public ResponseEntity<String> saveCars(@RequestPart("image") MultipartFile carImage,
 			@RequestPart("dto") CarRentRequestDTO dto) {
-		return ResponseEntity.ok(carService.saveCars(carImage, dto));
+		return carService.saveCars(carImage, dto);
 	}
 
 	@GetMapping("/getCarById/{id}")

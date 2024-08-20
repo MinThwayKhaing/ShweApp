@@ -2,6 +2,7 @@ package com.app.shwe.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import com.app.shwe.dto.VisaExtensionRequestDTO;
 import com.app.shwe.dto.VisaExtensionResponseDTO;
 import com.app.shwe.model.EmbassyLetter;
 import com.app.shwe.model.EmbassyLetterOrder;
+import com.app.shwe.model.TranslatorOrder;
 import com.app.shwe.model.User;
 import com.app.shwe.model.VisaExtension;
 import com.app.shwe.model.VisaExtensionOrder;
@@ -127,6 +129,22 @@ public class EmbassyLetterService {
 	    return responseList;
 	}
 	
+	@Transactional
+	public ResponseEntity<String> cancelOrder(int orderId) {
+		Optional<EmbassyLetter> getTranslatorOrder = embassyRepo.findById(orderId);
+		if (!getTranslatorOrder.isPresent()) {
+			return new ResponseEntity<>("Error occurred: ", HttpStatus.INTERNAL_SERVER_ERROR);
+
+		}
+		try {
+			String status = "Cancel Order";
+			embassyRepo.cancelOrder(orderId, status);
+			return ResponseEntity.status(HttpStatus.OK).body("Cancel Embassy Recommendation Letter order successfully.");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error occurred while cancel Embassy Recommendation Letter order: " + e.getMessage());
+		}
+	}
 	
 
 }

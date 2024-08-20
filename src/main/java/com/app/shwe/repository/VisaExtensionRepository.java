@@ -3,6 +3,7 @@ package com.app.shwe.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -14,6 +15,8 @@ import com.app.shwe.dto.VisaExtensionProjectionDTO;
 import com.app.shwe.dto.VisaExtensionResponseDTO;
 import com.app.shwe.dto.VisaExtensionTypeResponseDTO;
 import com.app.shwe.model.VisaExtension;
+
+import jakarta.transaction.Transactional;
 
 @Repository
 public interface VisaExtensionRepository extends JpaRepository<VisaExtension, Integer>{
@@ -32,6 +35,11 @@ public interface VisaExtensionRepository extends JpaRepository<VisaExtension, In
 			+ "JOIN VisaExtensionSubType svt ON svt.id = vo.sub_visa_id "
 			+ "WHERE vo.order_id = :orderId")
 	List<VisaExtensionOrderResponseDTO> getVisaOrderByOrderId(@Param("orderId") int orderId);
+	
+	@Modifying
+	@Transactional
+	@Query("UPDATE VisaExtension v SET v.status = :status WHERE v.id = :id")
+	void cancelOrder(@Param("id") int id, @Param("status") String status);
 	
 	@Query("SELECT COALESCE(MAX(r.syskey), 'VE00000000') FROM VisaExtension r")
     String findMaxSysKey();

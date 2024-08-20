@@ -44,18 +44,17 @@ public class CarOrderService {
 	@Autowired
 	private UserRepository userRepository;
 
-	@Autowired
-	private CarOrderIdGeneratorService carOrderIdGeneratorService;
+	
 
 	@Transactional
 	public ResponseEntity<String> createCarOrder(CarOrderRequestDTO dto) {
 		if (dto == null) {
 			return new ResponseEntity<>("Request data is null", HttpStatus.BAD_REQUEST);
 		}
-		dto.setStatus("Pending");
+		
 		try {
 			CarOrder carOrder = carOrderMapping.mapToCarOrder(dto);
-			carOrder.setSysKey(carOrderIdGeneratorService.generateNextCarOrderId());
+			
 			carOrderRepository.save(carOrder);
 
 			return new ResponseEntity<>("CarOrder created successfully", HttpStatus.OK);

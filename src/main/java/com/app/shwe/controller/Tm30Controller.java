@@ -87,4 +87,8 @@ public class Tm30Controller {
 		return tm30Service.getAllTm30Order();
 	}
 	
+	@PutMapping("/cancelOrder/{id}")
+	public ResponseEntity<String> cancelOrder(@PathVariable int id) {
+		return tm30Service.cancelOrder(id);
+	}
 }

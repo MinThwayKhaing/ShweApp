@@ -22,11 +22,14 @@ import com.app.shwe.dto.Tm30RequestDTO;
 import com.app.shwe.dto.Tm30ResponseDTO;
 import com.app.shwe.dto.VisaResponseDTO;
 import com.app.shwe.model.CarRent;
+import com.app.shwe.model.EmbassyLetter;
+import com.app.shwe.model.MainOrder;
 import com.app.shwe.model.News;
 import com.app.shwe.model.Tm30;
 import com.app.shwe.model.User;
 import com.app.shwe.model.VisaOrder;
 import com.app.shwe.model.VisaServices;
+import com.app.shwe.repository.MainOrderRepository;
 import com.app.shwe.repository.OrderKeyGeneratorService;
 import com.app.shwe.repository.Tm30Repository;
 import com.app.shwe.repository.UserRepository;
@@ -56,6 +59,9 @@ public class Tm30Service {
 
 	@Autowired
 	private VisaOrderRepository visaOrderRepository;
+	
+	@Autowired
+	private MainOrderRepository mainOrderRepository;
 
 	@Transactional
 	public ResponseEntity<String> saveTm30(MultipartFile passport, MultipartFile visa, Tm30RequestDTO request) {
@@ -69,10 +75,11 @@ public class Tm30Service {
 
 			VisaServices visaServices = visaRepo.findById(request.getVisa_id())
 					.orElseThrow(() -> new IllegalArgumentException("Visa not found with id: " + request.getVisa_id()));
-
+            
 			String imageUrl1 = fileUploadService.uploadFile(passport);
 			String imageUrl2 = fileUploadService.uploadFile(visa);
 			Tm30 tm30 = new Tm30();
+			MainOrder mainOrder = new MainOrder();
 			VisaOrder order = new VisaOrder();
 			tm30.setSyskey(keyGenerator.generateVisaOrderId());
 			tm30.setPeriod(request.getPeriod());
@@ -82,7 +89,7 @@ public class Tm30Service {
 			tm30.setContactNumber(request.getContactNumber());
 			tm30.setDuration(request.getDuration());
 			tm30.setVisa(visaServices);
-			tm30.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
+			tm30.setCreatedBy(userId);
 			tm30.setCreatedDate(new Date());
 			tm30.setUser(user);
 			tm30Repo.save(tm30);
@@ -96,6 +103,13 @@ public class Tm30Service {
 			}
 			order.setMain_visa_id(request.getVisa_id());
 			visaOrderRepository.save(order);
+			mainOrder.setPeriod(tm30.getPeriod());
+			mainOrder.setCreatedBy(userId);
+			mainOrder.setCreatedDate(tm30.getCreatedDate());
+			mainOrder.setStatus(tm30.getStatus());
+			mainOrder.setOrder_id(tm30.getSyskey());
+			mainOrder.setUser(user);
+			mainOrderRepository.save(mainOrder);
 			return ResponseEntity.status(HttpStatus.OK).body("Tm-30 saved successfully.");
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -229,7 +243,22 @@ public class Tm30Service {
 	    return responseList;
 	}
 
-	
+	@Transactional
+	public ResponseEntity<String> cancelOrder(int orderId) {
+		Optional<Tm30> getTranslatorOrder = tm30Repo.findById(orderId);
+		if (!getTranslatorOrder.isPresent()) {
+			return new ResponseEntity<>("Error occurred: ", HttpStatus.INTERNAL_SERVER_ERROR);
+
+		}
+		try {
+			String status = "Cancel Order";
+			tm30Repo.cancelOrder(orderId, status);
+			return ResponseEntity.status(HttpStatus.OK).body("Cancel Tm-30 order successfully.");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error occurred while cancel Tm-30 order: " + e.getMessage());
+		}
+	}
 	
 
 }

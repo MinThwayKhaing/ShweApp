@@ -31,5 +31,16 @@ public class TranslatorOrderResponseDTO {
 	private String usedFor;
 	private String chatLink;
 	
+	public TranslatorOrderResponseDTO(String order_id, Date fromDate, Date toDate, String chatLink) {
+		super();
+		this.order_id = order_id;
+		this.fromDate = fromDate;
+		this.toDate = toDate;
+		this.chatLink = chatLink;
+	}
+	
+	
+	
+	
 
 }

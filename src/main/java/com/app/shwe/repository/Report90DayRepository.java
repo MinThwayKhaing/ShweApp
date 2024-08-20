@@ -3,6 +3,7 @@ package com.app.shwe.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -12,6 +13,8 @@ import com.app.shwe.dto.Report90DayTypeResponseDTO;
 import com.app.shwe.dto.Tm30ProjectionDTO;
 import com.app.shwe.dto.VisaResponseDTO;
 import com.app.shwe.model.Report90Day;
+
+import jakarta.transaction.Transactional;
 
 @Repository
 public interface Report90DayRepository extends JpaRepository<Report90Day, Integer>{
@@ -29,6 +32,12 @@ public interface Report90DayRepository extends JpaRepository<Report90Day, Intege
 	
 	@Query("SELECT COUNT(r) FROM Report90Day r WHERE r.id = :id")
 	int checkReport90DayById(@Param("id") int id);
+	
+	@Modifying
+	@Transactional
+	@Query("UPDATE Report90Day r SET r.status = :status WHERE r.id = :id")
+	void cancelOrder(@Param("id") int id, @Param("status") String status);
+
 
 	
 	 @Query("SELECT COALESCE(MAX(r.syskey), 'RP00000000') FROM Report90Day r")

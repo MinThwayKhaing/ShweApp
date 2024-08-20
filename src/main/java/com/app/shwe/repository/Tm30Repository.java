@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -13,6 +14,8 @@ import com.app.shwe.dto.Tm30ProjectionDTO;
 import com.app.shwe.dto.Tm30ResponseDTO;
 import com.app.shwe.dto.VisaResponseDTO;
 import com.app.shwe.model.Tm30;
+
+import jakarta.transaction.Transactional;
 
 @Repository
 public interface Tm30Repository extends JpaRepository<Tm30, Integer> {
@@ -55,6 +58,12 @@ public interface Tm30Repository extends JpaRepository<Tm30, Integer> {
 	
 	@Query("SELECT new com.app.shwe.dto.Tm30ProjectionDTO(t.id,t.syskey,t.period, t.passportBio, t.visaPage, t.contactNumber,t.user.userName,t.status) FROM Tm30 t ORDER BY t.id DESC")
 	List<Tm30ProjectionDTO> getAllTm30Order();
+	
+	
+	@Modifying
+	@Transactional
+	@Query("UPDATE Tm30 t SET t.status = :status WHERE t.id = :id")
+	void cancelOrder(@Param("id") int id, @Param("status") String status);
 	
 	
 

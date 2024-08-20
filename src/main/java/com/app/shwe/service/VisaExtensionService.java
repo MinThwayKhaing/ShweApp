@@ -2,6 +2,7 @@ package com.app.shwe.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -126,7 +127,22 @@ public class VisaExtensionService {
 	    return responseList;
 	}
 	
-	
+	@Transactional
+	public ResponseEntity<String> cancelOrder(int orderId) {
+		Optional<VisaExtension> getTranslatorOrder = visaExtensionRepo.findById(orderId);
+		if (!getTranslatorOrder.isPresent()) {
+			return new ResponseEntity<>("Error occurred: ", HttpStatus.INTERNAL_SERVER_ERROR);
+
+		}
+		try {
+			String status = "Cancel Order";
+			visaExtensionRepo.cancelOrder(orderId, status);
+			return ResponseEntity.status(HttpStatus.OK).body("Cancel Visa Extension order successfully.");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error occurred while cancel 90 Day Report order: " + e.getMessage());
+		}
+	}
 	
 	
 

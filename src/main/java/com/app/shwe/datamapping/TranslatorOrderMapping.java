@@ -10,8 +10,11 @@ import org.springframework.stereotype.Service;
 import com.app.shwe.dto.TranslatorOrderRequestDTO;
 import com.app.shwe.dto.TranslatorOrderResponseDTO;
 import com.app.shwe.dto.TranslatorRequestDTO;
+import com.app.shwe.model.MainOrder;
 import com.app.shwe.model.Translator;
 import com.app.shwe.model.TranslatorOrder;
+import com.app.shwe.model.User;
+import com.app.shwe.repository.MainOrderRepository;
 import com.app.shwe.repository.TranslatorOrderRepostitory;
 import com.app.shwe.repository.TranslatorRepository;
 import com.app.shwe.repository.UserRepository;
@@ -29,6 +32,9 @@ public class TranslatorOrderMapping {
 
 	@Autowired
 	private TranslatorOrderIdGenerator idGenerator;
+	
+	@Autowired
+	private MainOrderRepository mainOrderRepository;
 
 
 	 public TranslatorOrder mapToTranslatorOrder(TranslatorRequestDTO dto) {
@@ -47,6 +53,7 @@ public class TranslatorOrderMapping {
 	    	order.setUsedFor(dto.getUsedFor());
 	    	order.setTranslator(translator);
 	    	order.setSysKey(idGenerator.generateNextCarOrderId());
+	    	
 	    	return order;
 	    }
 	 
@@ -54,8 +61,12 @@ public class TranslatorOrderMapping {
 
 	public TranslatorOrder mapToTranslatorOrder(TranslatorOrderRequestDTO dto) {
 		TranslatorOrder order = new TranslatorOrder();
+		MainOrder mainOrder = new MainOrder();
 		Translator translator = translatorRepository.findById(dto.getTranslator_id())
 				.orElseThrow(() -> new RuntimeException("Translater not found for ID: " + dto.getTranslator_id()));
+		int userId = userRepository.authUser(SecurityUtils.getCurrentUsername());
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new RuntimeException("User not found for ID: " + userId));
 		order.setFromDate(dto.getFromDate());
 		order.setToDate(dto.getToDate());
 		order.setUsedFor(dto.getUsedFor());
@@ -64,10 +75,18 @@ public class TranslatorOrderMapping {
 		order.setMeetingTime(dto.getMeetingTime());
 		order.setPhoneNumber(dto.getPhoneNumber());
 		order.setStatus("Pending");
-		order.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
+		order.setCreatedBy(userId);
 		order.setCreatedDate(new Date());
 		order.setTranslator(translator);
 		order.setSysKey(idGenerator.generateNextCarOrderId());
+		mainOrder.setStart_date(order.getFromDate());
+		mainOrder.setEnd_date(order.getToDate());
+		mainOrder.setCreatedBy(userId);
+		mainOrder.setCreatedDate(new Date());
+		mainOrder.setOrder_id(order.getSysKey());
+		mainOrder.setStatus(order.getStatus());
+		mainOrder.setUser(user);
+		mainOrderRepository.save(mainOrder);
 		return order;
 	}
 

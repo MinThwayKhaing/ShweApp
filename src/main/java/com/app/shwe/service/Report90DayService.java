@@ -2,6 +2,7 @@ package com.app.shwe.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import com.app.shwe.dto.Report90ResponseDTO;
 import com.app.shwe.dto.Tm30ProjectionDTO;
 import com.app.shwe.dto.Tm30ResponseDTO;
 import com.app.shwe.dto.VisaResponseDTO;
+import com.app.shwe.model.EmbassyLetter;
 import com.app.shwe.model.Report90Day;
 import com.app.shwe.model.Report90DayOrder;
 import com.app.shwe.model.Report90DayVisaType;
@@ -135,6 +137,23 @@ public class Report90DayService {
 			return new ResponseEntity<>("Report 90 Days deleted successfully", HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@Transactional
+	public ResponseEntity<String> cancelOrder(int orderId) {
+		Optional<Report90Day> getTranslatorOrder = reportRepo.findById(orderId);
+		if (!getTranslatorOrder.isPresent()) {
+			return new ResponseEntity<>("Error occurred: ", HttpStatus.INTERNAL_SERVER_ERROR);
+
+		}
+		try {
+			String status = "Cancel Order";
+			reportRepo.cancelOrder(orderId, status);
+			return ResponseEntity.status(HttpStatus.OK).body("Cancel 90 Day Report order successfully.");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error occurred while cancel 90 Day Report order: " + e.getMessage());
 		}
 	}
 
