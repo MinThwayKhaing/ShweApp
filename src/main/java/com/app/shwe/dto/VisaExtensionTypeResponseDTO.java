@@ -9,15 +9,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class VisaTypeResponseDTO {
-    
-	private int id;
-	
-    private String description;
-    
-    private double price;
-    
-    private String duration;
+public class VisaExtensionTypeResponseDTO {
 
+	private int id;
+
+	private String description;
+
+	private double price;
 
 }

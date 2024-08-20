@@ -11,17 +11,14 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class VisaExtensionRequestDTO {
+public class VisaExtensionProjectionDTO {
 	
-	
+	private int id;
+	private String order_id;
+	private String passportBio;
+	private String visaPage;
 	private String contactNumber;
-	private int visa_id; 
-	private int option1;
-	private int option2;
-	private int option3;
-	private int option4;
-	private int option5;
-	private int option6;
-	private int option7;
+	private String user_name;
+	private String status;
 
 }

@@ -1,5 +1,7 @@
 package com.app.shwe.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,15 +11,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class VisaTypeResponseDTO {
-    
-	private int id;
+public class VisaExtensionResponseDTO {
 	
-    private String description;
-    
-    private double price;
-    
-    private String duration;
+	private VisaExtensionProjectionDTO visaExtension;
+	
+	private List<VisaExtensionOrderResponseDTO> visaOrder;
 
 
 }
