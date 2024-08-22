@@ -29,7 +29,7 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class Report90DayVisaTypeService {
-	
+
 	@Autowired
 	private Report90DayTypeRepository vsiaTypeRepository;
 
@@ -42,41 +42,40 @@ public class Report90DayVisaTypeService {
 	@Autowired
 	private VisaServicesRepository visaService;
 
-	
 	public ResponseEntity<String> saveVisaType(Report90DayTypeRequestDTO request) {
-	    if (request == null) {
-	        throw new IllegalArgumentException("Request and required fields must not be null");
-	    }
+		if (request == null) {
+			throw new IllegalArgumentException("Request and required fields must not be null");
+		}
 
-	    try {
-	        VisaServices visaServices = visaService.findById(request.getVisa_service_id())
-	                .orElseThrow(() -> new RuntimeException("Visa service not found for ID: " + request.getVisa_service_id()));
-	        
-	        Report90DayVisaType visaType = new Report90DayVisaType();
-	        visaType.setDescription(request.getDescription());
-	        visaType.setVisa(visaServices);
-	        visaType.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
-	        visaType.setCreatedDate(new Date());
-	        
-	        // Save the visaType first
-	        vsiaTypeRepository.save(visaType);
+		try {
+			VisaServices visaServices = visaService.findById(request.getVisa_service_id())
+					.orElseThrow(() -> new RuntimeException(
+							"Visa service not found for ID: " + request.getVisa_service_id()));
 
-	        // Now create and save the subVisaType
-	        Report90DaySubVisaType subVisaType = new Report90DaySubVisaType();
-	        subVisaType.setPrice(request.getPrice());
-	        subVisaType.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
-	        subVisaType.setCreatedDate(new Date());
-	        subVisaType.setVisa(visaType); // Ensure visaType is saved and referenced
-	        
-	        subVisaTypeRepository.save(subVisaType);
+			Report90DayVisaType visaType = new Report90DayVisaType();
+			visaType.setDescription(request.getDescription());
+			visaType.setVisa(visaServices);
+			visaType.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
+			visaType.setCreatedDate(new Date());
 
-	        return ResponseEntity.status(HttpStatus.OK).body("Visa type saved successfully.");
-	    } catch (Exception e) {
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Error occurred while saving visa type: " + e.getMessage());
-	    }
+			// Save the visaType first
+			vsiaTypeRepository.save(visaType);
+
+			// Now create and save the subVisaType
+			Report90DaySubVisaType subVisaType = new Report90DaySubVisaType();
+			subVisaType.setPrice(request.getPrice());
+			subVisaType.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
+			subVisaType.setCreatedDate(new Date());
+			subVisaType.setVisa(visaType);
+
+			subVisaTypeRepository.save(subVisaType);
+
+			return ResponseEntity.status(HttpStatus.OK).body("Visa type saved successfully.");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error occurred while saving visa type: " + e.getMessage());
+		}
 	}
-
 
 	@Transactional
 	public List<Report90DayTypeResponseType> getVisaByType(Report90DayTypeRequestDTO request) {

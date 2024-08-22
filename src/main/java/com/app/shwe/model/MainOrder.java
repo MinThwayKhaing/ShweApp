@@ -16,7 +16,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MainOrder extends CommonDTO {
 
-	private String order_id;
+	private int order_id;
+	private String sys_key;
 	private int car_type;
 	private String car_brand;
 	private Date start_date;

@@ -20,12 +20,18 @@ import com.app.shwe.dto.TranslatorOrderResponseDTO;
 import com.app.shwe.dto.TranslatorRequestDTO;
 import com.app.shwe.model.CarOrder;
 import com.app.shwe.model.CarRent;
+import com.app.shwe.model.MainOrder;
 import com.app.shwe.model.Translator;
+import com.app.shwe.model.User;
 import com.app.shwe.repository.CarOrderRepository;
 import com.app.shwe.repository.CarRentRepository;
+import com.app.shwe.repository.MainOrderRepository;
 import com.app.shwe.repository.UserRepository;
+import com.app.shwe.utils.OrderStatus;
 import com.app.shwe.utils.SecurityUtils;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.LockModeType;
 import jakarta.transaction.Transactional;
 
@@ -44,18 +50,20 @@ public class CarOrderService {
 	@Autowired
 	private UserRepository userRepository;
 
-	
+	@Autowired
+	private MainOrderRepository mainOrderRepository;
+
+	@Enumerated(EnumType.STRING)
+	private OrderStatus status;
 
 	@Transactional
 	public ResponseEntity<String> createCarOrder(CarOrderRequestDTO dto) {
 		if (dto == null) {
 			return new ResponseEntity<>("Request data is null", HttpStatus.BAD_REQUEST);
 		}
-		
+
 		try {
 			CarOrder carOrder = carOrderMapping.mapToCarOrder(dto);
-			
-			carOrderRepository.save(carOrder);
 
 			return new ResponseEntity<>("CarOrder created successfully", HttpStatus.OK);
 		} catch (Exception e) {
@@ -82,7 +90,46 @@ public class CarOrderService {
 
 		try {
 			CarOrder carOrder = carOrderOptional.get();
-			carOrder = carOrderMapping.mapToCarOrder(dto);
+			CarRent carRent = carRentRepository.findById(dto.getCarId())
+					.orElseThrow(() -> new RuntimeException("CarRent not found for ID: " + dto.getCarId()));
+			int userId = userRepository.authUser(SecurityUtils.getCurrentUsername());
+			User user = userRepository.findById(userId)
+					.orElseThrow(() -> new RuntimeException("User not found for ID: " + userId));
+			carOrder.setCarId(carRent);
+			carOrder.setStatus(dto.getStatus());
+			carOrder.setFromLocation(dto.getFromLocation());
+			carOrder.setToLocation(dto.getToLocation());
+			carOrder.setPrice(dto.getPrice());
+			carOrder.setPickUpDate(dto.getPickUpDate());
+			carOrder.setPickUpTime(dto.getPickUpTime());
+			carOrder.setFromDate(dto.getFromDate());
+			carOrder.setToDate(dto.getToDate());
+			carOrder.setCarType(dto.getCarType());
+			carOrder.setDriver(dto.isDriver());
+			dto.setStatus(dto.getStatus());
+			carOrder.setPickUpLocation(dto.getPickUpLocation());
+			carOrder.setSysKey(dto.getSys_key());
+			carOrder.setCreatedDate(new Date());
+			carOrder.setCustomerPhoneNumber(dto.getCustomerPhoneNumber());
+			carOrder.setCarBrand(carRent.getCarName());
+			carOrder.setCarId(carRent);
+			carOrder.setCreatedBy(userId);
+
+			Optional<MainOrder> mainOrder = mainOrderRepository.findByOrderIdAndSysKey(carOrder.getId(),
+					carOrder.getSysKey());
+			MainOrder model = mainOrder.get();
+			model.setCar_brand(carOrder.getCarBrand());
+			model.setCar_type(carOrder.getCarType());
+			model.setCreatedBy(userId);
+			model.setCreatedDate(new Date());
+			model.setUser(user);
+			model.setSys_key(carOrder.getSysKey());
+			model.setOrder_id(carOrder.getId());
+			model.setStatus(carOrder.getStatus());
+			if (!mainOrder.isPresent()) {
+				return new ResponseEntity<>("CarOrder update Failed", HttpStatus.NOT_FOUND);
+			}
+			mainOrderRepository.save(model);
 			carOrderRepository.save(carOrder);
 			return new ResponseEntity<>("CarOrder updated successfully", HttpStatus.OK);
 		} catch (Exception e) {
@@ -141,13 +188,16 @@ public class CarOrderService {
 		if (!carOrderOptional.isPresent()) {
 			return new ResponseEntity<>("CarOrder not found", HttpStatus.NOT_FOUND);
 		}
+
+		CarOrder model = carOrderOptional.get();
 		try {
-			String status = "Cancel Order";
+			String status = OrderStatus.Cancel_Order.name(); // Convert Enum to String
+			mainOrderRepository.updateOrderStatusToOnProgress(status, model.getSysKey());
 			carOrderRepository.updateOrder(id, status);
 			return ResponseEntity.status(HttpStatus.OK).body("Cancel Car Order successfully.");
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Error occurred while saving translator: " + e.getMessage());
+					.body("Error occurred while saving carOrder: " + e.getMessage());
 		}
 	}
 

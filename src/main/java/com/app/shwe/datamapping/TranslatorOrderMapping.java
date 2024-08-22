@@ -32,32 +32,29 @@ public class TranslatorOrderMapping {
 
 	@Autowired
 	private TranslatorOrderIdGenerator idGenerator;
-	
+
 	@Autowired
 	private MainOrderRepository mainOrderRepository;
 
+	public TranslatorOrder mapToTranslatorOrder(TranslatorRequestDTO dto) {
+		TranslatorOrder order = new TranslatorOrder();
+		Translator translator = translatorRepository.findById(dto.getTranslator_id())
+				.orElseThrow(() -> new RuntimeException("CarRent not found for ID: " + dto.getTranslator_id()));
+		order.setStatus("Pending");
+		order.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
+		order.setCreatedDate(new Date());
+		order.setFromDate(dto.getFromDate());
+		order.setToDate(dto.getToDate());
+		order.setMeetingDate(dto.getMeetingDate());
+		order.setMeetingPoint(dto.getMeetingPoint());
+		order.setMeetingTime(dto.getMeetingTime());
+		order.setPhoneNumber(dto.getPhoneNumber());
+		order.setUsedFor(dto.getUsedFor());
+		order.setTranslator(translator);
+		order.setSysKey(idGenerator.generateNextCarOrderId());
 
-	 public TranslatorOrder mapToTranslatorOrder(TranslatorRequestDTO dto) {
-	    	TranslatorOrder order = new TranslatorOrder();
-	    	Translator translator = translatorRepository.findById(dto.getTranslator_id())
-	                .orElseThrow(() -> new RuntimeException("CarRent not found for ID: " + dto.getTranslator_id()));
-	    	order.setStatus("Pending");
-	    	order.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
-	    	order.setCreatedDate(new Date());
-	    	order.setFromDate(dto.getFromDate());
-	    	order.setToDate(dto.getToDate());
-	    	order.setMeetingDate(dto.getMeetingDate());
-	    	order.setMeetingPoint(dto.getMeetingPoint());
-	    	order.setMeetingTime(dto.getMeetingTime());
-	    	order.setPhoneNumber(dto.getPhoneNumber());
-	    	order.setUsedFor(dto.getUsedFor());
-	    	order.setTranslator(translator);
-	    	order.setSysKey(idGenerator.generateNextCarOrderId());
-	    	
-	    	return order;
-	    }
-	 
-	 
+		return order;
+	}
 
 	public TranslatorOrder mapToTranslatorOrder(TranslatorOrderRequestDTO dto) {
 		TranslatorOrder order = new TranslatorOrder();
@@ -83,7 +80,8 @@ public class TranslatorOrderMapping {
 		mainOrder.setEnd_date(order.getToDate());
 		mainOrder.setCreatedBy(userId);
 		mainOrder.setCreatedDate(new Date());
-		mainOrder.setOrder_id(order.getSysKey());
+		mainOrder.setSys_key(order.getSysKey());
+		mainOrder.setOrder_id(order.getId());
 		mainOrder.setStatus(order.getStatus());
 		mainOrder.setUser(user);
 		mainOrderRepository.save(mainOrder);

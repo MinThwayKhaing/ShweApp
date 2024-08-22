@@ -3,6 +3,7 @@ package com.app.shwe.repository;
 import com.app.shwe.dto.CarOrderResponseDTO;
 import com.app.shwe.dto.TranslatorOrderResponseDTO;
 import com.app.shwe.model.CarOrder;
+import com.app.shwe.utils.OrderStatus;
 
 import jakarta.persistence.LockModeType;
 import jakarta.transaction.Transactional;
@@ -52,7 +53,6 @@ public interface CarOrderRepository extends JpaRepository<CarOrder, Integer> {
                         Pageable pageable);
 
         @Modifying
-        @Transactional
         @Query("UPDATE CarOrder c SET c.status = :status WHERE c.id = :id")
         void updateOrder(@Param("id") int id, @Param("status") String status);
 

@@ -1,6 +1,7 @@
 package com.app.shwe.datamapping;
 
 import java.util.Date;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.convert.DtoInstantiatingConverter;
@@ -13,6 +14,7 @@ import com.app.shwe.model.CarRent;
 import com.app.shwe.model.MainOrder;
 import com.app.shwe.model.User;
 import com.app.shwe.model.VisaServices;
+import com.app.shwe.repository.CarOrderRepository;
 import com.app.shwe.repository.CarRentRepository;
 import com.app.shwe.repository.MainOrderRepository;
 import com.app.shwe.repository.TranslatorRepository;
@@ -32,9 +34,12 @@ public class CarOrderMapping {
 
 	@Autowired
 	private MainOrderRepository mainOrderRepository;
-	
+
 	@Autowired
 	private CarOrderIdGeneratorService carOrderIdGeneratorService;
+
+	@Autowired
+	private CarOrderRepository carOrderRepository;
 
 	public CarOrder mapToCarOrder(CarOrderRequestDTO dto) {
 		CarOrder carOrder = new CarOrder();
@@ -55,7 +60,7 @@ public class CarOrderMapping {
 		carOrder.setToDate(dto.getToDate());
 		carOrder.setCarType(dto.getCarType());
 		carOrder.setDriver(dto.isDriver());
-		dto.setStatus("Pending");
+		carOrder.setStatus("Pending");
 		carOrder.setPickUpLocation(dto.getPickUpLocation());
 		carOrder.setSysKey(carOrderIdGeneratorService.generateNextCarOrderId());
 		carOrder.setCreatedDate(new Date());
@@ -63,14 +68,16 @@ public class CarOrderMapping {
 		carOrder.setCarBrand(carRent.getCarName());
 		carOrder.setCarId(carRent);
 		carOrder.setCreatedBy(userId);
+		carOrderRepository.save(carOrder);
 		mainOrder.setCar_brand(carOrder.getCarBrand());
 		mainOrder.setCar_type(carOrder.getCarType());
 		mainOrder.setCreatedBy(userId);
-        mainOrder.setCreatedDate(new Date());
-        mainOrder.setUser(user);
-        mainOrder.setOrder_id(carOrder.getSysKey());
-        mainOrder.setStatus(carOrder.getStatus());
-        mainOrderRepository.save(mainOrder);
+		mainOrder.setCreatedDate(new Date());
+		mainOrder.setUser(user);
+		mainOrder.setSys_key(carOrder.getSysKey());
+		mainOrder.setOrder_id(carOrder.getId());
+		mainOrder.setStatus(carOrder.getStatus());
+		mainOrderRepository.save(mainOrder);
 		return carOrder;
 	}
 

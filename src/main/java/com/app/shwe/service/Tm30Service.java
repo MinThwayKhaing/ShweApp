@@ -35,8 +35,11 @@ import com.app.shwe.repository.Tm30Repository;
 import com.app.shwe.repository.UserRepository;
 import com.app.shwe.repository.VisaOrderRepository;
 import com.app.shwe.repository.VisaServicesRepository;
+import com.app.shwe.utils.OrderStatus;
 import com.app.shwe.utils.SecurityUtils;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -59,9 +62,12 @@ public class Tm30Service {
 
 	@Autowired
 	private VisaOrderRepository visaOrderRepository;
-	
+
 	@Autowired
 	private MainOrderRepository mainOrderRepository;
+
+	@Enumerated(EnumType.STRING)
+	private OrderStatus status;
 
 	@Transactional
 	public ResponseEntity<String> saveTm30(MultipartFile passport, MultipartFile visa, Tm30RequestDTO request) {
@@ -75,7 +81,7 @@ public class Tm30Service {
 
 			VisaServices visaServices = visaRepo.findById(request.getVisa_id())
 					.orElseThrow(() -> new IllegalArgumentException("Visa not found with id: " + request.getVisa_id()));
-            
+
 			String imageUrl1 = fileUploadService.uploadFile(passport);
 			String imageUrl2 = fileUploadService.uploadFile(visa);
 			Tm30 tm30 = new Tm30();
@@ -94,20 +100,26 @@ public class Tm30Service {
 			tm30.setUser(user);
 			tm30Repo.save(tm30);
 			order.setOrder_id(tm30.getId());
-			if(request.getOption1() == 1) {
-			    order.setSub_visa_id(request.getOption1());
-			} else if(request.getOption2() == 2) {
-			    order.setSub_visa_id(request.getOption2());
-			} else if(request.getOption3() == 3) {
-			    order.setSub_visa_id(request.getOption3());
-			}
+
 			order.setMain_visa_id(request.getVisa_id());
-			visaOrderRepository.save(order);
+
+			if (request.getOption1() == 3) {
+				order.setSub_visa_id(request.getOption1());
+				visaOrderRepository.save(order);
+			} else if (request.getOption2() == 2) {
+				order.setSub_visa_id(request.getOption2());
+				visaOrderRepository.save(order);
+			} else if (request.getOption3() == 1) {
+				order.setSub_visa_id(request.getOption3());
+				visaOrderRepository.save(order);
+			}
+
 			mainOrder.setPeriod(tm30.getPeriod());
 			mainOrder.setCreatedBy(userId);
 			mainOrder.setCreatedDate(tm30.getCreatedDate());
 			mainOrder.setStatus(tm30.getStatus());
-			mainOrder.setOrder_id(tm30.getSyskey());
+			mainOrder.setSys_key(tm30.getSyskey());
+			mainOrder.setOrder_id(tm30.getId());
 			mainOrder.setUser(user);
 			mainOrderRepository.save(mainOrder);
 			return ResponseEntity.status(HttpStatus.OK).body("Tm-30 saved successfully.");
@@ -133,24 +145,24 @@ public class Tm30Service {
 		Pageable pageable = PageRequest.of(page, size);
 		return tm30Repo.getAllTm30(pageable);
 	}
-	
-//	@Transactional
-//	public Page<VisaResponseDTO> getAllTm30(SearchDTO search) {
-//		int page = (search.getPage() < 1) ? 0 : search.getPage() - 1;
-//		int size = search.getSize();
-//		Tm30ResponseDTO dto = new Tm30ResponseDTO();
-//		Pageable pageable = PageRequest.of(page, size);
-//		Page<Tm30> tm30 = tm30Repo.getAllTm30(pageable);
-//		List<VisaResponseDTO> response = new ArrayList<VisaResponseDTO>(); 
-//		for (Tm30 tm : tm30) {
-//			VisaResponseDTO visa = new VisaResponseDTO();
-//			visa = tm30Repo.getTM30(tm.getId());
-//			response.add(visa);
-//		}
-//		dto.setVisa(response);
-//		return dto;
-//	}
-//
+
+	// @Transactional
+	// public Page<VisaResponseDTO> getAllTm30(SearchDTO search) {
+	// int page = (search.getPage() < 1) ? 0 : search.getPage() - 1;
+	// int size = search.getSize();
+	// Tm30ResponseDTO dto = new Tm30ResponseDTO();
+	// Pageable pageable = PageRequest.of(page, size);
+	// Page<Tm30> tm30 = tm30Repo.getAllTm30(pageable);
+	// List<VisaResponseDTO> response = new ArrayList<VisaResponseDTO>();
+	// for (Tm30 tm : tm30) {
+	// VisaResponseDTO visa = new VisaResponseDTO();
+	// visa = tm30Repo.getTM30(tm.getId());
+	// response.add(visa);
+	// }
+	// dto.setVisa(response);
+	// return dto;
+	// }
+	//
 
 	// @Transactional
 	// public Page<VisaResponseDTO> getAllTm30(SearchDTO search) {
@@ -211,47 +223,49 @@ public class Tm30Service {
 			return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 	@Transactional
 	public List<Tm30ResponseDTO> getTm30OrderByUserId() {
-	    int userId = userRepository.authUser(SecurityUtils.getCurrentUsername());
-	    List<Tm30ProjectionDTO> tm30List = tm30Repo.getTm30OrderByUserId(userId);
-	    
-	    List<Tm30ResponseDTO> responseList = new ArrayList<>();
-	    for (Tm30ProjectionDTO tm30 : tm30List) {
-	        List<VisaResponseDTO> visaOrders = tm30Repo.getVisaOrderByOrderId(tm30.getId());
-	        Tm30ResponseDTO response = new Tm30ResponseDTO();
-	        response.setTm30Order(tm30);
-	        response.setVisaOrder(visaOrders);
-	        responseList.add(response);
-	    }
-	    return responseList;
+		int userId = userRepository.authUser(SecurityUtils.getCurrentUsername());
+		List<Tm30ProjectionDTO> tm30List = tm30Repo.getTm30OrderByUserId(userId);
+
+		List<Tm30ResponseDTO> responseList = new ArrayList<>();
+		for (Tm30ProjectionDTO tm30 : tm30List) {
+			List<VisaResponseDTO> visaOrders = tm30Repo.getVisaOrderByOrderId(tm30.getId());
+			Tm30ResponseDTO response = new Tm30ResponseDTO();
+			response.setTm30Order(tm30);
+			response.setVisaOrder(visaOrders);
+			responseList.add(response);
+		}
+		return responseList;
 	}
-	
+
 	@Transactional
 	public List<Tm30ResponseDTO> getAllTm30Order() {
-	    List<Tm30ProjectionDTO> tm30List = tm30Repo.getAllTm30Order();
-	    
-	    List<Tm30ResponseDTO> responseList = new ArrayList<>();
-	    for (Tm30ProjectionDTO tm30 : tm30List) {
-	        List<VisaResponseDTO> visaOrders = tm30Repo.getVisaOrderByOrderId(tm30.getId());
-	        Tm30ResponseDTO response = new Tm30ResponseDTO();
-	        response.setTm30Order(tm30);
-	        response.setVisaOrder(visaOrders);
-	        responseList.add(response);
-	    }
-	    return responseList;
+		List<Tm30ProjectionDTO> tm30List = tm30Repo.getAllTm30Order();
+
+		List<Tm30ResponseDTO> responseList = new ArrayList<>();
+		for (Tm30ProjectionDTO tm30 : tm30List) {
+			List<VisaResponseDTO> visaOrders = tm30Repo.getVisaOrderByOrderId(tm30.getId());
+			Tm30ResponseDTO response = new Tm30ResponseDTO();
+			response.setTm30Order(tm30);
+			response.setVisaOrder(visaOrders);
+			responseList.add(response);
+		}
+		return responseList;
 	}
 
 	@Transactional
 	public ResponseEntity<String> cancelOrder(int orderId) {
+		String status = OrderStatus.Cancel_Order.name();
 		Optional<Tm30> getTranslatorOrder = tm30Repo.findById(orderId);
 		if (!getTranslatorOrder.isPresent()) {
 			return new ResponseEntity<>("Error occurred: ", HttpStatus.INTERNAL_SERVER_ERROR);
 
 		}
 		try {
-			String status = "Cancel Order";
+			Tm30 model = getTranslatorOrder.get();
+			mainOrderRepository.updateOrderStatusToOnProgress(status, model.getSyskey());
 			tm30Repo.cancelOrder(orderId, status);
 			return ResponseEntity.status(HttpStatus.OK).body("Cancel Tm-30 order successfully.");
 		} catch (Exception e) {
@@ -259,6 +273,5 @@ public class Tm30Service {
 					.body("Error occurred while cancel Tm-30 order: " + e.getMessage());
 		}
 	}
-	
 
 }

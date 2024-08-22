@@ -11,20 +11,21 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class VisaExtension extends CommonDTO{
-	
+public class VisaExtension extends CommonDTO {
+
 	private String syskey;
 	private String visaType;
 	private String passportBio;
 	private String visaPage;
 	private String contactNumber;
 	private String status;
+	private String period;
 	@ManyToOne
-    @JoinColumn(name = "visa_id")
+	@JoinColumn(name = "visa_id")
 	private VisaServices visa;
 
 	@ManyToOne
-    @JoinColumn(name = "user_id")
+	@JoinColumn(name = "user_id")
 	private User user;
 
 }

@@ -25,12 +25,16 @@ import com.app.shwe.model.CarOrder;
 import com.app.shwe.model.CarRent;
 import com.app.shwe.model.Translator;
 import com.app.shwe.model.TranslatorOrder;
+import com.app.shwe.repository.MainOrderRepository;
 import com.app.shwe.repository.TranslatorOrderRepostitory;
 import com.app.shwe.repository.TranslatorRepository;
 import com.app.shwe.repository.UserRepository;
 import com.app.shwe.utils.FilesSerializationUtil;
+import com.app.shwe.utils.OrderStatus;
 import com.app.shwe.utils.SecurityUtils;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.LockModeType;
 import jakarta.transaction.Transactional;
 
@@ -54,6 +58,12 @@ public class TranslatorService {
 
 	@Autowired
 	private UserRepository userRepo;
+
+	@Enumerated(EnumType.STRING)
+	private OrderStatus status;
+
+	@Autowired
+	MainOrderRepository mainOrderRepository;
 
 	@Transactional
 	public ResponseEntity<String> saveTranslator(MultipartFile image, TranslatorRequestDTO request) {
@@ -174,13 +184,16 @@ public class TranslatorService {
 
 	@Transactional
 	public ResponseEntity<String> cancelOrder(int orderId) {
+		String status = OrderStatus.Cancel_Order.name();
 		Optional<TranslatorOrder> getTranslatorOrder = transOrderRepository.findById(orderId);
+
 		if (!getTranslatorOrder.isPresent()) {
 			return new ResponseEntity<>("Error occurred: ", HttpStatus.INTERNAL_SERVER_ERROR);
 
 		}
 		try {
-			String status = "Cancel Order";
+			TranslatorOrder model = getTranslatorOrder.get();
+			mainOrderRepository.updateOrderStatusToOnProgress(status, model.getSysKey());
 			transOrderRepository.cancelOrder(orderId, status);
 			return ResponseEntity.status(HttpStatus.OK).body("Cancel translator order successfully.");
 		} catch (Exception e) {

@@ -10,10 +10,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmbassyLetterRequestDTO {
-	
+
 	private String address;
 	private String contactNumber;
-	private int visa_id; 
+	private String period;
+	private int visa_id;
 	private int option1;
 	private int option2;
 	private int option3;

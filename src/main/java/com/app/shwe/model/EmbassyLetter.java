@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmbassyLetter extends CommonDTO{
-	
+public class EmbassyLetter extends CommonDTO {
+
 	private String syskey;
 	private String type;
 	private String passportBio;
@@ -23,13 +23,13 @@ public class EmbassyLetter extends CommonDTO{
 	private String contactNumber;
 	private String address;
 	private String status;
-	
+	private String period;
 	@ManyToOne
-    @JoinColumn(name = "visa_id")
+	@JoinColumn(name = "visa_id")
 	private VisaServices visa;
 
 	@ManyToOne
-    @JoinColumn(name = "user_id")
+	@JoinColumn(name = "user_id")
 	private User user;
 
 }
