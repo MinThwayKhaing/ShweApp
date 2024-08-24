@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -58,5 +59,10 @@ public class ArticleController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return articleService.getAllArticles(page, size);
+    }
+    
+    @GetMapping("/getAllArticleList")
+    public List<Article> getAllArticleList(){
+    	return articleService.getAllArticlesList();
     }
 }

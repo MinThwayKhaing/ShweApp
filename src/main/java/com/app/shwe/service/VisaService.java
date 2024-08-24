@@ -1,6 +1,8 @@
 package com.app.shwe.service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,6 +112,11 @@ public class VisaService {
 		} catch (Exception e) {
 			return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+	
+	public List<VisaServices> getAllVisaList(){
+		List<VisaServices> visaList = visaRepo.findAll();
+	    return visaList;
 	}
 
 }

@@ -7,6 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -89,6 +92,9 @@ public class OtpService {
             return "Failed to send OTP. Response Code: " + response.getStatusCode();
         }
     }
+    
+   
+
 
     public ResponseEntity<String> verifyOtp(String token, String otpCode, String phoneNumber) {
 

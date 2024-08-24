@@ -60,4 +60,9 @@ public class VisaServicesController {
 	public ResponseEntity<?> deleteCar(@PathVariable int id) {
 		return visaService.deleteVisa(id);
 	}
+	
+	@GetMapping("/getAllVisa")
+	public List<VisaServices> getAllVisaList(){
+		return visaService.getAllVisaList();
+	}
 }

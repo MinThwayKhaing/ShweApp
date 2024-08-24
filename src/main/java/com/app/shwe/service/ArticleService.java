@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -91,5 +93,10 @@ public class ArticleService {
 			 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 	                    .body("Error occurred while selecting Activities: " + e.getMessage());
 		}
+    }
+    
+    public List<Article> getAllArticlesList(){
+    	List<Article> articleList = articleRepository.findAll();
+    	return articleList;
     }
 }
