@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -27,16 +28,29 @@ public class SettingService {
 	@Autowired
 	private TermsAndConditionRepository termsAndConditonRepo;
 
-	public SettingResponseDTO getAllSetting() {
-		TermsAndCondition tnc = termsAndConditonRepo.getTermsAndCondition();
-		List<VisaServices> visaList = visaRepo.findAll();
-		List<Article> articleList = articleRepo.findAll();
+	public ResponseEntity<?> getAllSetting() {
+		try {
+			// Fetching data from repositories
+			TermsAndCondition tnc = termsAndConditonRepo.getTermsAndCondition();
+			List<VisaServices> visaList = visaRepo.findAll();
+			List<Article> articleList = articleRepo.findAll();
 
-		SettingResponseDTO response = new SettingResponseDTO();
+			// Creating the response DTO
+			SettingResponseDTO response = new SettingResponseDTO();
+			response.setTnc(tnc);
+			response.setVisa_services(visaList);
+			response.setArticle(articleList);
 
-		response.setTnc(tnc);
-		response.setVisa_services(visaList);
-		response.setArticle(articleList);
-		return response;
+			// Returning the response entity with HTTP status 200 (OK)
+			return ResponseEntity.ok(response);
+
+		} catch (Exception e) {
+			// Logging the exception (optional)
+			e.printStackTrace();
+
+			// Creating an error response with HTTP status 500 (Internal Server Error)
+			String errorMessage = "Failed to retrieve settings due to an internal error.";
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
+		}
 	}
 }

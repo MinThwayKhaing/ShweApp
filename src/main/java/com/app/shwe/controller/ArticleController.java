@@ -22,17 +22,25 @@ public class ArticleController {
 
     @PostMapping("/create")
     public ResponseEntity<String> createArticle(
-            @RequestPart("image") MultipartFile imageFile,  @RequestPart("request") ArticleRequest article) {
+            @RequestPart("image") MultipartFile imageFile, @RequestPart("request") ArticleRequest article) {
         try {
-            return articleService.saveArticle(imageFile,article);
+            return articleService.saveArticle(imageFile, article);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error occurred while saving Article: " + e.getMessage());
         }
     }
 
+    @GetMapping("/select")
+    public ResponseEntity<?> getArticlesByActivityId(@RequestParam("id") int activityId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        System.out.println("Hello");
+        return articleService.getArticlesByActivityId(activityId, page, size);
+    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<Article> getArticleById(@PathVariable("id") int id) {
+    public ResponseEntity<?> getArticleById(@PathVariable("id") int id) {
         Optional<Article> article = articleService.getArticleById(id);
         return article.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -60,9 +68,9 @@ public class ArticleController {
             @RequestParam(defaultValue = "10") int size) {
         return articleService.getAllArticles(page, size);
     }
-    
+
     @GetMapping("/getAllArticleList")
-    public List<Article> getAllArticleList(){
-    	return articleService.getAllArticlesList();
+    public List<Article> getAllArticleList() {
+        return articleService.getAllArticlesList();
     }
 }
