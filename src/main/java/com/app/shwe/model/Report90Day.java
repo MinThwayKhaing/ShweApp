@@ -11,23 +11,23 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Report90Day extends CommonDTO{
-	
+public class Report90Day extends CommonDTO {
+
 	private String syskey;
-	private String visaType;
+	private int visaType;
 	private String tm6Photo;
 	private String expireDatePhoto;
 	private String passportBio;
 	private String visaPage;
 	private String contactNumber;
 	private String status;
-	
+
 	@ManyToOne
-    @JoinColumn(name = "user_id")
+	@JoinColumn(name = "user_id")
 	private User user;
-	
+
 	@ManyToOne
-    @JoinColumn(name = "visa_id")
+	@JoinColumn(name = "visa_id")
 	private VisaServices visa;
 
 }

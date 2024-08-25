@@ -24,6 +24,8 @@ public class MainOrder extends CommonDTO {
 	private Date end_date;
 	private String period;
 	private String status;
+	private String visaType;
+	private String RecommendationLetterType;
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User user;

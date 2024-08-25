@@ -19,15 +19,17 @@ import com.app.shwe.model.VisaExtension;
 import jakarta.transaction.Transactional;
 
 @Repository
-public interface VisaExtensionRepository extends JpaRepository<VisaExtension, Integer>{
-	
-	@Query("SELECT new com.app.shwe.dto.VisaExtensionTypeResponseDTO(v.id,v.description,s.price) "
-			+ "FROM Report90DayVisaType v JOIN Report90DaySubVisaType s ON s.visa.id = v.id")
-	List<VisaExtensionTypeResponseDTO> findAllVisaType();
-	
+public interface VisaExtensionRepository extends JpaRepository<VisaExtension, Integer> {
+
+	// @Query("SELECT new
+	// com.app.shwe.dto.VisaExtensionTypeResponseDTO(v.id,v.description,s.price) "
+	// + "FROM Report90DayVisaType v JOIN Report90DaySubVisaType s ON s.visa.id =
+	// v.id")
+	// List<VisaExtensionTypeResponseDTO> findAllVisaType();
+
 	@Query("SELECT new com.app.shwe.dto.VisaExtensionProjectionDTO(v.id,v.syskey,v.passportBio, v.visaPage, v.contactNumber,v.user.userName,v.status) FROM VisaExtension v WHERE v.user.id = :id ORDER BY v.id DESC")
 	List<VisaExtensionProjectionDTO> getVisaExtensionOrderByUserId(int id);
-	
+
 	@Query("SELECT new com.app.shwe.dto.VisaExtensionOrderResponseDTO(vo.order_id,vs.serviceName, vo.main_visa_id, vo.sub_visa_id, vt.description, svt.price) "
 			+ "FROM VisaExtensionType vt "
 			+ "JOIN VisaServices vs ON vt.visa.id = vs.id "
@@ -35,13 +37,13 @@ public interface VisaExtensionRepository extends JpaRepository<VisaExtension, In
 			+ "JOIN VisaExtensionSubType svt ON svt.id = vo.sub_visa_id "
 			+ "WHERE vo.order_id = :orderId")
 	List<VisaExtensionOrderResponseDTO> getVisaOrderByOrderId(@Param("orderId") int orderId);
-	
+
 	@Modifying
 	@Transactional
 	@Query("UPDATE VisaExtension v SET v.status = :status WHERE v.id = :id")
 	void cancelOrder(@Param("id") int id, @Param("status") String status);
-	
+
 	@Query("SELECT COALESCE(MAX(r.syskey), 'VE00000000') FROM VisaExtension r")
-    String findMaxSysKey();
+	String findMaxSysKey();
 
 }

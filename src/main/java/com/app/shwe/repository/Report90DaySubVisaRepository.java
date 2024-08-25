@@ -10,11 +10,11 @@ import com.app.shwe.model.Report90DaySubVisaType;
 import jakarta.transaction.Transactional;
 
 @Repository
-public interface Report90DaySubVisaRepository extends JpaRepository<Report90DaySubVisaType, Integer>{
-	
-	@Modifying
-    @Transactional
-    @Query("DELETE FROM Report90DaySubVisaType s WHERE s.visa.id = :visaId")
-    void deleteSubVisaTypesByVisaId(int visaId);
+public interface Report90DaySubVisaRepository extends JpaRepository<Report90DaySubVisaType, Integer> {
+
+    // @Modifying
+    // @Transactional
+    // @Query("DELETE FROM Report90DaySubVisaType s WHERE s.visa.id = :visaId")
+    // void deleteSubVisaTypesByVisaId(int visaId);
 
 }

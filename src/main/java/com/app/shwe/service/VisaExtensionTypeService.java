@@ -39,86 +39,89 @@ public class VisaExtensionTypeService {
 	@Autowired
 	private VisaServicesRepository visaService;
 
-	
 	public ResponseEntity<String> saveVisaType(VisaExtensionTypeRequestDTO request) {
-	    if (request == null) {
-	        throw new IllegalArgumentException("Request and required fields must not be null");
-	    }
-
-	    try {
-	        VisaServices visaServices = visaService.findById(request.getVisa_service_id())
-	                .orElseThrow(() -> new RuntimeException("Visa service not found for ID: " + request.getVisa_service_id()));
-	        
-	        VisaExtensionType visaType = new VisaExtensionType();
-	        visaType.setDescription(request.getDescription());
-	        visaType.setVisa(visaServices);
-	        visaType.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
-	        visaType.setCreatedDate(new Date());
-	        
-	        // Save the visaType first
-	        vsiaTypeRepository.save(visaType);
-
-	        // Now create and save the subVisaType
-	        VisaExtensionSubType subVisaType = new VisaExtensionSubType();
-	        subVisaType.setPrice(request.getPrice());
-	        subVisaType.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
-	        subVisaType.setCreatedDate(new Date());
-	        subVisaType.setVisa(visaType); // Ensure visaType is saved and referenced
-	        
-	        subVisaTypeRepository.save(subVisaType);
-
-	        return ResponseEntity.status(HttpStatus.OK).body("Visa type saved successfully.");
-	    } catch (Exception e) {
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Error occurred while saving visa type: " + e.getMessage());
-	    }
-	}
-
-
-	@Transactional
-	public List<VisaExtensionTypeResponseDTO> getVisaByType(VisaExtensionTypeRequestDTO request) {
 		if (request == null) {
 			throw new IllegalArgumentException("Request and required fields must not be null");
 		}
-		List<VisaExtensionTypeResponseDTO> visaList = vsiaTypeRepository.findVisaByType(request.getDescription());
-		List<VisaExtensionTypeResponseDTO> response = new ArrayList<>();
-		for (VisaExtensionTypeResponseDTO visaTypeResponseDTO : visaList) {
-			VisaExtensionTypeResponseDTO dto = new VisaExtensionTypeResponseDTO();
-			VisaType type = new VisaType();
-			type.setId(dto.getId());
-			type.setDescription(dto.getDescription());
-			dto.setId(visaTypeResponseDTO.getId());
-			dto.setDescription(visaTypeResponseDTO.getDescription());
-			SubVisaType sub = new SubVisaType();
-			sub.setPrice(dto.getPrice());
-			dto.setPrice(visaTypeResponseDTO.getPrice());
-			response.add(visaTypeResponseDTO);
 
+		try {
+			VisaServices visaServices = visaService.findById(request.getVisa_service_id())
+					.orElseThrow(() -> new RuntimeException(
+							"Visa service not found for ID: " + request.getVisa_service_id()));
+
+			VisaExtensionType visaType = new VisaExtensionType();
+			visaType.setDescription(request.getDescription());
+			visaType.setVisa(visaServices);
+			visaType.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
+			visaType.setCreatedDate(new Date());
+
+			// Save the visaType first
+			vsiaTypeRepository.save(visaType);
+
+			// Now create and save the subVisaType
+			VisaExtensionSubType subVisaType = new VisaExtensionSubType();
+			subVisaType.setPrice(request.getPrice());
+			subVisaType.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
+			subVisaType.setCreatedDate(new Date());
+			subVisaType.setVisa(visaType); // Ensure visaType is saved and referenced
+
+			subVisaTypeRepository.save(subVisaType);
+
+			return ResponseEntity.status(HttpStatus.OK).body("Visa type saved successfully.");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error occurred while saving visa type: " + e.getMessage());
 		}
-
-		return response;
 	}
 
-	@Transactional
-	public List<VisaExtensionTypeResponseDTO> getAllVisaType() {
-		List<VisaExtensionTypeResponseDTO> visaList = vsiaTypeRepository.findAllVisaType();
-		List<VisaExtensionTypeResponseDTO> response = new ArrayList<>();
-		for (VisaExtensionTypeResponseDTO visaTypeResponseDTO : visaList) {
-			VisaExtensionTypeResponseDTO dto = new VisaExtensionTypeResponseDTO();
-			VisaType type = new VisaType();
-			type.setId(dto.getId());
-			type.setDescription(dto.getDescription());
-			dto.setId(visaTypeResponseDTO.getId());
-			dto.setDescription(visaTypeResponseDTO.getDescription());
-			VisaExtensionSubType sub = new VisaExtensionSubType();
-			sub.setPrice(dto.getPrice());
-			dto.setPrice(visaTypeResponseDTO.getPrice());
-			response.add(visaTypeResponseDTO);
+	// @Transactional
+	// public List<VisaExtensionTypeResponseDTO>
+	// getVisaByType(VisaExtensionTypeRequestDTO request) {
+	// if (request == null) {
+	// throw new IllegalArgumentException("Request and required fields must not be
+	// null");
+	// }
+	// List<VisaExtensionTypeResponseDTO> visaList =
+	// vsiaTypeRepository.findVisaByType(request.getDescription());
+	// List<VisaExtensionTypeResponseDTO> response = new ArrayList<>();
+	// for (VisaExtensionTypeResponseDTO visaTypeResponseDTO : visaList) {
+	// VisaExtensionTypeResponseDTO dto = new VisaExtensionTypeResponseDTO();
+	// VisaType type = new VisaType();
+	// type.setId(dto.getId());
+	// type.setDescription(dto.getDescription());
+	// dto.setId(visaTypeResponseDTO.getId());
+	// dto.setDescription(visaTypeResponseDTO.getDescription());
+	// SubVisaType sub = new SubVisaType();
+	// sub.setPrice(dto.getPrice());
+	// dto.setPrice(visaTypeResponseDTO.getPrice());
+	// response.add(visaTypeResponseDTO);
 
-		}
+	// }
 
-		return response;
-	}
+	// return response;
+	// }
+
+	// @Transactional
+	// public List<VisaExtensionTypeResponseDTO> getAllVisaType() {
+	// List<VisaExtensionTypeResponseDTO> visaList =
+	// vsiaTypeRepository.findAllVisaType();
+	// List<VisaExtensionTypeResponseDTO> response = new ArrayList<>();
+	// for (VisaExtensionTypeResponseDTO visaTypeResponseDTO : visaList) {
+	// VisaExtensionTypeResponseDTO dto = new VisaExtensionTypeResponseDTO();
+	// VisaType type = new VisaType();
+	// type.setId(dto.getId());
+	// type.setDescription(dto.getDescription());
+	// dto.setId(visaTypeResponseDTO.getId());
+	// dto.setDescription(visaTypeResponseDTO.getDescription());
+	// VisaExtensionSubType sub = new VisaExtensionSubType();
+	// sub.setPrice(dto.getPrice());
+	// dto.setPrice(visaTypeResponseDTO.getPrice());
+	// response.add(visaTypeResponseDTO);
+
+	// }
+
+	// return response;
+	// }
 
 	@Transactional
 	public ResponseEntity<String> updateVisaType(int id, VisaExtensionTypeRequestDTO request) {

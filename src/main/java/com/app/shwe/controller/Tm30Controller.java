@@ -49,12 +49,11 @@ public class Tm30Controller {
 	public Page<Tm30> showTmAllTm30(@RequestBody SearchDTO search) {
 		return tm30Service.getTm30(search);
 	}
-	
-	
-//	@GetMapping("/getAllTm30Order")
-//	public Page<VisaResponseDTO> getAllTm30Order(@RequestBody SearchDTO search) {
-//		return tm30Service.getAllTm30(search);
-//	}
+
+	// @GetMapping("/getAllTm30Order")
+	// public Page<VisaResponseDTO> getAllTm30Order(@RequestBody SearchDTO search) {
+	// return tm30Service.getAllTm30(search);
+	// }
 
 	// @GetMapping("/getAllTm30Order")
 	// public Page<VisaResponseDTO> getAllTm30Order(@RequestBody SearchDTO search) {
@@ -66,27 +65,29 @@ public class Tm30Controller {
 	// return tm30Service.getAllTm30(search);
 	// }
 
-	@PutMapping("/updateTm30/{id}")
-	public ResponseEntity<String> updateNews(@PathVariable int id, @RequestPart("passport") MultipartFile passportPage,
-			@RequestPart("visa") MultipartFile visaPage, @RequestPart("request") Tm30RequestDTO request) {
-		return tm30Service.updateTm30(id, passportPage, visaPage, request);
-	}
+	// @PutMapping("/updateTm30/{id}")
+	// public ResponseEntity<String> updateNews(@PathVariable int id,
+	// @RequestPart("passport") MultipartFile passportPage,
+	// @RequestPart("visa") MultipartFile visaPage, @RequestPart("request")
+	// Tm30RequestDTO request) {
+	// return tm30Service.updateTm30(id, passportPage, visaPage, request);
+	// }
 
 	@DeleteMapping("/deleteTm30/{id}")
 	public ResponseEntity<?> deleteCar(@PathVariable int id) {
 		return tm30Service.deleteTm30(id);
 	}
-	
-	@GetMapping("/getTm30OrderByUserId")
-	public List<Tm30ResponseDTO> getTm30OrderByuserId() {
-		return tm30Service.getTm30OrderByUserId();
-	}
-	
-	@GetMapping("/getAllTm30Order")
-	public List<Tm30ResponseDTO> getAllTm30Order() {
-		return tm30Service.getAllTm30Order();
-	}
-	
+
+	// @GetMapping("/getTm30OrderByUserId")
+	// public List<Tm30ResponseDTO> getTm30OrderByuserId() {
+	// return tm30Service.getTm30OrderByUserId();
+	// }
+
+	// @GetMapping("/getAllTm30Order")
+	// public List<Tm30ResponseDTO> getAllTm30Order() {
+	// return tm30Service.getAllTm30Order();
+	// }
+
 	@PutMapping("/cancelOrder/{id}")
 	public ResponseEntity<String> cancelOrder(@PathVariable int id) {
 		return tm30Service.cancelOrder(id);

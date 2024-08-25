@@ -23,34 +23,35 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/visa-extension-type")
 @RequiredArgsConstructor
 public class VisaExtensionTypeController {
-	
-	    @Autowired
-	    private VisaExtensionTypeService visaTypeService;
 
-	    @PostMapping("/saveVisaType")
-		public ResponseEntity<String> saveVisaTypes(@RequestBody VisaExtensionTypeRequestDTO request) {
-			return visaTypeService.saveVisaType(request);
-		}
+	@Autowired
+	private VisaExtensionTypeService visaTypeService;
 
-		@GetMapping("/getVisaByType")
-		public List<VisaExtensionTypeResponseDTO> getVisaExtensionType(@RequestBody VisaExtensionTypeRequestDTO request) {
-			return visaTypeService.getVisaByType(request);
-		}
+	@PostMapping("/saveVisaType")
+	public ResponseEntity<String> saveVisaTypes(@RequestBody VisaExtensionTypeRequestDTO request) {
+		return visaTypeService.saveVisaType(request);
+	}
 
-		@PutMapping("/updateVisaType/{id}")
-		public ResponseEntity<String> updateVisaExtensionType(@PathVariable int id,@RequestBody VisaExtensionTypeRequestDTO request) {
-			return visaTypeService.updateVisaType(id,request);
-		}
-	    
-	    @GetMapping("/getAllVisaType")
-	   	public List<VisaExtensionTypeResponseDTO> getVisaExtensionType() {
-	   		return visaTypeService.getAllVisaType();
-	   	}
-	    
-	    @DeleteMapping("/deleteVisaType/{id}")
-		public ResponseEntity<?> deleteVisaType(@PathVariable int id) {
-			return visaTypeService.deleteVisaType(id);
-		}
-	    
+	// @GetMapping("/getVisaByType")
+	// public List<VisaExtensionTypeResponseDTO> getVisaExtensionType(@RequestBody
+	// VisaExtensionTypeRequestDTO request) {
+	// return visaTypeService.getVisaByType(request);
+	// }
+
+	@PutMapping("/updateVisaType/{id}")
+	public ResponseEntity<String> updateVisaExtensionType(@PathVariable int id,
+			@RequestBody VisaExtensionTypeRequestDTO request) {
+		return visaTypeService.updateVisaType(id, request);
+	}
+
+	// @GetMapping("/getAllVisaType")
+	// public List<VisaExtensionTypeResponseDTO> getVisaExtensionType() {
+	// return visaTypeService.getAllVisaType();
+	// }
+
+	@DeleteMapping("/deleteVisaType/{id}")
+	public ResponseEntity<?> deleteVisaType(@PathVariable int id) {
+		return visaTypeService.deleteVisaType(id);
+	}
 
 }

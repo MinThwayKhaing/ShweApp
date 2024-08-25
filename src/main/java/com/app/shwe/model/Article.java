@@ -19,7 +19,7 @@ public class Article extends CommonDTO {
 
     @Column(length = 500)
     private String description;
-
+    private String period;
     private String imageUrl;
 
     @ManyToOne

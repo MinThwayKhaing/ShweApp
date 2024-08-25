@@ -17,28 +17,29 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Tm30 extends CommonDTO{
-	
+public class Tm30 extends CommonDTO {
+
 	private String syskey;
-	private String period;
+
 	private String passportBio;
 	private String visaPage;
-	//@Convert(converter = StringListConverter.class)
+	// @Convert(converter = StringListConverter.class)
 	private String duration;
 	private String contactNumber;
 	private String status;
 	@ManyToOne
-    @JoinColumn(name = "visa_id")
+	@JoinColumn(name = "visa_id")
 	private VisaServices visa;
 
 	@ManyToOne
-    @JoinColumn(name = "user_id")
+	@JoinColumn(name = "user_id")
 	private User user;
-    
-	@ManyToOne
-    @JoinColumn(name = "price_id")
-	private Price price;
 
-	
+	@ManyToOne
+	@JoinColumn(name = "price_id")
+	private Price price;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "period_id", nullable = false)
+	private TM30Period period;
 
 }

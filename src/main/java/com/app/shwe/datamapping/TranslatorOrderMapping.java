@@ -59,8 +59,7 @@ public class TranslatorOrderMapping {
 	public TranslatorOrder mapToTranslatorOrder(TranslatorOrderRequestDTO dto) {
 		TranslatorOrder order = new TranslatorOrder();
 		MainOrder mainOrder = new MainOrder();
-		Translator translator = translatorRepository.findById(dto.getTranslator_id())
-				.orElseThrow(() -> new RuntimeException("Translater not found for ID: " + dto.getTranslator_id()));
+
 		int userId = userRepository.authUser(SecurityUtils.getCurrentUsername());
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new RuntimeException("User not found for ID: " + userId));
@@ -74,7 +73,7 @@ public class TranslatorOrderMapping {
 		order.setStatus("Pending");
 		order.setCreatedBy(userId);
 		order.setCreatedDate(new Date());
-		order.setTranslator(translator);
+
 		order.setSysKey(idGenerator.generateNextCarOrderId());
 		mainOrder.setStart_date(order.getFromDate());
 		mainOrder.setEnd_date(order.getToDate());

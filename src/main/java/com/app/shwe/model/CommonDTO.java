@@ -26,7 +26,6 @@ public class CommonDTO {
 	private Date updatedDate;
 	private int createdBy;
 	private int updatedBy;
-	private String period;
 
 	@PrePersist
 	protected void onCreate() {
