@@ -36,6 +36,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 	boolean existsByUserName(String userName);
 
 	User findByPhoneNumber(String phoneNumber);
+	
+	Optional<User> getPhoneNumberById(int id);
 
 	Optional<User> findByPhoneNumberAndPassword(String phoneNumber, String password);
 
@@ -56,5 +58,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 	@Transactional
 	@Query("UPDATE User u SET u.password = :password WHERE u.id = :id")
 	void changePassword(@Param("id") int id, @Param("password") String password);
+	
+	Optional<User> getUserByPhoneNumber(String phoneNumber);
 
 }

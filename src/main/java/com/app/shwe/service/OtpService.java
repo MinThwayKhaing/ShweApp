@@ -1,7 +1,10 @@
 package com.app.shwe.service;
 
+import com.app.shwe.dto.UpdateUserRequest;
 import com.app.shwe.model.Otp;
+import com.app.shwe.model.User;
 import com.app.shwe.repository.OtpRepository;
+import com.app.shwe.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,7 @@ import java.util.Random;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class OtpService {
@@ -40,6 +44,9 @@ public class OtpService {
 
     @Autowired
     private UserService userService;
+    
+    @Autowired 
+    private UserRepository userRepository;
 
     private static final int OTP_EXPIRATION_MINUTES = 3;
 
@@ -95,6 +102,8 @@ public class OtpService {
     
    
 
+    
+
 
     public ResponseEntity<String> verifyOtp(String token, String otpCode, String phoneNumber) {
 
@@ -128,6 +137,32 @@ public class OtpService {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("An error occurred while verifying the OTP.");
+        }
+    }
+    
+    //WWTT
+    public ResponseEntity<String> verifyOtpForUpdate(String token, String otpCode, String phoneNumber) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Accept", "application/json");
+        headers.set("Authorization", "Bearer " + apiKey);
+        headers.set("Content-Type", "application/json");
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("token", token);
+        payload.put("otp_code", otpCode);
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(verifyOtpUrl, HttpMethod.POST, entity, String.class);
+
+            return userService.handleParsedResponseForUserUpdate(response, phoneNumber);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while verifying the OTP.");
         }
     }
 

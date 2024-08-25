@@ -3,6 +3,7 @@ package com.app.shwe.service;
 import java.util.Date;
 import java.util.Optional;
 
+import org.apache.catalina.security.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.app.shwe.dto.AuthenticationRequest;
 import com.app.shwe.dto.AuthenticationResponse;
 import com.app.shwe.dto.RegisterRequest;
+import com.app.shwe.dto.UpdateUserRequest;
 import com.app.shwe.dto.UserRequest;
 import com.app.shwe.model.PendingRegistration;
 import com.app.shwe.model.Role;
@@ -26,6 +28,7 @@ import com.app.shwe.model.User;
 import com.app.shwe.repository.PendingRegistrationRepository;
 import com.app.shwe.repository.UserRepository;
 import com.app.shwe.securityConfig.JwtService;
+import com.app.shwe.utils.SecurityUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -68,6 +71,47 @@ public class AuthenticationService {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(token);
     }
+    
+    //WWTT
+    public ResponseEntity<String> initiateUpdateUser(UpdateUserRequest request) {
+        // Get the current user's username and fetch their details
+        int id = repository.authUser(SecurityUtils.getCurrentUsername());
+        Optional<User> existingUser = repository.getPhoneNumberById(id);
+
+        if (!existingUser.isPresent()) {
+            throw new RuntimeException("User not found.");
+        }
+
+        User user = existingUser.get();
+        String oldPhoneNumber = user.getPhoneNumber();
+        
+        // Check if the phone number is being updated
+        if (!request.getPhoneNumber().equals(oldPhoneNumber)) {
+            // Phone number is being updated, so we need to send an OTP
+            String otpCode = otpService.generateOtp(6);
+            Date expiryTime = otpService.calculateExpiryTime(3);
+
+            PendingRegistration pendingRegistration = new PendingRegistration();
+            pendingRegistration.setName(request.getUserName());
+            pendingRegistration.setPhoneNumber(request.getPhoneNumber());
+            pendingRegistration.setPasswordHash(user.getPassword()); // Retain the old password
+            pendingRegistration.setOtp(otpCode);
+            pendingRegistration.setOtpExpiry(expiryTime);
+
+            pendingRegistrationRepo.save(pendingRegistration);
+
+            // Send OTP to the new phone number
+            String token = otpService.sendOtp(request.getPhoneNumber(), "SHWEAPPS", otpCode);
+            return ResponseEntity.status(HttpStatus.OK).body(token);
+        } else {
+            // Only the name is being updated, no OTP required
+            user.setUserName(request.getUserName());
+            repository.save(user);
+            return ResponseEntity.status(HttpStatus.OK).body("Username updated successfully.");
+        }
+    }
+
+
 
     public ResponseEntity<String> registerUser(String phoneNumber) {
         if (repository.existsByPhoneNumber(phoneNumber)
@@ -101,6 +145,36 @@ public class AuthenticationService {
                     .body("Error occurred while saving users: " + e.getMessage());
         }
     }
+    
+    //WWTT
+    public ResponseEntity<String> updateUserPhoneNumber(String phoneNumber) {
+	    Optional<PendingRegistration> pendingUserOptional = pendingRegistrationRepo.findByPhoneNumber(phoneNumber);
+
+	    if (!pendingUserOptional.isPresent()) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Pending registration not found.");
+	    }
+
+	    PendingRegistration pendingUser = pendingUserOptional.get();
+	    int id = repository.authUser(SecurityUtils.getCurrentUsername());
+        Optional<User> existingUser = repository.getPhoneNumberById(id);
+
+
+	    if (!existingUser.isPresent()) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User not found.");
+	    }
+
+	    try {
+	        User user = existingUser.get();
+	        user.setPhoneNumber(pendingUser.getPhoneNumber());
+	        user.setUserName(pendingUser.getName());
+	        repository.save(user);
+	        pendingRegistrationRepo.delete(pendingUser);
+
+	        return ResponseEntity.status(HttpStatus.OK).body("User updated successfully.");
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred while updating user: " + e.getMessage());
+	    }
+	}
 
     public ResponseEntity<String> registerAdmin(RegisterRequest request) {
         if (request == null) {
@@ -202,4 +276,7 @@ public class AuthenticationService {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
         }
     }
+    
+   
+    
 }

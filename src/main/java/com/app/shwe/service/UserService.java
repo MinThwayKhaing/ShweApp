@@ -138,5 +138,32 @@ public class UserService {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to parse the response.");
 		}
 	}
+	
+	//WWTT
+	public ResponseEntity<String> handleParsedResponseForUserUpdate(ResponseEntity<String> response, String phoneNumber) {
+	    int responseCode = response.getStatusCodeValue();
+	    String responseBody = response.getBody();
+
+	    try {
+	        ObjectMapper objectMapper = new ObjectMapper();
+	        JsonNode jsonNode = objectMapper.readTree(responseBody);
+
+	        boolean isValid = jsonNode.path("data").path("is_valid").asBoolean();
+	        String message = jsonNode.path("data").path("message").asText();
+
+	        if (isValid) {
+	            // If the OTP is valid, update the user's phone number
+	            return authRepo.updateUserPhoneNumber(phoneNumber);
+	        } else {
+	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid OTP: " + message);
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to parse the response.");
+	    }
+	}
+	
+	
 
 }
