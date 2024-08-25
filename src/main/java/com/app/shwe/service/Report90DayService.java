@@ -28,6 +28,7 @@ import com.app.shwe.model.VisaServices;
 import com.app.shwe.repository.MainOrderRepository;
 import com.app.shwe.repository.Report90DayOrderRepository;
 import com.app.shwe.repository.Report90DayRepository;
+import com.app.shwe.repository.Report90DayVisaTypeRepository;
 import com.app.shwe.repository.UserRepository;
 import com.app.shwe.repository.VisaServicesRepository;
 import com.app.shwe.utils.OrderStatus;
@@ -62,6 +63,8 @@ public class Report90DayService {
 	private OrderStatus status;
 
 	@Autowired
+	private Report90DayVisaTypeRepository report90_dayRepo;
+	@Autowired
 	MainOrderRepository mainOrderRepository;
 
 	public ResponseEntity<String> saveReport90Day(MultipartFile tm6Photo, MultipartFile expireDatePhoto,
@@ -82,6 +85,7 @@ public class Report90DayService {
 			String passport_bio = fileUploadService.uploadFile(passportBio);
 			String visa_page = fileUploadService.uploadFile(visaPage);
 			Report90Day report = new Report90Day();
+
 			report.setSyskey(orderGeneratorService.generateReport90DayOrderId());
 			report.setTm6Photo(tm6_photo);
 			report.setExpireDatePhoto(expire_photo);
@@ -92,25 +96,10 @@ public class Report90DayService {
 			report.setUser(user);
 			report.setVisa(visaServices);
 			reportRepo.save(report);
-			if (request.getOption1() == 1) {
-				order.setSub_visa_id(request.getOption1());
-			} else if (request.getOption2() == 2) {
-				order.setSub_visa_id(request.getOption2());
-			} else if (request.getOption3() == 3) {
-				order.setSub_visa_id(request.getOption3());
-			} else if (request.getOption4() == 4) {
-				order.setSub_visa_id(request.getOption4());
-			} else if (request.getOption5() == 5) {
-				order.setSub_visa_id(request.getOption5());
-			} else if (request.getOption6() == 6) {
-				order.setSub_visa_id(request.getOption6());
-			} else if (request.getOption7() == 7) {
-				order.setSub_visa_id(request.getOption7());
-			}
-			order.setMain_visa_id(request.getVisa_id());
-			order.setOrder_id(report.getId());
+
 			MainOrder mainOrder = new MainOrder();
-			mainOrder.setPeriod(report.getPeriod());
+			Report90DayVisaType visaType = report90_dayRepo.findReport90DayVisaTypeById(report.getVisaType());
+			mainOrder.setVisaType(visaType.getDescription() + "B" + visaType.getPrice());
 			mainOrder.setCreatedBy(userId);
 			mainOrder.setCreatedDate(report.getCreatedDate());
 			mainOrder.setStatus(report.getStatus());
@@ -126,22 +115,24 @@ public class Report90DayService {
 		}
 
 	}
+	// For Repair
+	// @Transactional
+	// public List<Report90ResponseDTO> getReport90DayOrder() {
+	// int userId = userRepo.authUser(SecurityUtils.getCurrentUsername());
+	// List<Report90DayProjectionDTO> reportList =
+	// reportRepo.getReport90DayOrderByUserId(userId);
 
-	@Transactional
-	public List<Report90ResponseDTO> getReport90DayOrder() {
-		int userId = userRepo.authUser(SecurityUtils.getCurrentUsername());
-		List<Report90DayProjectionDTO> reportList = reportRepo.getReport90DayOrderByUserId(userId);
-
-		List<Report90ResponseDTO> responseList = new ArrayList<>();
-		for (Report90DayProjectionDTO report : reportList) {
-			List<Report90DayTypeResponseDTO> visaOrders = reportRepo.getVisaOrderByOrderId(report.getId());
-			Report90ResponseDTO response = new Report90ResponseDTO();
-			response.setReportOrder(report);
-			response.setVisaOrder(visaOrders);
-			responseList.add(response);
-		}
-		return responseList;
-	}
+	// List<Report90ResponseDTO> responseList = new ArrayList<>();
+	// for (Report90DayProjectionDTO report : reportList) {
+	// List<Report90DayTypeResponseDTO> visaOrders =
+	// reportRepo.getVisaOrderByOrderId(report.getId());
+	// Report90ResponseDTO response = new Report90ResponseDTO();
+	// response.setReportOrder(report);
+	// response.setVisaOrder(visaOrders);
+	// responseList.add(response);
+	// }
+	// return responseList;
+	// }
 
 	@Transactional
 	public ResponseEntity<?> deleteReport90DayById(int id) {

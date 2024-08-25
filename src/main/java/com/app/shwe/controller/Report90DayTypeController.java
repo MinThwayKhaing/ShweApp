@@ -26,34 +26,35 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/report-visa-type")
 @RequiredArgsConstructor
 public class Report90DayTypeController {
-	
-	@Autowired
-    private Report90DayVisaTypeService visaTypeService;
 
-    @PostMapping("/save90DayReportType")
+	@Autowired
+	private Report90DayVisaTypeService visaTypeService;
+
+	@PostMapping("/save90DayReportType")
 	public ResponseEntity<String> save90DayReportTypes(@RequestBody Report90DayTypeRequestDTO request) {
 		return visaTypeService.saveVisaType(request);
 	}
 
-    @GetMapping("/get90DayReportType")
-	public List<Report90DayTypeResponseType> getNewsById(@RequestBody Report90DayTypeRequestDTO request) {
-		return visaTypeService.getVisaByType(request);
+	// @GetMapping("/get90DayReportType")
+	// public List<Report90DayTypeResponseType> getNewsById(@RequestBody
+	// Report90DayTypeRequestDTO request) {
+	// return visaTypeService.getVisaByType(request);
+	// }
+
+	// @PutMapping("/update90DayReportType/{id}")
+	// public ResponseEntity<String> updateVisa(@PathVariable int id,@RequestBody
+	// Report90DayTypeRequestDTO request) {
+	// return visaTypeService.updateVisaType(id,request);
+	// }
+
+	@GetMapping("/getAll90DayReportType")
+	public ResponseEntity<?> getNewsById() {
+		return visaTypeService.getAllReport90DayVisaTypes();
 	}
-    
-    @PutMapping("/update90DayReportType/{id}")
-	public ResponseEntity<String> updateVisa(@PathVariable int id,@RequestBody Report90DayTypeRequestDTO request) {
-		return visaTypeService.updateVisaType(id,request);
-	}
-    
-    @GetMapping("/getAll90DayReportType")
-   	public List<Report90DayTypeResponseType> getNewsById() {
-   		return visaTypeService.getAllVisaType();
-   	}
-    
-    @DeleteMapping("/delete90DayReportType/{id}")
-	public ResponseEntity<?> deleteVisaType(@PathVariable int id) {
-		return visaTypeService.deleteVisaType(id);
-	}
-    
+
+	// @DeleteMapping("/delete90DayReportType/{id}")
+	// public ResponseEntity<?> deleteVisaType(@PathVariable int id) {
+	// return visaTypeService.deleteVisaType(id);
+	// }
 
 }

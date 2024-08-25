@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Report90DayRequestDTO {
 
-	private String visaType;
+	private int visaType;
 	private String contactNumber;
 	private String period;
 	private int visa_id;

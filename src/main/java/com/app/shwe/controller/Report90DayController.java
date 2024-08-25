@@ -25,22 +25,24 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/report90day")
 @RequiredArgsConstructor
 public class Report90DayController {
-	
+
 	@Autowired
 	private Report90DayService reportService;
 
 	@PostMapping("/save90DayReport")
-	public ResponseEntity<String> saveTm30(@RequestPart("tm6Photo") MultipartFile tm6Photo,@RequestPart("expireDatePhoto") MultipartFile expireDatePhoto,
-			@RequestPart("passportBio") MultipartFile passportBio,@RequestPart("visaPage") MultipartFile visaPage, @RequestPart("request") Report90DayRequestDTO request) {
-		return reportService.saveReport90Day(tm6Photo,expireDatePhoto,passportBio, visaPage, request);
+	public ResponseEntity<String> saveTm30(@RequestPart("tm6Photo") MultipartFile tm6Photo,
+			@RequestPart("expireDatePhoto") MultipartFile expireDatePhoto,
+			@RequestPart("passportBio") MultipartFile passportBio, @RequestPart("visaPage") MultipartFile visaPage,
+			@RequestPart("request") Report90DayRequestDTO request) {
+		return reportService.saveReport90Day(tm6Photo, expireDatePhoto, passportBio, visaPage, request);
 
 	}
-	
-	@GetMapping("/getReport90DayOrder")
-	public List<Report90ResponseDTO> getTm30OrderByuserId() {
-		return reportService.getReport90DayOrder();
-	}
-	
+
+	// @GetMapping("/getReport90DayOrder")
+	// public List<Report90ResponseDTO> getTm30OrderByuserId() {
+	// return reportService.getReport90DayOrder();
+	// }
+
 	@PutMapping("/cancelOrder/{id}")
 	public ResponseEntity<String> cancelOrder(@PathVariable int id) {
 		return reportService.cancelOrder(id);

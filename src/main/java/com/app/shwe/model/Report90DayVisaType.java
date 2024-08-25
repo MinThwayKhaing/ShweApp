@@ -11,10 +11,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Report90DayVisaType extends CommonDTO{
+public class Report90DayVisaType extends CommonDTO {
 
 	private String description;
-	@ManyToOne
-	@JoinColumn(name = "visa_service_id")
-	private VisaServices visa;
+	private double price;
 }
