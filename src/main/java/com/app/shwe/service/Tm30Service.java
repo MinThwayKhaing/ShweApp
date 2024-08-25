@@ -103,14 +103,14 @@ public class Tm30Service {
 
 			order.setMain_visa_id(request.getVisa_id());
 
-			if (request.getOption1() == 3) {
-				order.setSub_visa_id(request.getOption1());
+			if (request.getOption3() == 3) {
+				order.setSub_visa_id(request.getOption3());
 				visaOrderRepository.save(order);
 			} else if (request.getOption2() == 2) {
 				order.setSub_visa_id(request.getOption2());
 				visaOrderRepository.save(order);
-			} else if (request.getOption3() == 1) {
-				order.setSub_visa_id(request.getOption3());
+			} else if (request.getOption1() == 1) {
+				order.setSub_visa_id(request.getOption1());
 				visaOrderRepository.save(order);
 			}
 

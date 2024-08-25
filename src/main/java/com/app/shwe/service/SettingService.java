@@ -9,9 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.app.shwe.dto.SettingResponseDTO;
+import com.app.shwe.model.Activity;
 import com.app.shwe.model.Article;
 import com.app.shwe.model.TermsAndCondition;
 import com.app.shwe.model.VisaServices;
+import com.app.shwe.repository.ActivityRepository;
 import com.app.shwe.repository.ArticleRepository;
 import com.app.shwe.repository.TermsAndConditionRepository;
 import com.app.shwe.repository.VisaServicesRepository;
@@ -24,6 +26,9 @@ public class SettingService {
 
 	@Autowired
 	private ArticleRepository articleRepo;
+	
+	@Autowired
+	private ActivityRepository activityRepo;
 
 	@Autowired
 	private TermsAndConditionRepository termsAndConditonRepo;
@@ -33,13 +38,13 @@ public class SettingService {
 			// Fetching data from repositories
 			TermsAndCondition tnc = termsAndConditonRepo.getTermsAndCondition();
 			List<VisaServices> visaList = visaRepo.findAll();
-			List<Article> articleList = articleRepo.findAll();
+			List<Activity> activityList = activityRepo.findAll();
 
 			// Creating the response DTO
 			SettingResponseDTO response = new SettingResponseDTO();
 			response.setTnc(tnc);
 			response.setVisa_services(visaList);
-			response.setArticle(articleList);
+			response.setActivity(activityList);
 
 			// Returning the response entity with HTTP status 200 (OK)
 			return ResponseEntity.ok(response);
