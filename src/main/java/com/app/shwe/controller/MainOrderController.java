@@ -22,4 +22,11 @@ public class MainOrderController {
             @RequestParam(defaultValue = "10") int size) {
         return mainOrderService.getMainOrdersPaginated(page, size);
     }
+
+    @GetMapping("/current-user")
+    public ResponseEntity<?> getMainOrdersPaginatedwithCurrentUser(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return mainOrderService.getMainOrdersPaginatedwithCurrentUser(page, size);
+    }
 }

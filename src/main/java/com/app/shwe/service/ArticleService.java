@@ -1,5 +1,6 @@
 package com.app.shwe.service;
 
+import com.app.shwe.dto.ArticleDTO;
 import com.app.shwe.dto.ArticleRequest;
 import com.app.shwe.model.Activity;
 import com.app.shwe.model.Article;
@@ -59,6 +60,30 @@ public class ArticleService {
         return articleRepository.findById(id);
     }
 
+    public ResponseEntity<?> getAllArticles(int page, int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            return ResponseEntity.status(HttpStatus.OK).body(articleRepository.findDTOByArticleId(pageable));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error occurred while selecting Activities: " + e.getMessage());
+        }
+    }
+
+    public ResponseEntity<?> getArticlesByActivityId(int activityId, int page, int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<ArticleDTO> articlesPage = articleRepository.findDTOByActivityId(activityId, pageable);
+            if (articlesPage.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No articles found for the given activity ID.");
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(articlesPage);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error occurred while retrieving articles: " + e.getMessage());
+        }
+    }
+
     public Article updateArticle(int id, Article updatedArticle) {
         return articleRepository.findById(id).map(article -> {
             article.setTitle(updatedArticle.getTitle());
@@ -83,20 +108,9 @@ public class ArticleService {
                 .body("Deleted successfully");
 
     }
-    
 
-    public ResponseEntity<?> getAllArticles(int page, int size) {
-        try {
-        	Pageable pageable = PageRequest.of(page, size);
-        	return ResponseEntity.status(HttpStatus.OK).body(articleRepository.findAll(pageable));
-		} catch (Exception e) {
-			 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                    .body("Error occurred while selecting Activities: " + e.getMessage());
-		}
-    }
-    
-    public List<Article> getAllArticlesList(){
-    	List<Article> articleList = articleRepository.findAll();
-    	return articleList;
+    public List<Article> getAllArticlesList() {
+        List<Article> articleList = articleRepository.findAll();
+        return articleList;
     }
 }
