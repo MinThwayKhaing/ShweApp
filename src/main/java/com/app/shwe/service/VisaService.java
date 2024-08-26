@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.app.shwe.dto.NewsRequestDTO;
 import com.app.shwe.dto.SearchDTO;
 import com.app.shwe.dto.VisaServiceRequestDTO;
 import com.app.shwe.model.VisaServices;
@@ -114,9 +113,17 @@ public class VisaService {
 		}
 	}
 	
-	public List<VisaServices> getAllVisaList(){
-		List<VisaServices> visaList = visaRepo.findAll();
-	    return visaList;
+	
+	public List<VisaServices> getAllVisaService(){
+		List<VisaServices> visaList = visaRepo.getAllVisaService();
+		List<VisaServices> visa = new ArrayList<>();
+		for (VisaServices visaService : visaList) {
+			visa.add(visaService);
+		}
+		return visaList;
 	}
+	
+
+	
 
 }

@@ -63,6 +63,6 @@ public class VisaServicesController {
 	
 	@GetMapping("/getAllVisa")
 	public List<VisaServices> getAllVisaList(){
-		return visaService.getAllVisaList();
+		return visaService.getAllVisaService();
 	}
 }

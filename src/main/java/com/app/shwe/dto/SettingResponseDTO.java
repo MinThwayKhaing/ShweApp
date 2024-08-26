@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.app.shwe.model.Activity;
 import com.app.shwe.model.Article;
+import com.app.shwe.model.SamplePhoto;
 import com.app.shwe.model.TermsAndCondition;
 import com.app.shwe.model.VisaServices;
 
@@ -24,6 +25,8 @@ public class SettingResponseDTO {
 	public List<Activity> activity;
 	
 	public List<VisaServices> visa_services;
+	
+	public List<SamplePhoto> sample_photo;
 	
 
 }
