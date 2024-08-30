@@ -1,5 +1,7 @@
 package com.app.shwe.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,5 +17,8 @@ public interface VisaServicesRepository extends JpaRepository<VisaServices, Inte
 	
 	@Query("SELECT COUNT(v) FROM VisaServices v WHERE v.id = :id")
 	int checkVisaById(@Param("id") int id);
-
+	
+	@Query("SELECT v FROM VisaServices v")
+	List<VisaServices> getAllVisaService();
+ 
 }
