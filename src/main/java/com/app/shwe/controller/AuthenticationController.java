@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173")
 public class AuthenticationController {
 	@Autowired
 	private OtpService smsOtpService;
@@ -74,7 +76,8 @@ public class AuthenticationController {
 
 	@PostMapping("/verify-update-otp")
 	public ResponseEntity<String> verifyUpdateOtp(@RequestBody OtpVerificationRequest otpRequest) {
-		return smsOtpService.verifyOtpForUpdate(otpRequest.getToken(), otpRequest.getOtpCode(), otpRequest.getRecipient());
+		return smsOtpService.verifyOtpForUpdate(otpRequest.getToken(), otpRequest.getOtpCode(),
+				otpRequest.getRecipient());
 	}
 
 }
