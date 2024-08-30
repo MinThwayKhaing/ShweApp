@@ -140,13 +140,9 @@ public class TranslatorService {
 	}
 
 	@Transactional
-	public Page<Translator> searchTranslator(SearchDTO dto) {
-		String searchString = dto.getSearchString();
-		int page = (dto.getPage() < 1) ? 0 : dto.getPage() - 1;
-		int size = dto.getSize();
-		Pageable pageable = PageRequest.of(page, size);
+	public Page<Translator> searchTranslator(String searchString, int page, int size) {
+		Pageable pageable = PageRequest.of(page < 1 ? 0 : page - 1, size);
 		return translatorRepo.searchTranslator(searchString, pageable);
-
 	}
 
 	@Transactional

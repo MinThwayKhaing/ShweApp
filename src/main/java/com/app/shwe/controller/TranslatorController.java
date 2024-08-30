@@ -46,7 +46,8 @@ public class TranslatorController {
 	}
 
 	@PutMapping("/updateTranslator/{id}")
-	public ResponseEntity<String> updateTranslator(@PathVariable int id, @RequestPart("image") MultipartFile image,
+	public ResponseEntity<String> updateTranslator(@PathVariable int id,
+			@RequestPart("image") MultipartFile image,
 			@RequestPart("request") TranslatorRequestDTO request) {
 		return translatorService.updateTranslator(id, image, request);
 	}
@@ -57,8 +58,11 @@ public class TranslatorController {
 	}
 
 	@GetMapping("/searchTranslator")
-	public Page<Translator> searchTranslator(@RequestBody SearchDTO dto) {
-		return translatorService.searchTranslator(dto);
+	public Page<Translator> searchTranslator(
+			@RequestParam(required = false) String searchString,
+			@RequestParam(defaultValue = "1") int page,
+			@RequestParam(defaultValue = "10") int size) {
+		return translatorService.searchTranslator(searchString, page, size);
 	}
 
 }
