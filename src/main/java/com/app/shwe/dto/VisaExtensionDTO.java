@@ -1,5 +1,7 @@
 package com.app.shwe.dto;
 
+import com.app.shwe.model.Role;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,10 +11,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class VisaExtensionTypeRequestDTO {
+public class VisaExtensionDTO {
 
-	private String description;
-
-	private double price;
-
+	private String visaType;
+	private String passportBio;
+	private String visaPage;
+	private String contactNumber;
 }

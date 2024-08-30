@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.app.shwe.dto.VisaExtensionDTO;
 import com.app.shwe.dto.VisaExtensionRequestDTO;
 import com.app.shwe.dto.VisaExtensionResponseDTO;
+import com.app.shwe.model.VisaExtension;
 import com.app.shwe.service.VisaExtensionService;
 
 import lombok.RequiredArgsConstructor;
@@ -35,7 +37,7 @@ public class VisaExtensionController {
 	}
 
 	@GetMapping("/getVisaExtensionByUserId")
-	public List<VisaExtensionResponseDTO> getVisaExtensionByUserId() {
+	public List<VisaExtensionDTO> getVisaExtensionByUserId() {
 		return visaService.getVisaExtensionByOrder();
 	}
 

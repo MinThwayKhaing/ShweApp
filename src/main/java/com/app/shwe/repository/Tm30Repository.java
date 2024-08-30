@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.app.shwe.dto.Tm30DTO;
 import com.app.shwe.dto.Tm30ProjectionDTO;
 import com.app.shwe.dto.Tm30ResponseDTO;
 import com.app.shwe.dto.VisaResponseDTO;
@@ -72,7 +73,9 @@ public interface Tm30Repository extends JpaRepository<Tm30, Integer> {
 	@Query("UPDATE Tm30 t SET t.status = :status WHERE t.id = :id")
 	void cancelOrder(@Param("id") int id, @Param("status") String status);
 
-	// @Query("")
-	// List<VisaResponseDTO> getVisaOrderByUserId();
+//	@Query("SELECT new com.app.shwe.dto.Tm30DTO(t.period,t.passportBio, t.visaPage, t.contactNumber) FROM Tm30 t WHERE t.user.id = :userId")
+//	 List<Tm30DTO> getTm30OrderByUserId(int userId);
+	
+	
 
 }

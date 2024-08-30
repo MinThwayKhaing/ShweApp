@@ -14,8 +14,6 @@ import lombok.NoArgsConstructor;
 public class VisaExtensionType extends CommonDTO{
 	
 	private String description;
-	@ManyToOne
-	@JoinColumn(name = "visa_service_id")
-	private VisaServices visa;
+	private double price;
 
 }

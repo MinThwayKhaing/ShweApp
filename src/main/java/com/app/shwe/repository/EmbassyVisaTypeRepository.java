@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import com.app.shwe.dto.EmbassyVisaTypeResponseDTO;
 import com.app.shwe.dto.Report90DayTypeResponseType;
 import com.app.shwe.model.EmbassyVisaType;
+import com.app.shwe.model.VisaExtensionType;
 
 import jakarta.transaction.Transactional;
 
@@ -33,5 +34,8 @@ public interface EmbassyVisaTypeRepository extends JpaRepository<EmbassyVisaType
 	@Transactional
 	@Query("DELETE FROM EmbassyVisaType v WHERE v.id = :id")
 	void deleteVisaTypeById(int id);
+	
+	@Query(value = "SELECT * FROM embassy_visa_type WHERE id = :id", nativeQuery = true)
+	EmbassyVisaType findEmbassyVisaTypeById(@Param("id") int id);
 
 }

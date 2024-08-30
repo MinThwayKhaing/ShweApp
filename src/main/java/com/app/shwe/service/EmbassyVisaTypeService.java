@@ -48,26 +48,19 @@ public class EmbassyVisaTypeService {
 	    }
 
 	    try {
-	        VisaServices visaServices = visaService.findById(request.getVisa_service_id())
-	                .orElseThrow(() -> new RuntimeException("Visa service not found for ID: " + request.getVisa_service_id()));
-	        
+//	        VisaServices visaServices = visaService.findById(request.getVisa_service_id())
+//	                .orElseThrow(() -> new RuntimeException("Visa service not found for ID: " + request.getVisa_service_id()));
+//	        
 	        EmbassyVisaType visaType = new EmbassyVisaType();
 	        visaType.setDescription(request.getDescription());
-	        visaType.setVisa(visaServices);
+	        visaType.setPrice(request.getPrice());
 	        visaType.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 	        visaType.setCreatedDate(new Date());
 	        
 	        // Save the visaType first
 	        vsiaTypeRepository.save(visaType);
 
-	        // Now create and save the subVisaType
-	        EmbassySubVisaType subVisaType = new EmbassySubVisaType();
-	        subVisaType.setPrice(request.getPrice());
-	        subVisaType.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
-	        subVisaType.setCreatedDate(new Date());
-	        subVisaType.setVisa(visaType); // Ensure visaType is saved and referenced
 	        
-	        subVisaTypeRepository.save(subVisaType);
 
 	        return ResponseEntity.status(HttpStatus.OK).body("Embassy Recommendation Letter saved successfully.");
 	    } catch (Exception e) {
@@ -128,20 +121,13 @@ public class EmbassyVisaTypeService {
 		if (!getVisa.isPresent()) {
 			throw new IllegalArgumentException("ID not found");
 		}
-		EmbassySubVisaType subVisa = subVisaTypeRepository.findById(request.getSubVisaId())
-				.orElseThrow(() -> new RuntimeException("SubVisaType not found for ID: " + request.getSubVisaId()));
-
 		try {
 			EmbassyVisaType visaType = getVisa.get();
 			visaType.setDescription(request.getDescription());
+			visaType.setPrice(request.getPrice());
 			visaType.setUpdatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 			visaType.setUpdatedDate(new Date());
 			vsiaTypeRepository.save(visaType);
-			subVisa.setPrice(request.getPrice());
-			subVisa.setUpdatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
-			subVisa.setUpdatedDate(new Date());
-			subVisa.setVisa(visaType);
-			subVisaTypeRepository.save(subVisa);
 
 			return new ResponseEntity<>("Visa updated successfully", HttpStatus.OK);
 		} catch (Exception e) {

@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.app.shwe.dto.Report90DayTypeResponseType;
 import com.app.shwe.dto.VisaExtensionTypeResponseDTO;
+import com.app.shwe.model.Report90DayVisaType;
 import com.app.shwe.model.VisaExtensionType;
 
 import jakarta.transaction.Transactional;
@@ -33,5 +34,8 @@ public interface VisaExtensionTypeRepository extends JpaRepository<VisaExtension
 	@Transactional
 	@Query("DELETE FROM VisaExtensionType v WHERE v.id = :id")
 	void deleteVisaTypeById(int id);
+
+	@Query(value = "SELECT * FROM visa_extension_type WHERE id = :id", nativeQuery = true)
+	VisaExtensionType findVisaExtensionTypeById(@Param("id") int id);
 
 }
