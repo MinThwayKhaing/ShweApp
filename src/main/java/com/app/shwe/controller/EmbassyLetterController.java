@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.app.shwe.dto.EmbassyLetterDTO;
 import com.app.shwe.dto.EmbassyLetterRequestDTO;
 import com.app.shwe.dto.EmbassyLetterResponseDTO;
 import com.app.shwe.dto.Report90DayRequestDTO;
@@ -38,7 +39,7 @@ public class EmbassyLetterController {
 	}
 
 	@GetMapping("/getEmbassyLetterByUserId")
-	public List<EmbassyLetterResponseDTO> getEmbassyLetterByUserId() {
+	public List<EmbassyLetterDTO> getEmbassyLetterByUserId() {
 		return visaService.getEmbassyLetterOrderByUserId();
 	}
 	

@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.app.shwe.dto.NewsRequestDTO;
 import com.app.shwe.dto.SearchDTO;
 import com.app.shwe.dto.TM30PeriodDTO;
+import com.app.shwe.dto.Tm30DTO;
 import com.app.shwe.dto.Tm30ProjectionDTO;
 import com.app.shwe.dto.Tm30RequestDTO;
 import com.app.shwe.dto.Tm30ResponseDTO;
@@ -267,5 +268,10 @@ public class Tm30Service {
 					.body("Error occurred while cancel Tm-30 order: " + e.getMessage());
 		}
 	}
+	
+//	public List<Tm30DTO> getTm30OrderByUserId(){
+//		int userId = userRepository.authUser(SecurityUtils.getCurrentUsername());
+//		return tm30Repo.getTm30OrderByUserId(userId);
+//	}
 
 }

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.app.shwe.dto.SearchDTO;
+import com.app.shwe.dto.Tm30DTO;
 import com.app.shwe.dto.Tm30RequestDTO;
 import com.app.shwe.dto.Tm30ResponseDTO;
 import com.app.shwe.dto.VisaResponseDTO;
@@ -78,10 +79,10 @@ public class Tm30Controller {
 		return tm30Service.deleteTm30(id);
 	}
 
-	// @GetMapping("/getTm30OrderByUserId")
-	// public List<Tm30ResponseDTO> getTm30OrderByuserId() {
-	// return tm30Service.getTm30OrderByUserId();
-	// }
+//	 @GetMapping("/getTm30OrderByUserId")
+//	 public List<Tm30DTO> getTm30OrderByuserId() {
+//	 return tm30Service.getTm30OrderByUserId();
+//	 }
 
 	// @GetMapping("/getAllTm30Order")
 	// public List<Tm30ResponseDTO> getAllTm30Order() {

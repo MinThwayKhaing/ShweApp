@@ -15,8 +15,4 @@ public class EmbassyVisaTypeRequestDTO {
 
 	private double price;
 
-	private int subVisaId;
-
-	private int visa_service_id;
-
 }

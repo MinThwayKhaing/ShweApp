@@ -45,27 +45,16 @@ public class VisaExtensionTypeService {
 		}
 
 		try {
-			VisaServices visaServices = visaService.findById(request.getVisa_service_id())
-					.orElseThrow(() -> new RuntimeException(
-							"Visa service not found for ID: " + request.getVisa_service_id()));
 
 			VisaExtensionType visaType = new VisaExtensionType();
 			visaType.setDescription(request.getDescription());
-			visaType.setVisa(visaServices);
+			visaType.setPrice(request.getPrice());
 			visaType.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 			visaType.setCreatedDate(new Date());
 
 			// Save the visaType first
 			vsiaTypeRepository.save(visaType);
 
-			// Now create and save the subVisaType
-			VisaExtensionSubType subVisaType = new VisaExtensionSubType();
-			subVisaType.setPrice(request.getPrice());
-			subVisaType.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
-			subVisaType.setCreatedDate(new Date());
-			subVisaType.setVisa(visaType); // Ensure visaType is saved and referenced
-
-			subVisaTypeRepository.save(subVisaType);
 
 			return ResponseEntity.status(HttpStatus.OK).body("Visa type saved successfully.");
 		} catch (Exception e) {
@@ -129,8 +118,7 @@ public class VisaExtensionTypeService {
 		if (!getVisa.isPresent()) {
 			throw new IllegalArgumentException("ID not found");
 		}
-		VisaExtensionSubType subVisa = subVisaTypeRepository.findById(request.getSubVisaId())
-				.orElseThrow(() -> new RuntimeException("SubVisaType not found for ID: " + request.getSubVisaId()));
+		
 
 		try {
 			VisaExtensionType visaType = getVisa.get();
@@ -138,12 +126,6 @@ public class VisaExtensionTypeService {
 			visaType.setUpdatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 			visaType.setUpdatedDate(new Date());
 			vsiaTypeRepository.save(visaType);
-			subVisa.setPrice(request.getPrice());
-			subVisa.setUpdatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
-			subVisa.setUpdatedDate(new Date());
-			subVisa.setVisa(visaType);
-			subVisaTypeRepository.save(subVisa);
-
 			return new ResponseEntity<>("Visa updated successfully", HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class EmbassyLetter extends CommonDTO {
 
 	private String syskey;
-	private String type;
+	private String visaType;
 	private String passportBio;
 	private String visaPage;
 	private String contactNumber;

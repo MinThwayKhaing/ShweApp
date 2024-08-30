@@ -10,10 +10,12 @@ import org.springframework.stereotype.Repository;
 
 import com.app.shwe.dto.Report90DayProjectionDTO;
 import com.app.shwe.dto.Report90DayTypeResponseDTO;
+import com.app.shwe.dto.VisaExtensionDTO;
 import com.app.shwe.dto.VisaExtensionOrderResponseDTO;
 import com.app.shwe.dto.VisaExtensionProjectionDTO;
 import com.app.shwe.dto.VisaExtensionResponseDTO;
 import com.app.shwe.dto.VisaExtensionTypeResponseDTO;
+import com.app.shwe.model.TermsAndCondition;
 import com.app.shwe.model.VisaExtension;
 
 import jakarta.transaction.Transactional;
@@ -30,13 +32,13 @@ public interface VisaExtensionRepository extends JpaRepository<VisaExtension, In
 	@Query("SELECT new com.app.shwe.dto.VisaExtensionProjectionDTO(v.id,v.syskey,v.passportBio, v.visaPage, v.contactNumber,v.user.userName,v.status) FROM VisaExtension v WHERE v.user.id = :id ORDER BY v.id DESC")
 	List<VisaExtensionProjectionDTO> getVisaExtensionOrderByUserId(int id);
 
-	@Query("SELECT new com.app.shwe.dto.VisaExtensionOrderResponseDTO(vo.order_id,vs.serviceName, vo.main_visa_id, vo.sub_visa_id, vt.description, svt.price) "
-			+ "FROM VisaExtensionType vt "
-			+ "JOIN VisaServices vs ON vt.visa.id = vs.id "
-			+ "JOIN VisaExtensionOrder vo ON vo.main_visa_id = vs.id "
-			+ "JOIN VisaExtensionSubType svt ON svt.id = vo.sub_visa_id "
-			+ "WHERE vo.order_id = :orderId")
-	List<VisaExtensionOrderResponseDTO> getVisaOrderByOrderId(@Param("orderId") int orderId);
+//	@Query("SELECT new com.app.shwe.dto.VisaExtensionOrderResponseDTO(vo.order_id,vs.serviceName, vo.main_visa_id, vo.sub_visa_id, vt.description, svt.price) "
+//			+ "FROM VisaExtensionType vt "
+//			+ "JOIN VisaServices vs ON vt.visa.id = vs.id "
+//			+ "JOIN VisaExtensionOrder vo ON vo.main_visa_id = vs.id "
+//			+ "JOIN VisaExtensionSubType svt ON svt.id = vo.sub_visa_id "
+//			+ "WHERE vo.order_id = :orderId")
+//	List<VisaExtensionOrderResponseDTO> getVisaOrderByOrderId(@Param("orderId") int orderId);
 
 	@Modifying
 	@Transactional
@@ -45,5 +47,8 @@ public interface VisaExtensionRepository extends JpaRepository<VisaExtension, In
 
 	@Query("SELECT COALESCE(MAX(r.syskey), 'VE00000000') FROM VisaExtension r")
 	String findMaxSysKey();
+	
+	@Query("SELECT new com.app.shwe.dto.VisaExtensionDTO(v.visaType,v.passportBio, v.visaPage, v.contactNumber) FROM VisaExtension v WHERE v.user.id = :userId")
+	List<VisaExtensionDTO> getVisaExtensionOrder(int userId);
 
 }

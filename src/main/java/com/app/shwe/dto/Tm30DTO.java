@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class VisaExtensionTypeRequestDTO {
+public class Tm30DTO {
 
-	private String description;
-
-	private double price;
-
+	private String period;
+	private String passportBio;
+	private String visaPage;
+	private String contactNumber;
 }
