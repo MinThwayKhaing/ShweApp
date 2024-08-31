@@ -138,13 +138,6 @@ public class VisaTypeService {
 			visaType.setUpdatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 			visaType.setUpdatedDate(new Date());
 			vsiaTypeRepository.save(visaType);
-			subVisa.setDuration(request.getDuration());
-			subVisa.setPrice(request.getPrice());
-			subVisa.setUpdatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
-			subVisa.setUpdatedDate(new Date());
-			subVisa.setVisa(visaType);
-			subVisaTypeRepository.save(subVisa);
-
 			return new ResponseEntity<>("Visa updated successfully", HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -159,8 +152,6 @@ public class VisaTypeService {
 		}
 
 		try {
-			// Delete associated SubVisaType records
-			subVisaTypeRepository.deleteSubVisaTypesByVisaId(id);
 
 			// Delete VisaType
 			vsiaTypeRepository.deleteVisaTypeById(id);

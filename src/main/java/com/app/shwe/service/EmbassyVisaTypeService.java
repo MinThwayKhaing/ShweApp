@@ -16,6 +16,7 @@ import com.app.shwe.model.EmbassySubVisaType;
 import com.app.shwe.model.EmbassyVisaType;
 import com.app.shwe.model.SubVisaType;
 import com.app.shwe.model.VisaExtensionSubType;
+import com.app.shwe.model.VisaExtensionType;
 import com.app.shwe.model.VisaServices;
 import com.app.shwe.model.VisaType;
 import com.app.shwe.repository.EmbassySubVisaTypeRepository;
@@ -54,6 +55,7 @@ public class EmbassyVisaTypeService {
 	        EmbassyVisaType visaType = new EmbassyVisaType();
 	        visaType.setDescription(request.getDescription());
 	        visaType.setPrice(request.getPrice());
+	        visaType.setDelete_status(0);
 	        visaType.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 	        visaType.setCreatedDate(new Date());
 	        
@@ -94,26 +96,8 @@ public class EmbassyVisaTypeService {
 		return response;
 	}
 
-	@Transactional
-	public List<EmbassyVisaTypeResponseDTO> getAllVisaType() {
-		List<EmbassyVisaTypeResponseDTO> visaList = vsiaTypeRepository.findAllVisaType();
-		List<EmbassyVisaTypeResponseDTO> response = new ArrayList<>();
-		for (EmbassyVisaTypeResponseDTO visaTypeResponseDTO : visaList) {
-			EmbassyVisaTypeResponseDTO dto = new EmbassyVisaTypeResponseDTO();
-			EmbassyVisaType type = new EmbassyVisaType();
-			type.setId(dto.getId());
-			type.setDescription(dto.getDescription());
-			dto.setId(visaTypeResponseDTO.getId());
-			dto.setDescription(visaTypeResponseDTO.getDescription());
-			VisaExtensionSubType sub = new VisaExtensionSubType();
-			sub.setPrice(dto.getPrice());
-			dto.setPrice(visaTypeResponseDTO.getPrice());
-			response.add(visaTypeResponseDTO);
+    
 
-		}
-
-		return response;
-	}
 
 	@Transactional
 	public ResponseEntity<String> updateVisaType(int id, EmbassyVisaTypeRequestDTO request) {
@@ -154,6 +138,21 @@ public class EmbassyVisaTypeService {
 			return new ResponseEntity<>("Error occurred while deleting VisaType: " + e.getMessage(),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+	
+	@Transactional
+	public ResponseEntity<EmbassyVisaType> getEmbassyLetteById(int id) {
+	    Optional<EmbassyVisaType> visaTypeOpt = vsiaTypeRepository.findById(id);
+	    if (!visaTypeOpt.isPresent()) {
+	        return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if not found
+	    }
+	    
+	    return new ResponseEntity<>(visaTypeOpt.get(), HttpStatus.OK); // Return the found VisaExtensionType
+	}
+	
+	@Transactional
+	public List<EmbassyVisaType> getAllVisaType() {
+		return vsiaTypeRepository.getAllVisa();
 	}
 
 }

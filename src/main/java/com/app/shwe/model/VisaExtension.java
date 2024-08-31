@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class VisaExtension extends CommonDTO {
 
 	private String syskey;
-	private String visaType;
+	private int visaType;
 	private String passportBio;
 	private String visaPage;
 	private String contactNumber;

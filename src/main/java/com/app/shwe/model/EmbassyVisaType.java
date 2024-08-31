@@ -17,6 +17,8 @@ public class EmbassyVisaType extends CommonDTO{
 	
 	private double price;
 	
+	private int delete_status;
+	
 	
 //	@ManyToOne
 //	@JoinColumn(name = "visa_service_id")

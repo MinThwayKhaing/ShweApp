@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EmbassyLetterDTO {
 	
-	private String visaType;
+	private int visaType;
 	private String passportBioPage;
 	private String visaPage;
 	private String address;

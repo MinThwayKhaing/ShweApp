@@ -37,5 +37,8 @@ public interface VisaExtensionTypeRepository extends JpaRepository<VisaExtension
 
 	@Query(value = "SELECT * FROM visa_extension_type WHERE id = :id", nativeQuery = true)
 	VisaExtensionType findVisaExtensionTypeById(@Param("id") int id);
+	
+	@Query("SELECT v FROM VisaExtensionType v ")
+	List<VisaExtensionType> getAllVisa();
 
 }

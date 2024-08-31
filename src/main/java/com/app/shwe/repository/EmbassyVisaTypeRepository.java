@@ -38,4 +38,6 @@ public interface EmbassyVisaTypeRepository extends JpaRepository<EmbassyVisaType
 	@Query(value = "SELECT * FROM embassy_visa_type WHERE id = :id", nativeQuery = true)
 	EmbassyVisaType findEmbassyVisaTypeById(@Param("id") int id);
 
+	@Query("SELECT v FROM EmbassyVisaType v ")
+	List<EmbassyVisaType> getAllVisa();
 }
