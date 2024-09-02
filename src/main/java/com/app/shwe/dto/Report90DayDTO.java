@@ -2,8 +2,6 @@ package com.app.shwe.dto;
 
 import java.util.Date;
 
-import com.app.shwe.model.Role;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,8 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class VisaExtensionDTO {
-
+public class Report90DayDTO {
+	
 	private String visaType;
 	private String passportBio;
 	private String visaPage;
@@ -22,4 +20,5 @@ public class VisaExtensionDTO {
 	private String userName;
 	private String status;
 	private Date createdDate;
+
 }

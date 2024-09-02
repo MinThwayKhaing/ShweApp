@@ -5,17 +5,22 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.app.shwe.dto.Report90DayDTO;
 import com.app.shwe.dto.Report90DayProjectionDTO;
 import com.app.shwe.dto.Report90DayRequestDTO;
 import com.app.shwe.dto.Report90DayTypeResponseDTO;
 import com.app.shwe.dto.Report90ResponseDTO;
 import com.app.shwe.dto.Tm30ProjectionDTO;
 import com.app.shwe.dto.Tm30ResponseDTO;
+import com.app.shwe.dto.VisaExtensionDTO;
 import com.app.shwe.dto.VisaResponseDTO;
 import com.app.shwe.model.EmbassyLetter;
 import com.app.shwe.model.MainOrder;
@@ -24,6 +29,7 @@ import com.app.shwe.model.Report90DayOrder;
 import com.app.shwe.model.Report90DayVisaType;
 import com.app.shwe.model.User;
 import com.app.shwe.model.VisaExtension;
+import com.app.shwe.model.VisaExtensionType;
 import com.app.shwe.model.VisaServices;
 import com.app.shwe.repository.MainOrderRepository;
 import com.app.shwe.repository.Report90DayOrderRepository;
@@ -79,27 +85,28 @@ public class Report90DayService {
 
 			VisaServices visaServices = visaRepo.findById(request.getVisa_id())
 					.orElseThrow(() -> new IllegalArgumentException("Visa not found with id: " + request.getVisa_id()));
+			Optional<Report90DayVisaType> visaType =report90_dayRepo.findById(request.getVisa_id());
 			Report90DayOrder order = new Report90DayOrder();
 			String tm6_photo = fileUploadService.uploadFile(tm6Photo);
 			String expire_photo = fileUploadService.uploadFile(expireDatePhoto);
 			String passport_bio = fileUploadService.uploadFile(passportBio);
 			String visa_page = fileUploadService.uploadFile(visaPage);
 			Report90Day report = new Report90Day();
-
+           
 			report.setSyskey(orderGeneratorService.generateReport90DayOrderId());
 			report.setTm6Photo(tm6_photo);
 			report.setExpireDatePhoto(expire_photo);
+			report.setVisaType(visaType.get());
+			report.setVisaTypeDescription(visaType.get().getDescription());
 			report.setPassportBio(passport_bio);
 			report.setVisaPage(visa_page);
-			report.setVisaType(request.getVisaType());
 			report.setStatus("Pending");
+			report.setCreatedBy(userId);
 			report.setUser(user);
 			report.setVisa(visaServices);
 			reportRepo.save(report);
-
 			MainOrder mainOrder = new MainOrder();
-			Report90DayVisaType visaType = report90_dayRepo.findReport90DayVisaTypeById(report.getVisaType());
-			mainOrder.setVisaType(visaType.getDescription() + "B" + visaType.getPrice());
+			mainOrder.setVisaType(report.getVisaTypeDescription());
 			mainOrder.setCreatedBy(userId);
 			mainOrder.setCreatedDate(report.getCreatedDate());
 			mainOrder.setStatus(report.getStatus());
@@ -150,6 +157,12 @@ public class Report90DayService {
 			return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	@Transactional
+	public Page<Report90DayDTO> getAllReport90DayVisa(String searchString, String status, int page, int size) {
+		Pageable pageable = PageRequest.of(page < 1 ? 0 : page - 1, size);
+		return reportRepo.getAllVisa(status, searchString, pageable);
+	}
 
 	@Transactional
 	public ResponseEntity<String> cancelOrder(int orderId) {
@@ -164,12 +177,64 @@ public class Report90DayService {
 
 			Report90Day model = getTranslatorOrder.get();
 			mainOrderRepository.updateOrderStatusToOnProgress(status, model.getSyskey());
-			reportRepo.cancelOrder(orderId, status);
-			return ResponseEntity.status(HttpStatus.OK).body("Cancel 90 Day Report order successfully.");
+			reportRepo.changeOrderStatus(orderId, status);
+			return ResponseEntity.status(HttpStatus.OK).body("Order is canceled.");
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Error occurred while cancel 90 Day Report order: " + e.getMessage());
 		}
+	}
+	
+	@Transactional
+	public ResponseEntity<String> completed(int orderId) {
+		String status = OrderStatus.COMPLETED.name();
+		Optional<Report90Day> getTranslatorOrder = reportRepo.findById(orderId);
+		if (!getTranslatorOrder.isPresent()) {
+			return new ResponseEntity<>("Error occurred: ", HttpStatus.INTERNAL_SERVER_ERROR);
+
+		}
+
+		try {
+
+			Report90Day model = getTranslatorOrder.get();
+			mainOrderRepository.updateOrderStatusToOnProgress(status, model.getSyskey());
+			reportRepo.changeOrderStatus(orderId, status);
+			return ResponseEntity.status(HttpStatus.OK).body("Order is completed");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error occurred while cancel 90 Day Report order: " + e.getMessage());
+		}
+	}
+	
+	@Transactional
+	public ResponseEntity<String> onProgress(int orderId) {
+		String status = OrderStatus.ON_PROGRESS.name();
+		Optional<Report90Day> getTranslatorOrder = reportRepo.findById(orderId);
+		if (!getTranslatorOrder.isPresent()) {
+			return new ResponseEntity<>("Error occurred: ", HttpStatus.INTERNAL_SERVER_ERROR);
+
+		}
+
+		try {
+
+			Report90Day model = getTranslatorOrder.get();
+			mainOrderRepository.updateOrderStatusToOnProgress(status, model.getSyskey());
+			reportRepo.changeOrderStatus(orderId, status);
+			return ResponseEntity.status(HttpStatus.OK).body("Order is On Progress");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error occurred while cancel 90 Day Report order: " + e.getMessage());
+		}
+	}
+	
+	@Transactional
+	public ResponseEntity<Report90DayDTO> getReport90DayOrderById(int id) {
+	    Optional<Report90DayDTO> visaTypeOpt = reportRepo.getVisaOrderById(id);
+	    if (!visaTypeOpt.isPresent()) {
+	        return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if not found
+	    }
+	    
+	    return new ResponseEntity<>(visaTypeOpt.get(), HttpStatus.OK); // Return the found VisaExtensionType
 	}
 
 }

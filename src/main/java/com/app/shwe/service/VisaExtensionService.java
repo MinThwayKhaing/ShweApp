@@ -6,16 +6,21 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.app.shwe.dto.EmbassyLetterDTO;
 import com.app.shwe.dto.Report90DayProjectionDTO;
 import com.app.shwe.dto.Report90DayRequestDTO;
 import com.app.shwe.dto.Report90DayTypeResponseDTO;
 import com.app.shwe.dto.Report90DayTypeResponseType;
 import com.app.shwe.dto.Report90ResponseDTO;
+import com.app.shwe.dto.Tm30DTOResponseDTO;
 import com.app.shwe.dto.VisaExtensionDTO;
 import com.app.shwe.dto.VisaExtensionOrderResponseDTO;
 import com.app.shwe.dto.VisaExtensionProjectionDTO;
@@ -94,15 +99,16 @@ public class VisaExtensionService {
 			VisaServices visaServices = visaRepo.findById(request.getVisa_id())
 					.orElseThrow(() -> new IllegalArgumentException("Visa not found with id: " + request.getVisa_id()));
 			
-			VisaExtensionType visaType = vsiaTypeRepository.findVisaExtensionTypeById(request.getVisa_id());
-			VisaExtensionOrder order = new VisaExtensionOrder();
+			//VisaExtensionType visaType = vsiaTypeRepository.findVisaExtensionTypeById(request.getVisa_id());
+			Optional<VisaExtensionType> visaType =vsiaTypeRepository.findById(request.getVisa_id());
 			String passport_bio = fileUploadService.uploadFile(passportBio);
 			String visa_page = fileUploadService.uploadFile(visaPage);
 			VisaExtension visaExtension = new VisaExtension();
 			visaExtension.setSyskey(orderGeneratorService.generateVisaExtensionOrderId());
 			visaExtension.setPassportBio(passport_bio);
 			visaExtension.setVisaPage(visa_page);
-			visaExtension.setVisaType(request.getVisa_id());
+			visaExtension.setVisaType(visaType.get());
+			visaExtension.setVisaTypeDescription(visaType.get().getDescription());
 			visaExtension.setStatus("Pending");
 			visaExtension.setUser(user);
 			visaExtension.setContactNumber(request.getContactNumber());
@@ -110,10 +116,8 @@ public class VisaExtensionService {
 			visaExtension.setCreatedDate(new Date());;
 			visaExtension.setVisa(visaServices);
 			visaExtensionRepo.save(visaExtension);
-			
-
 			mainOrder.setPeriod(visaExtension.getPeriod());
-			mainOrder.setVisaType(visaType.getDescription());
+			mainOrder.setVisaType(visaExtension.getVisaTypeDescription());
 			mainOrder.setCreatedBy(userId);
 			mainOrder.setCreatedDate(visaExtension.getCreatedDate());
 			mainOrder.setStatus(visaExtension.getStatus());
@@ -122,7 +126,6 @@ public class VisaExtensionService {
 			mainOrder.setUser(user);
 			mainOrderRepository.save(mainOrder);
 
-			orderRepository.save(order);
 			return ResponseEntity.status(HttpStatus.OK).body("Visa Extension saved successfully.");
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -138,10 +141,10 @@ public class VisaExtensionService {
 //	}
 //	return visaList;
 	
-	public List<VisaExtensionDTO> getVisaExtensionByOrder() {
-		int userId = userRepo.authUser(SecurityUtils.getCurrentUsername());
-		return visaExtensionRepo.getVisaExtensionOrder(userId);
-	}
+//	public List<VisaExtensionDTO> getVisaExtensionByOrder() {
+//		int userId = userRepo.authUser(SecurityUtils.getCurrentUsername());
+//		return visaExtensionRepo.getVisaExtensionOrder(userId);
+//	}
 
 //	@Transactional
 //	public List<VisaExtensionResponseDTO> getVisaExtensionByOrder() {
@@ -170,12 +173,67 @@ public class VisaExtensionService {
 		try {
 			VisaExtension model = getTranslatorOrder.get();
 			mainOrderRepository.updateOrderStatusToOnProgress(status, model.getSyskey());
-			visaExtensionRepo.cancelOrder(orderId, status);
-			return ResponseEntity.status(HttpStatus.OK).body("Cancel Visa Extension order successfully.");
+			visaExtensionRepo.changeOrderStatus(orderId, status);
+			return ResponseEntity.status(HttpStatus.OK).body("Order is canceled");
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Error occurred while cancel 90 Day Report order: " + e.getMessage());
 		}
+	}
+	
+	@Transactional
+	public Page<VisaExtensionDTO> getAllVisaExtensionOrder(String searchString, String status, int page, int size) {
+		Pageable pageable = PageRequest.of(page < 1 ? 0 : page - 1, size);
+		return visaExtensionRepo.getAllVisa(status, searchString, pageable);
+	}
+	
+	
+
+	@Transactional
+	public ResponseEntity<String> onProgress(int orderId) {
+		String status = OrderStatus.ON_PROGRESS.name();
+		Optional<VisaExtension> getVisa = visaExtensionRepo.findById(orderId);
+		if (!getVisa.isPresent()) {
+			return new ResponseEntity<>("Error occurred: ", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		try {
+			VisaExtension model = getVisa.get();
+			mainOrderRepository.updateOrderStatusToOnProgress(status, model.getSyskey());
+			visaExtensionRepo.changeOrderStatus(orderId, status);
+			return ResponseEntity.status(HttpStatus.OK).body("Order is On Progress");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error occurred while cancel Tm-30 order: " + e.getMessage());
+		}
+	}
+
+	@Transactional
+	public ResponseEntity<String> completed(int orderId) {
+		String status = OrderStatus.COMPLETED.name();
+		Optional<VisaExtension> getVisa = visaExtensionRepo.findById(orderId);
+		if (!getVisa.isPresent()) {
+			return new ResponseEntity<>("Error occurred: ", HttpStatus.INTERNAL_SERVER_ERROR);
+
+		}
+		try {
+			VisaExtension model = getVisa.get();
+			mainOrderRepository.updateOrderStatusToOnProgress(status, model.getSyskey());
+			visaExtensionRepo.changeOrderStatus(orderId, status);
+			return ResponseEntity.status(HttpStatus.OK).body("Order is completed");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error occurred while cancel Tm-30 order: " + e.getMessage());
+		}
+	}
+
+	@Transactional
+	public ResponseEntity<VisaExtensionDTO> getVisaExtensionOrderById(int id) {
+	    Optional<VisaExtensionDTO> visaTypeOpt = visaExtensionRepo.getVisaOrderById(id);
+	    if (!visaTypeOpt.isPresent()) {
+	        return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if not found
+	    }
+	    
+	    return new ResponseEntity<>(visaTypeOpt.get(), HttpStatus.OK); // Return the found VisaExtensionType
 	}
 
 }
