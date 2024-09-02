@@ -30,6 +30,5 @@ public class News extends CommonDTO implements Serializable{
     private String images;
 	private Date date;
 	private String description;
-	private int delete_status;
 
 }

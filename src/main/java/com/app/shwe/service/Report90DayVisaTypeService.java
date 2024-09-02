@@ -58,7 +58,8 @@ public class Report90DayVisaTypeService {
 			Report90DayVisaType visaType = new Report90DayVisaType();
 			visaType.setDescription(request.getDescription());
 			visaType.setPrice(request.getPrice());
-			visaType.setDelete_status(0);
+			visaType.setDeleteStatus(false);
+			//visaType.setDelete_status(0);
 			visaType.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 			visaType.setCreatedDate(new Date());
 

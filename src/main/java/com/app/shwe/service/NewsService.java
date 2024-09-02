@@ -56,7 +56,7 @@ public class NewsService {
 			news.setDescription(request.getDescription());
 			news.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 			news.setCreatedDate(new Date());
-			news.setDelete_status(0);
+			news.setDeleteStatus(false);
 			newsRepository.save(news);
 			return ResponseEntity.status(HttpStatus.OK).body("News saved successfully.");
 		} catch (IOException e) {

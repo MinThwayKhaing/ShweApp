@@ -55,7 +55,7 @@ public class EmbassyVisaTypeService {
 	        EmbassyVisaType visaType = new EmbassyVisaType();
 	        visaType.setDescription(request.getDescription());
 	        visaType.setPrice(request.getPrice());
-	        visaType.setDelete_status(0);
+	       // visaType.setDelete_status(0);
 	        visaType.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 	        visaType.setCreatedDate(new Date());
 	        

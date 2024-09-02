@@ -17,7 +17,7 @@ public class EmbassyVisaType extends CommonDTO{
 	
 	private double price;
 	
-	private int delete_status;
+
 	
 	
 //	@ManyToOne
