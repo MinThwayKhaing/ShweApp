@@ -56,14 +56,14 @@ public interface VisaExtensionRepository extends JpaRepository<VisaExtension, In
 //	@Query("SELECT new com.app.shwe.dto.VisaExtensionDTO(v.visaType,v.passportBio, v.visaPage, v.contactNumber,v.user.userName,v.createdDate) FROM VisaExtension v WHERE v.user.id = :userId")
 //	List<VisaExtensionDTO> getVisaExtensionOrder(int userId);
 //	
-	@Query("SELECT new com.app.shwe.dto.VisaExtensionDTO(v.visaTypeDescription,v.passportBio, v.visaPage, v.contactNumber,v.user.userName,v.status,v.createdDate) "
+	@Query("SELECT new com.app.shwe.dto.VisaExtensionDTO(v.syskey,v.visaTypeDescription,v.passportBio, v.visaPage, v.contactNumber,v.user.userName,v.status,v.createdDate) "
 			+ "FROM VisaExtension v JOIN v.user u " + "WHERE v.status = :status "
 			+ "AND (:searchString IS NULL OR :searchString = '' OR u.userName LIKE %:searchString%) "
 			+ "ORDER BY v.createdDate")
 	Page<VisaExtensionDTO> getAllVisa(@Param("status") String status, @Param("searchString") String searchString,
 			Pageable pageable);
 	
-	@Query("SELECT new com.app.shwe.dto.VisaExtensionDTO(v.visaTypeDescription,v.passportBio, v.visaPage, v.contactNumber,v.user.userName,v.status,v.createdDate) "
+	@Query("SELECT new com.app.shwe.dto.VisaExtensionDTO(v.syskey,v.visaTypeDescription,v.passportBio, v.visaPage, v.contactNumber,v.user.userName,v.status,v.createdDate) "
 			+ " FROM VisaExtension v WHERE v.id =:id")
 	Optional<VisaExtensionDTO> getVisaOrderById(@Param("id") int id);
 

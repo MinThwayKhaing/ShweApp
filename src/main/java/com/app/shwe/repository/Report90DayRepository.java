@@ -49,14 +49,14 @@ public interface Report90DayRepository extends JpaRepository<Report90Day, Intege
 	@Query("SELECT COALESCE(MAX(r.syskey), 'RP00000000') FROM Report90Day r")
 	String findMaxSysKey();
 
-	@Query("SELECT new com.app.shwe.dto.Report90DayDTO(v.visaTypeDescription,v.passportBio, v.visaPage, v.contactNumber,v.user.userName,v.status,v.createdDate) "
+	@Query("SELECT new com.app.shwe.dto.Report90DayDTO(v.syskey,v.visaTypeDescription,v.passportBio, v.visaPage, v.contactNumber,v.user.userName,v.status,v.createdDate) "
 			+ "FROM Report90Day v JOIN v.user u " + "WHERE v.status = :status "
 			+ "AND (:searchString IS NULL OR :searchString = '' OR u.userName LIKE %:searchString%) "
 			+ "ORDER BY v.createdDate")
 	Page<Report90DayDTO> getAllVisa(@Param("status") String status, @Param("searchString") String searchString,
 			Pageable pageable);
 	
-	@Query("SELECT new com.app.shwe.dto.Report90DayDTO(v.visaTypeDescription,v.passportBio, v.visaPage, v.contactNumber,v.user.userName,v.status,v.createdDate) "
+	@Query("SELECT new com.app.shwe.dto.Report90DayDTO(v.syskey,v.visaTypeDescription,v.passportBio, v.visaPage, v.contactNumber,v.user.userName,v.status,v.createdDate) "
 			+ " FROM Report90Day v WHERE v.id =:id")
 	Optional<Report90DayDTO> getVisaOrderById(@Param("id") int id);
 }

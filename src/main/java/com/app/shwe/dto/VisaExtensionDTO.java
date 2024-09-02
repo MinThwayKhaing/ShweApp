@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class VisaExtensionDTO {
 
+	private String order_id;
 	private String visaType;
 	private String passportBio;
 	private String visaPage;
