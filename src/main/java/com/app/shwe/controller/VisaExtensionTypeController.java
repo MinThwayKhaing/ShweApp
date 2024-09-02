@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.app.shwe.dto.VisaExtensionTypeRequestDTO;
 import com.app.shwe.dto.VisaExtensionTypeResponseDTO;
+import com.app.shwe.model.VisaExtensionType;
 import com.app.shwe.service.VisaExtensionTypeService;
 
 import lombok.RequiredArgsConstructor;
@@ -43,11 +44,17 @@ public class VisaExtensionTypeController {
 			@RequestBody VisaExtensionTypeRequestDTO request) {
 		return visaTypeService.updateVisaType(id, request);
 	}
+	
+	@GetMapping("/getVisaExtensionTypeById/{id}")
+	public ResponseEntity<VisaExtensionType> getVisaTypeById(@PathVariable int id) {
+	    return visaTypeService.getVisaExtensionTypeById(id);
+	}
 
-	// @GetMapping("/getAllVisaType")
-	// public List<VisaExtensionTypeResponseDTO> getVisaExtensionType() {
-	// return visaTypeService.getAllVisaType();
-	// }
+
+	 @GetMapping("/getAllVisaType")
+	 public List<VisaExtensionType> getVisaExtensionType() {
+	 return visaTypeService.getAllVisaType();
+	 }
 
 	@DeleteMapping("/deleteVisaType/{id}")
 	public ResponseEntity<?> deleteVisaType(@PathVariable int id) {

@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import com.app.shwe.dto.Report90DayTypeResponseType;
 import com.app.shwe.dto.VisaTypeResponseDTO;
 import com.app.shwe.model.Report90DayVisaType;
+import com.app.shwe.model.VisaExtensionType;
 
 import jakarta.transaction.Transactional;
 
@@ -32,6 +33,9 @@ public interface Report90DayTypeRepository extends JpaRepository<Report90DayVisa
 
 	@Modifying
 	@Transactional
-	@Query("DELETE FROM VisaType v WHERE v.id = :id")
+	@Query("DELETE FROM Report90DayVisaType v WHERE v.id = :id")
 	void deleteVisaTypeById(int id);
+	
+	@Query("SELECT v FROM Report90DayVisaType v ")
+	List<Report90DayVisaType> getAllVisa();
 }

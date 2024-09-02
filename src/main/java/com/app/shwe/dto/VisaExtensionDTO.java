@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class VisaExtensionDTO {
 
-	private String visaType;
+	private int visaType;
 	private String passportBio;
 	private String visaPage;
 	private String contactNumber;

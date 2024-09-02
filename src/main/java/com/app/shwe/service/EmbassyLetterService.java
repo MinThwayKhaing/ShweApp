@@ -100,10 +100,10 @@ public class EmbassyLetterService {
 			embassy.setUser(user);
 			embassy.setCreatedBy(userId);
 			embassy.setCreatedDate(new Date());
-			embassy.setVisaType(visaType.getDescription() + " ( ฿" + visaType.getPrice()+ " )");
+			embassy.setVisaType(request.getVisa_id());
 			embassyRepo.save(embassy);
 			mainOrder.setCreatedBy(userId);
-			mainOrder.setRecommendationLetterType(embassy.getVisaType());
+			mainOrder.setRecommendationLetterType(visaType.getDescription());
 			mainOrder.setCreatedDate(embassy.getCreatedDate());
 			mainOrder.setStatus(embassy.getStatus());
 			mainOrder.setSys_key(embassy.getSyskey());

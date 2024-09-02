@@ -14,5 +14,7 @@ public class EmbassyVisaTypeRequestDTO {
 	private String description;
 
 	private double price;
+	
+	
 
 }

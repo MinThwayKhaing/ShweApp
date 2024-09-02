@@ -55,7 +55,6 @@ public class VisaExtensionTypeService {
 			// Save the visaType first
 			vsiaTypeRepository.save(visaType);
 
-
 			return ResponseEntity.status(HttpStatus.OK).body("Visa type saved successfully.");
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -113,18 +112,23 @@ public class VisaExtensionTypeService {
 	// }
 
 	@Transactional
+	public List<VisaExtensionType> getAllVisaType() {
+		return vsiaTypeRepository.getAllVisa();
+	}
+
+	@Transactional
 	public ResponseEntity<String> updateVisaType(int id, VisaExtensionTypeRequestDTO request) {
 		Optional<VisaExtensionType> getVisa = vsiaTypeRepository.findById(id);
 		if (!getVisa.isPresent()) {
 			throw new IllegalArgumentException("ID not found");
 		}
-		
 
 		try {
 			VisaExtensionType visaType = getVisa.get();
 			visaType.setDescription(request.getDescription());
 			visaType.setUpdatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 			visaType.setUpdatedDate(new Date());
+			visaType.setPrice(request.getPrice());
 			vsiaTypeRepository.save(visaType);
 			return new ResponseEntity<>("Visa updated successfully", HttpStatus.OK);
 		} catch (Exception e) {
@@ -152,4 +156,15 @@ public class VisaExtensionTypeService {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	@Transactional
+	public ResponseEntity<VisaExtensionType> getVisaExtensionTypeById(int id) {
+	    Optional<VisaExtensionType> visaTypeOpt = vsiaTypeRepository.findById(id);
+	    if (!visaTypeOpt.isPresent()) {
+	        return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if not found
+	    }
+	    
+	    return new ResponseEntity<>(visaTypeOpt.get(), HttpStatus.OK); // Return the found VisaExtensionType
+	}
+
 }

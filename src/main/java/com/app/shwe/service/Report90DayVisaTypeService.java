@@ -14,9 +14,11 @@ import com.app.shwe.dto.Report90DayTypeRequestDTO;
 import com.app.shwe.dto.Report90DayTypeResponseType;
 import com.app.shwe.dto.VisaTypeRequestDTO;
 import com.app.shwe.dto.VisaTypeResponseDTO;
+import com.app.shwe.model.EmbassyVisaType;
 import com.app.shwe.model.Report90DaySubVisaType;
 import com.app.shwe.model.Report90DayVisaType;
 import com.app.shwe.model.SubVisaType;
+import com.app.shwe.model.VisaExtensionType;
 import com.app.shwe.model.VisaServices;
 import com.app.shwe.model.VisaType;
 import com.app.shwe.repository.Report90DaySubVisaRepository;
@@ -56,6 +58,7 @@ public class Report90DayVisaTypeService {
 			Report90DayVisaType visaType = new Report90DayVisaType();
 			visaType.setDescription(request.getDescription());
 			visaType.setPrice(request.getPrice());
+			visaType.setDelete_status(0);
 			visaType.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 			visaType.setCreatedDate(new Date());
 
@@ -107,6 +110,16 @@ public class Report90DayVisaTypeService {
 		}
 	}
 
+	@Transactional
+	public ResponseEntity<Report90DayVisaType> getEmbassyLetteById(int id) {
+		Optional<Report90DayVisaType> visaTypeOpt = vsTypeRepo.findById(id);
+		if (!visaTypeOpt.isPresent()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if not found
+		}
+
+		return new ResponseEntity<>(visaTypeOpt.get(), HttpStatus.OK); // Return the found VisaExtensionType
+	}
+
 	// @Transactional
 	// public List<Report90DayTypeResponseType> getAllVisaType() {
 	// List<Report90DayTypeResponseType> visaList =
@@ -129,53 +142,49 @@ public class Report90DayVisaTypeService {
 	// return response;
 	// }
 
-	// @Transactional
-	// public ResponseEntity<String> updateVisaType(int id,
-	// Report90DayTypeRequestDTO request) {
-	// Optional<Report90DayVisaType> getVisa = vsiaTypeRepository.findById(id);
-	// if (!getVisa.isPresent()) {
-	// throw new IllegalArgumentException("ID not found");
-	// }
-	// Report90DaySubVisaType subVisa =
-	// subVisaTypeRepository.findById(request.getSubVisaId())
-	// .orElseThrow(() -> new RuntimeException("SubVisaType not found for ID: " +
-	// request.getSubVisaId()));
+	@Transactional
+	public ResponseEntity<String> updateVisaType(int id, Report90DayTypeRequestDTO request) {
+		Optional<Report90DayVisaType> getVisa = vsiaTypeRepository.findById(id);
+		if (!getVisa.isPresent()) {
+			throw new IllegalArgumentException("ID not found");
+		}
 
-	// try {
-	// Report90DayVisaType visaType = getVisa.get();
-	// visaType.setDescription(request.getDescription());
-	// visaType.setUpdatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
-	// visaType.setUpdatedDate(new Date());
-	// vsiaTypeRepository.save(visaType);
+		try {
+			Report90DayVisaType visaType = getVisa.get();
+			visaType.setDescription(request.getDescription());
+			visaType.setUpdatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
+			visaType.setUpdatedDate(new Date());
+			visaType.setPrice(request.getPrice());
+			vsiaTypeRepository.save(visaType);
 
-	// return new ResponseEntity<>("Visa updated successfully", HttpStatus.OK);
-	// } catch (Exception e) {
-	// return new ResponseEntity<>("Error occurred: " + e.getMessage(),
-	// HttpStatus.INTERNAL_SERVER_ERROR);
-	// }
-	// }
+			return new ResponseEntity<>("Visa updated successfully", HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 
-	// @Transactional
-	// public ResponseEntity<String> deleteVisaType(int id) {
-	// // Check if VisaType exists
-	// if (vsiaTypeRepository.checkVisaTypeById(id) == 0) {
-	// return new ResponseEntity<>("VisaType with ID " + id + " not found.",
-	// HttpStatus.NOT_FOUND);
-	// }
+	@Transactional
+	public ResponseEntity<String> deleteVisaType(int id) {
+		// Check if VisaType exists
+		if (vsiaTypeRepository.checkVisaTypeById(id) == 0) {
+			return new ResponseEntity<>("VisaType with ID " + id + " not found.", HttpStatus.NOT_FOUND);
+		}
 
-	// try {
-	// // Delete associated SubVisaType records
-	// subVisaTypeRepository.deleteSubVisaTypesByVisaId(id);
+		try {
 
-	// // Delete VisaType
-	// vsiaTypeRepository.deleteVisaTypeById(id);
+			// Delete VisaType
+			vsiaTypeRepository.deleteVisaTypeById(id);
 
-	// return new ResponseEntity<>("VisaType deleted successfully.", HttpStatus.OK);
-	// } catch (Exception e) {
-	// return new ResponseEntity<>("Error occurred while deleting VisaType: " +
-	// e.getMessage(),
-	// HttpStatus.INTERNAL_SERVER_ERROR);
-	// }
-	// }
+			return new ResponseEntity<>("VisaType deleted successfully.", HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>("Error occurred while deleting VisaType: " + e.getMessage(),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@Transactional
+	public List<Report90DayVisaType> getAllVisaType() {
+		return vsiaTypeRepository.getAllVisa();
+	}
 
 }

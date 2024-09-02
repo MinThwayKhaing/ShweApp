@@ -19,4 +19,6 @@ public class Report90DayVisaType extends CommonDTO {
 
 	@Column(name = "price")
 	private double price;
+	
+	private int delete_status;
 }

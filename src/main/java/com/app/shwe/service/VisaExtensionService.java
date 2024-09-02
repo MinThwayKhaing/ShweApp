@@ -102,7 +102,7 @@ public class VisaExtensionService {
 			visaExtension.setSyskey(orderGeneratorService.generateVisaExtensionOrderId());
 			visaExtension.setPassportBio(passport_bio);
 			visaExtension.setVisaPage(visa_page);
-			visaExtension.setVisaType(visaType.getDescription() + " ( ฿" + visaType.getPrice()+ " )");
+			visaExtension.setVisaType(request.getVisa_id());
 			visaExtension.setStatus("Pending");
 			visaExtension.setUser(user);
 			visaExtension.setContactNumber(request.getContactNumber());
@@ -113,6 +113,7 @@ public class VisaExtensionService {
 			
 
 			mainOrder.setPeriod(visaExtension.getPeriod());
+			mainOrder.setVisaType(visaType.getDescription());
 			mainOrder.setCreatedBy(userId);
 			mainOrder.setCreatedDate(visaExtension.getCreatedDate());
 			mainOrder.setStatus(visaExtension.getStatus());
