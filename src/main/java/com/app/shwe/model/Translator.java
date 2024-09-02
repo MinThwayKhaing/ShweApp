@@ -27,7 +27,7 @@ public class Translator extends CommonDTO {
 	private String language;
 
 	private String specialist;
-	
+
 	private String chatLink;
 
 }

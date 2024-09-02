@@ -19,6 +19,8 @@ import com.app.shwe.dto.NewsRequestDTO;
 import com.app.shwe.dto.SearchDTO;
 import com.app.shwe.dto.TM30PeriodDTO;
 import com.app.shwe.dto.Tm30DTO;
+import com.app.shwe.dto.Tm30DTOResponseDTO;
+import com.app.shwe.dto.Tm30DetailsDTO;
 import com.app.shwe.dto.Tm30ProjectionDTO;
 import com.app.shwe.dto.Tm30RequestDTO;
 import com.app.shwe.dto.Tm30ResponseDTO;
@@ -120,6 +122,20 @@ public class Tm30Service {
 		}
 	}
 
+	public ResponseEntity<?> getTm30DetailsById(int id) {
+		try {
+			Tm30DetailsDTO tm30Details = tm30Repo.findTm30DetailsById(id);
+			if (tm30Details != null) {
+				return ResponseEntity.ok(tm30Details);
+			} else {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("TM30 record not found with ID: " + id);
+			}
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("An error occurred while fetching the TM30 details: " + e.getMessage());
+		}
+	}
+
 	@Transactional
 	public Optional<Tm30> getTm30ById(Integer id) {
 		if (id == null) {
@@ -130,11 +146,9 @@ public class Tm30Service {
 	}
 
 	@Transactional
-	public Page<Tm30> getTm30(SearchDTO search) {
-		int page = (search.getPage() < 1) ? 0 : search.getPage() - 1;
-		int size = search.getSize();
-		Pageable pageable = PageRequest.of(page, size);
-		return tm30Repo.getAllTm30(pageable);
+	public Page<Tm30DTOResponseDTO> getTm30(String searchString, String status, int page, int size) {
+		Pageable pageable = PageRequest.of(page < 1 ? 0 : page - 1, size);
+		return tm30Repo.getAllTm30(status, searchString, pageable);
 	}
 
 	// @Transactional
@@ -268,10 +282,48 @@ public class Tm30Service {
 					.body("Error occurred while cancel Tm-30 order: " + e.getMessage());
 		}
 	}
-	
-//	public List<Tm30DTO> getTm30OrderByUserId(){
-//		int userId = userRepository.authUser(SecurityUtils.getCurrentUsername());
-//		return tm30Repo.getTm30OrderByUserId(userId);
-//	}
+
+	@Transactional
+	public ResponseEntity<String> onProgress(int orderId) {
+		String status = OrderStatus.ON_PROGRESS.name();
+		Optional<Tm30> getTranslatorOrder = tm30Repo.findById(orderId);
+		if (!getTranslatorOrder.isPresent()) {
+			return new ResponseEntity<>("Error occurred: ", HttpStatus.INTERNAL_SERVER_ERROR);
+
+		}
+		try {
+			Tm30 model = getTranslatorOrder.get();
+			mainOrderRepository.updateOrderStatusToOnProgress(status, model.getSyskey());
+			tm30Repo.cancelOrder(orderId, status);
+			return ResponseEntity.status(HttpStatus.OK).body("Cancel Tm-30 order successfully.");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error occurred while cancel Tm-30 order: " + e.getMessage());
+		}
+	}
+
+	@Transactional
+	public ResponseEntity<String> completed(int orderId) {
+		String status = OrderStatus.COMPLETED.name();
+		Optional<Tm30> getTranslatorOrder = tm30Repo.findById(orderId);
+		if (!getTranslatorOrder.isPresent()) {
+			return new ResponseEntity<>("Error occurred: ", HttpStatus.INTERNAL_SERVER_ERROR);
+
+		}
+		try {
+			Tm30 model = getTranslatorOrder.get();
+			mainOrderRepository.updateOrderStatusToOnProgress(status, model.getSyskey());
+			tm30Repo.cancelOrder(orderId, status);
+			return ResponseEntity.status(HttpStatus.OK).body("Cancel Tm-30 order successfully.");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error occurred while cancel Tm-30 order: " + e.getMessage());
+		}
+	}
+
+	// public List<Tm30DTO> getTm30OrderByUserId(){
+	// int userId = userRepository.authUser(SecurityUtils.getCurrentUsername());
+	// return tm30Repo.getTm30OrderByUserId(userId);
+	// }
 
 }

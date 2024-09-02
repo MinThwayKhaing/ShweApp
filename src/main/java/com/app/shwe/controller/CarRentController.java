@@ -29,7 +29,7 @@ public class CarRentController {
 	@Autowired
 	private CarRentService carService;
 
-	@PreAuthorize("hasRole('ADMIN')")
+	// @PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/carRentSave")
 	public ResponseEntity<String> saveCars(@RequestPart("image") MultipartFile carImage,
 			@RequestPart("dto") CarRentRequestDTO dto) {
@@ -63,8 +63,10 @@ public class CarRentController {
 	}
 
 	@GetMapping("/showAllCarsAndSearch")
-	public Page<CarRent> showCars(@RequestBody SearchDTO search) {
-		return carService.showAllCar(search);
+	public Page<CarRent> showCars(@RequestParam(required = false) String searchString,
+			@RequestParam(defaultValue = "1") int page,
+			@RequestParam(defaultValue = "10") int size) {
+		return carService.showAllCar(searchString, page, size);
 	}
 
 }

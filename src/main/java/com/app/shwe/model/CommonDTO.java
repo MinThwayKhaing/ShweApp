@@ -27,6 +27,8 @@ public class CommonDTO {
 	private int createdBy;
 	private int updatedBy;
 
+	private boolean deleteStatus;
+
 	@PrePersist
 	protected void onCreate() {
 		createdDate = new Date();
@@ -37,4 +39,5 @@ public class CommonDTO {
 	protected void onUpdate() {
 		updatedDate = new Date();
 	}
+
 }

@@ -125,18 +125,24 @@ public class TranslatorService {
 	}
 
 	@Transactional
-	public ResponseEntity<?> deteteTranslator(int id) {
+	public ResponseEntity<?> deleteTranslator(int id) {
 		int count = translatorRepo.checkTranslator(id);
 		if (count == 0) {
 			return new ResponseEntity<>("Translator with ID " + id + " not found", HttpStatus.NOT_FOUND);
 		}
 		try {
-			translatorRepo.deleteById(id);
-			return new ResponseEntity<>("Translator deleted successfully", HttpStatus.OK);
+			Optional<Translator> translatorOptional = translatorRepo.findById(id);
+			if (translatorOptional.isPresent()) {
+				Translator translator = translatorOptional.get();
+				translator.setDeleteStatus(true); // Set the delete status to true
+				translatorRepo.save(translator); // Save the updated translator
+				return new ResponseEntity<>("Translator deleted successfully", HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>("Translator with ID " + id + " not found", HttpStatus.NOT_FOUND);
+			}
 		} catch (Exception e) {
 			return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
 	}
 
 	@Transactional

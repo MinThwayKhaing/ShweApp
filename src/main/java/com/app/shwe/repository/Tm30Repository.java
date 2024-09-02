@@ -11,6 +11,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.app.shwe.dto.Tm30DTO;
+import com.app.shwe.dto.Tm30DTOResponseDTO;
+import com.app.shwe.dto.Tm30DetailsDTO;
 import com.app.shwe.dto.Tm30ProjectionDTO;
 import com.app.shwe.dto.Tm30ResponseDTO;
 import com.app.shwe.dto.VisaResponseDTO;
@@ -40,8 +42,11 @@ public interface Tm30Repository extends JpaRepository<Tm30, Integer> {
 	@Query("SELECT v.main_visa_id, v.sub_visa_id FROM VisaOrder v WHERE v.order_id = :id ")
 	VisaResponseDTO getTM30(@Param("id") int id);
 
-	@Query("SELECT t FROM Tm30 t ORDER BY t.createdDate")
-	Page<Tm30> getAllTm30(Pageable pageable);
+	@Query("SELECT new com.app.shwe.dto.Tm30DTOResponseDTO(t.id, t.createdDate, t.syskey, t.passportBio, t.visaPage, t.duration, t.contactNumber, t.status, u.userName) "
+			+
+			"FROM Tm30 t JOIN t.user u WHERE t.status = :status AND u.userName LIKE %:searchString% ORDER BY t.createdDate")
+	Page<Tm30DTOResponseDTO> getAllTm30(@Param("status") String status, @Param("searchString") String searchString,
+			Pageable pageable);
 
 	@Query("SELECT COUNT(t) FROM Tm30 t WHERE t.id = :id")
 	int checkTm30ById(@Param("id") int id);
@@ -63,6 +68,15 @@ public interface Tm30Repository extends JpaRepository<Tm30, Integer> {
 			+ "WHERE vo.order_id = :orderId")
 	List<VisaResponseDTO> getVisaOrderByOrderId(@Param("orderId") int orderId);
 
+	@Query("SELECT new com.app.shwe.dto.Tm30DetailsDTO(" +
+			"t.id, t.syskey, t.passportBio, t.visaPage, t.duration, t.contactNumber, t.status, " +
+			"t.createdDate, u.userName, p.description, p.type, p.price, pr.description) " +
+			"FROM Tm30 t " +
+			"JOIN t.user u " +
+			"JOIN t.price p " +
+			"JOIN t.period pr " +
+			"WHERE t.id = :id")
+	Tm30DetailsDTO findTm30DetailsById(@Param("id") int id);
 	// @Query("SELECT new com.app.shwe.dto.Tm30ProjectionDTO(t.id,t.syskey,t.period,
 	// t.passportBio, t.visaPage, t.contactNumber,t.user.userName,t.status) FROM
 	// Tm30 t ORDER BY t.id DESC")
@@ -73,9 +87,8 @@ public interface Tm30Repository extends JpaRepository<Tm30, Integer> {
 	@Query("UPDATE Tm30 t SET t.status = :status WHERE t.id = :id")
 	void cancelOrder(@Param("id") int id, @Param("status") String status);
 
-//	@Query("SELECT new com.app.shwe.dto.Tm30DTO(t.period,t.passportBio, t.visaPage, t.contactNumber) FROM Tm30 t WHERE t.user.id = :userId")
-//	 List<Tm30DTO> getTm30OrderByUserId(int userId);
-	
-	
+	// @Query("SELECT new com.app.shwe.dto.Tm30DTO(t.period,t.passportBio,
+	// t.visaPage, t.contactNumber) FROM Tm30 t WHERE t.user.id = :userId")
+	// List<Tm30DTO> getTm30OrderByUserId(int userId);
 
 }
