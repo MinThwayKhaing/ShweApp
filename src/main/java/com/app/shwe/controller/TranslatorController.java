@@ -46,7 +46,8 @@ public class TranslatorController {
 	}
 
 	@PutMapping("/updateTranslator/{id}")
-	public ResponseEntity<String> updateTranslator(@PathVariable int id,
+	public ResponseEntity<String> updateTranslator(
+			@PathVariable int id,
 			@RequestPart("image") MultipartFile image,
 			@RequestPart("request") TranslatorRequestDTO request) {
 		return translatorService.updateTranslator(id, image, request);
@@ -54,7 +55,7 @@ public class TranslatorController {
 
 	@DeleteMapping("/deleteTranslator/{id}")
 	public ResponseEntity<?> deletTranslator(@PathVariable int id) {
-		return translatorService.deteteTranslator(id);
+		return translatorService.deleteTranslator(id);
 	}
 
 	@GetMapping("/searchTranslator")

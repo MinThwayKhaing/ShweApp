@@ -44,12 +44,13 @@ public interface CarRentRepository extends JpaRepository<CarRent, Integer> {
 	@Query("SELECT new com.app.shwe.dto.CarRentDTO(c.id,c.carName,c.ownerName,c.carNo,c.status,c.license,c.driverPhoneNumber,c.driverName,c.carColor"
 			+ ",c.carType,c.image)"
 			+ " FROM CarRent c "
-			+ " WHERE (:searchString IS NULL OR :searchString = '' OR "
+			+ " WHERE c.deleteStatus = false AND (:searchString IS NULL OR :searchString = '' OR "
 			+ "c.carName LIKE %:searchString% OR c.ownerName LIKE %:searchString% OR c.carNo LIKE %:searchString%)")
 	Page<CarRent> carSimpleSearch(@Param("searchString") String searchString, Pageable pageable);
 
-	@Query("SELECT new com.app.shwe.dto.CarRentDTO(c.id,c.carName,c.ownerName,c.carNo,c.status,c.license,c.driverPhoneNumber,c.driverName,c.carColor"
-			+ ",c.carType,c.image)"
-			+ "FROM CarRent c WHERE c.id = :id")
-	Optional<CarRentDTO> getCarById(int id);
+	@Query("SELECT new com.app.shwe.dto.CarRentDTO(c.id, c.carName, c.ownerName, c.carNo, c.status, c.license, c.driverPhoneNumber, c.driverName, c.carColor, c.carType, c.image) "
+			+
+			"FROM CarRent c WHERE c.id = :id AND c.deleteStatus = false")
+	Optional<CarRentDTO> getCarById(@Param("id") int id);
+
 }

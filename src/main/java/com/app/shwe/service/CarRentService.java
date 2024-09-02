@@ -123,26 +123,25 @@ public class CarRentService {
 
 	public ResponseEntity<?> deleteCar(int id) {
 		// Check if the car exists
-		int count = carRentRepository.checkCarById(id);
+		Optional<CarRent> carOptional = carRentRepository.findById(id);
 
-		if (count == 0) {
+		if (carOptional.isEmpty()) {
 			// Car with the given ID not found
 			return new ResponseEntity<>("Car with ID " + id + " not found", HttpStatus.NOT_FOUND);
 		}
 
 		try {
-			carRentRepository.deleteById(id);
-			return new ResponseEntity<>("Car Details deleted successfully", HttpStatus.OK);
+			CarRent car = carOptional.get();
+			car.setDeleteStatus(true); // Set delete status to true
+			carRentRepository.save(car); // Save the updated car record
+			return new ResponseEntity<>("Car marked as deleted successfully", HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
-	public Page<CarRent> showAllCar(SearchDTO search) {
-		String searchString = search.getSearchString();
-		int page = (search.getPage() < 1) ? 0 : search.getPage() - 1;
-		int size = search.getSize();
-		Pageable pageable = PageRequest.of(page, size);
+	public Page<CarRent> showAllCar(String searchString, int page, int size) {
+		Pageable pageable = PageRequest.of(page < 1 ? 0 : page - 1, size);
 		return carRentRepository.carSimpleSearch(searchString, pageable);
 	}
 

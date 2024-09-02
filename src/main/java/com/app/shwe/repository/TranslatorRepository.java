@@ -25,10 +25,18 @@ public interface TranslatorRepository extends JpaRepository<Translator, Integer>
 			"GROUP BY t.id, t.name")
 	Optional<TranslatorRatingDTO> findByIdWithRating(int translatorId);
 
-	@Query("SELECT t FROM Translator t WHERE (:searchString IS NULL OR :searchString = '' OR "
-			+ "t.name LIKE %:searchString% OR t.language LIKE %:searchString% OR t.specialist LIKE %:searchString%)")
-	Page<Translator> searchTranslator(@Param("searchString") String searchString, Pageable pageable);
+	// @Query("SELECT t FROM Translator t WHERE (:searchString IS NULL OR
+	// :searchString = '' OR "
+	// + "t.name LIKE %:searchString% OR t.language LIKE %:searchString% OR
+	// t.specialist LIKE %:searchString%)")
+	// Page<Translator> searchTranslator(@Param("searchString") String searchString,
+	// Pageable pageable);
 
 	@Query("SELECT COUNT(t) FROM Translator t WHERE t.id = :id")
 	int checkTranslator(@Param("id") int id);
+
+	@Query("SELECT t FROM Translator t WHERE t.deleteStatus = false AND (:searchString IS NULL OR :searchString = '' OR "
+			+ "t.name LIKE %:searchString% OR t.language LIKE %:searchString% OR t.specialist LIKE %:searchString%)")
+	Page<Translator> searchTranslator(@Param("searchString") String searchString, Pageable pageable);
+
 }

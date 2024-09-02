@@ -22,7 +22,5 @@ public class CarRentRequestDTO {
 	private String driverPhoneNumber;
 	private String carColor;
 	private int carType;
-	private boolean withDriver;
-	private String checkStatus;
 
 }
