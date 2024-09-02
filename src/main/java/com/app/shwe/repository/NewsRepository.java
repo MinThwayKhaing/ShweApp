@@ -10,11 +10,12 @@ import org.springframework.stereotype.Repository;
 import com.app.shwe.model.News;
 
 @Repository
-public interface NewsRepository extends JpaRepository<News, Integer>{
-	
+public interface NewsRepository extends JpaRepository<News, Integer> {
+
 	@Query("SELECT n FROM News n ORDER BY n.createdDate DESC")
-	Page<News> getAllNewsByDate(Pageable pageable);
-	
+	Page<News> getAllNewsByDate( Pageable pageable);
+
+
 	@Query("SELECT COUNT(n) FROM News n WHERE n.id = :id")
 	int checkNewsById(@Param("id") int id);
 
