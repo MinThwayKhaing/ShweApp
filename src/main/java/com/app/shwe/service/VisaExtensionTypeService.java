@@ -51,7 +51,7 @@ public class VisaExtensionTypeService {
 			visaType.setPrice(request.getPrice());
 			visaType.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 			visaType.setCreatedDate(new Date());
-
+            visaType.setDeleteStatus(false);
 			// Save the visaType first
 			vsiaTypeRepository.save(visaType);
 

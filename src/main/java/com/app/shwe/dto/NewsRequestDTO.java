@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class NewsRequestDTO {
 	
-	List<MultipartFile> files;
+	
 	private String description;
 
 }

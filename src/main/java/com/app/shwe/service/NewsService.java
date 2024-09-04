@@ -20,6 +20,7 @@ import com.app.shwe.dto.SearchDTO;
 import com.app.shwe.model.CarRent;
 import com.app.shwe.model.News;
 import com.app.shwe.model.Translator;
+import com.app.shwe.model.VisaExtensionType;
 import com.app.shwe.repository.NewsRepository;
 import com.app.shwe.repository.UserRepository;
 import com.app.shwe.utils.FilesSerializationUtil;
@@ -55,6 +56,7 @@ public class NewsService {
 			news.setDescription(request.getDescription());
 			news.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 			news.setCreatedDate(new Date());
+			news.setDeleteStatus(false);
 			newsRepository.save(news);
 			return ResponseEntity.status(HttpStatus.OK).body("News saved successfully.");
 		} catch (IOException e) {
@@ -90,13 +92,23 @@ public class NewsService {
 
 	}
 
+//	@Transactional
+//	public Optional<News> getNewsById(Integer id) {
+//		if (id == null) {
+//			throw new IllegalArgumentException("Id cannot be null");
+//		}
+//		Optional<News> news = newsRepository.findById(id);
+//		return news;
+//	}
+	
 	@Transactional
-	public Optional<News> getNewsById(Integer id) {
-		if (id == null) {
-			throw new IllegalArgumentException("Id cannot be null");
-		}
-		Optional<News> news = newsRepository.findById(id);
-		return news;
+	public ResponseEntity<News> getNewsById(int id) {
+	    Optional<News> visaTypeOpt = newsRepository.findById(id);
+	    if (!visaTypeOpt.isPresent()) {
+	        return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if not found
+	    }
+	    
+	    return new ResponseEntity<>(visaTypeOpt.get(), HttpStatus.OK); // Return the found VisaExtensionType
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
@@ -116,10 +128,9 @@ public class NewsService {
 		}
 	}
 
-	public Page<News> getAllNewsByDate(SearchDTO search) {
-		int page = (search.getPage() < 1) ? 0 : search.getPage() - 1;
-		int size = search.getSize();
-		Pageable pageable = PageRequest.of(page, size);
+	public Page<News> getAllNewsByDate( int page, int size) {
+		Pageable pageable = PageRequest.of(page < 1 ? 0 : page - 1, size);
 		return newsRepository.getAllNewsByDate(pageable);
 	}
+	
 }

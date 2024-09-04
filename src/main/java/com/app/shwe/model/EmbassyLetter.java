@@ -3,6 +3,7 @@ package com.app.shwe.model;
 import java.util.Date;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
@@ -17,7 +18,7 @@ import lombok.NoArgsConstructor;
 public class EmbassyLetter extends CommonDTO {
 
 	private String syskey;
-	private int visaType;
+	private String visaTypeDescription;
 	private String passportBio;
 	private String visaPage;
 	private String contactNumber;
@@ -31,5 +32,9 @@ public class EmbassyLetter extends CommonDTO {
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User user;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "visa_type", nullable = false)
+	private EmbassyVisaType visaType;
 
 }

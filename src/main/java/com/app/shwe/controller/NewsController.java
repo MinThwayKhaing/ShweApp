@@ -23,6 +23,8 @@ import com.app.shwe.dto.NewsRequestDTO;
 import com.app.shwe.dto.SearchDTO;
 import com.app.shwe.model.CarRent;
 import com.app.shwe.model.News;
+import com.app.shwe.model.Translator;
+import com.app.shwe.model.VisaExtensionType;
 import com.app.shwe.service.NewsService;
 
 @RestController
@@ -41,12 +43,22 @@ public class NewsController {
 
 	@GetMapping("/getNewsById/{id}")
 	public ResponseEntity<News> getNewsById(@PathVariable int id) {
-		return newsService.getNewsById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+		return newsService.getNewsById(id);
 	}
-
+	
+//	@GetMapping("/getVisaExtensionTypeById/{id}")
+//	public ResponseEntity<VisaExtensionType> getVisaTypeById(@PathVariable int id) {
+//	    return visaTypeService.getVisaExtensionTypeById(id);
+//	}
+	
+	
 	@GetMapping("/showAllNews")
-	public Page<News> showCars(@RequestBody SearchDTO search) {
-		return newsService.getAllNewsByDate(search);
+	public Page<News> getAllNews(
+	    @RequestParam(defaultValue = "1") int page,
+	    @RequestParam(defaultValue = "10") int size) {
+	    Page<News> newsPage = newsService.getAllNewsByDate(page, size);
+	    System.out.println("Fetched news: " + newsPage.getContent()); // Add logging
+	    return newsPage;
 	}
 
 	@PutMapping("/updateNews/{id}")

@@ -1,5 +1,6 @@
 package com.app.shwe.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -18,8 +19,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class News extends CommonDTO{
+public class News extends CommonDTO implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@Lob
     @Column(name = "images", columnDefinition = "TEXT")
     private String images;

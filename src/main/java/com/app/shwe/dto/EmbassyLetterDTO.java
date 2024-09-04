@@ -1,5 +1,7 @@
 package com.app.shwe.dto;
 
+import java.util.Date;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,10 +13,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EmbassyLetterDTO {
 	
-	private int visaType;
-	private String passportBioPage;
+	private String order_id;
+	private String visaType;
+	private String passportBio;
 	private String visaPage;
-	private String address;
 	private String contactNumber;
+	private String userName;
+	private String status;
+	private Date createdDate;
+	
 
 }
