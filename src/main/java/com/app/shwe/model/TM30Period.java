@@ -18,5 +18,6 @@ import lombok.NoArgsConstructor;
 public class TM30Period extends CommonDTO {
 
     private String description;
+    private double price;
 
 }

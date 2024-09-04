@@ -21,16 +21,12 @@ public class Report90Day extends CommonDTO {
 	private String visaPage;
 	private String contactNumber;
 	private String status;
-	private String visaTypeDescription;
+	private int visaTypeDescription;
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	@ManyToOne
-	@JoinColumn(name = "visa_id")
-	private VisaServices visa;
-	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "visa_type", nullable = false)
 	private Report90DayVisaType visaType;

@@ -27,9 +27,6 @@ public class Tm30 extends CommonDTO {
 	private String duration;
 	private String contactNumber;
 	private String status;
-	@ManyToOne
-	@JoinColumn(name = "visa_id")
-	private VisaServices visa;
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")

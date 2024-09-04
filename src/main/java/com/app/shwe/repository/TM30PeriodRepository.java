@@ -13,9 +13,9 @@ import com.app.shwe.model.TM30Period;
 @Repository
 public interface TM30PeriodRepository extends JpaRepository<TM30Period, Integer> {
 
-    @Query("SELECT new com.app.shwe.dto.TM30PeriodDTO(p.id, p.description) FROM TM30Period p")
+    @Query("SELECT new com.app.shwe.dto.TM30PeriodDTO(p.id, p.description,p.price) FROM TM30Period p")
     List<TM30PeriodDTO> findAllTM30Periods();
 
-    @Query("SELECT new com.app.shwe.dto.TM30PeriodDTO(p.id, p.description) FROM TM30Period p WHERE p.id = :id")
+    @Query("SELECT new com.app.shwe.dto.TM30PeriodDTO(p.id, p.description,p.price) FROM TM30Period p WHERE p.id = :id")
     TM30PeriodDTO findTM30PeriodById(@Param("id") int id);
 }

@@ -12,15 +12,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmbassyLetterDTO {
-	
+
 	private String order_id;
-	private String visaType;
+	private int visaType;
 	private String passportBio;
 	private String visaPage;
 	private String contactNumber;
 	private String userName;
 	private String status;
 	private Date createdDate;
-	
 
 }

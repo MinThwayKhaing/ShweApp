@@ -13,7 +13,6 @@ public class EmbassyLetterRequestDTO {
 
 	private String address;
 	private String contactNumber;
-	private String period;
 	private int visa_id;
 
 }

@@ -87,9 +87,6 @@ public class Tm30Service {
 			User user = userRepository.findById(userId)
 					.orElseThrow(() -> new RuntimeException("User not found for ID: " + userId));
 
-			VisaServices visaServices = visaRepo.findById(request.getVisa_id())
-					.orElseThrow(() -> new IllegalArgumentException("Visa not found with id: " + request.getVisa_id()));
-
 			String imageUrl1 = fileUploadService.uploadFile(passport);
 			String imageUrl2 = fileUploadService.uploadFile(visa);
 			Tm30 tm30 = new Tm30();
@@ -101,13 +98,11 @@ public class Tm30Service {
 			tm30.setVisaPage(imageUrl2);
 			tm30.setStatus("Pending");
 			tm30.setContactNumber(request.getContactNumber());
-			tm30.setDuration(request.getDuration());
-			tm30.setVisa(visaServices);
 			tm30.setCreatedBy(userId);
 			tm30.setCreatedDate(new Date());
 			tm30.setUser(user);
 			tm30Repo.save(tm30);
-			mainOrder.setPeriod(periodId.get().getDescription());
+			mainOrder.setPeriod(periodId.get().getDescription() + periodId.get().getPrice());
 			mainOrder.setCreatedBy(userId);
 			mainOrder.setCreatedDate(tm30.getCreatedDate());
 			mainOrder.setStatus(tm30.getStatus());

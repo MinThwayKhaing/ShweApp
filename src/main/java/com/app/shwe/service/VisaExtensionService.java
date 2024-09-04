@@ -75,7 +75,7 @@ public class VisaExtensionService {
 
 	@Autowired
 	private VisaExtensionOrderRepository orderRepository;
-	
+
 	@Autowired
 	private VisaExtensionTypeRepository vsiaTypeRepository;
 
@@ -98,9 +98,10 @@ public class VisaExtensionService {
 
 			VisaServices visaServices = visaRepo.findById(request.getVisa_id())
 					.orElseThrow(() -> new IllegalArgumentException("Visa not found with id: " + request.getVisa_id()));
-			
-			//VisaExtensionType visaType = vsiaTypeRepository.findVisaExtensionTypeById(request.getVisa_id());
-			Optional<VisaExtensionType> visaType =vsiaTypeRepository.findById(request.getVisa_id());
+
+			// VisaExtensionType visaType =
+			// vsiaTypeRepository.findVisaExtensionTypeById(request.getVisa_id());
+			Optional<VisaExtensionType> visaType = vsiaTypeRepository.findById(request.getVisa_id());
 			String passport_bio = fileUploadService.uploadFile(passportBio);
 			String visa_page = fileUploadService.uploadFile(visaPage);
 			VisaExtension visaExtension = new VisaExtension();
@@ -108,16 +109,17 @@ public class VisaExtensionService {
 			visaExtension.setPassportBio(passport_bio);
 			visaExtension.setVisaPage(visa_page);
 			visaExtension.setVisaType(visaType.get());
-			visaExtension.setVisaTypeDescription(visaType.get().getDescription());
+			visaExtension.setVisaTypeDescription(visaType.get().getId());
 			visaExtension.setStatus("Pending");
 			visaExtension.setUser(user);
 			visaExtension.setContactNumber(request.getContactNumber());
 			visaExtension.setCreatedBy(userId);
-			visaExtension.setCreatedDate(new Date());;
-			visaExtension.setVisa(visaServices);
+			visaExtension.setCreatedDate(new Date());
+			;
+
 			visaExtensionRepo.save(visaExtension);
 			mainOrder.setPeriod(visaExtension.getPeriod());
-			mainOrder.setVisaType(visaExtension.getVisaTypeDescription());
+			mainOrder.setVisaType(visaType.get().getDescription() + visaType.get().getPrice());
 			mainOrder.setCreatedBy(userId);
 			mainOrder.setCreatedDate(visaExtension.getCreatedDate());
 			mainOrder.setStatus(visaExtension.getStatus());
@@ -133,34 +135,36 @@ public class VisaExtensionService {
 		}
 
 	}
-	
-//	List<VisaServices> visaList = visaRepo.getAllVisaService();
-//	List<VisaServices> visa = new ArrayList<>();
-//	for (VisaServices visaService : visaList) {
-//		visa.add(visaService);
-//	}
-//	return visaList;
-	
-//	public List<VisaExtensionDTO> getVisaExtensionByOrder() {
-//		int userId = userRepo.authUser(SecurityUtils.getCurrentUsername());
-//		return visaExtensionRepo.getVisaExtensionOrder(userId);
-//	}
 
-//	@Transactional
-//	public List<VisaExtensionResponseDTO> getVisaExtensionByOrder() {
-//		int userId = userRepo.authUser(SecurityUtils.getCurrentUsername());
-//		List<VisaExtensionProjectionDTO> visaList = visaExtensionRepo.getVisaExtensionOrderByUserId(userId);
-//
-//		List<VisaExtensionResponseDTO> responseList = new ArrayList<>();
-//		for (VisaExtensionProjectionDTO dto : visaList) {
-//			List<VisaExtensionOrderResponseDTO> visaOrders = visaExtensionRepo.getVisaOrderByOrderId(dto.getId());
-//			VisaExtensionResponseDTO response = new VisaExtensionResponseDTO();
-//			response.setVisaExtension(dto);
-//			response.setVisaOrder(visaOrders);
-//			responseList.add(response);
-//		}
-//		return responseList;
-//	}
+	// List<VisaServices> visaList = visaRepo.getAllVisaService();
+	// List<VisaServices> visa = new ArrayList<>();
+	// for (VisaServices visaService : visaList) {
+	// visa.add(visaService);
+	// }
+	// return visaList;
+
+	// public List<VisaExtensionDTO> getVisaExtensionByOrder() {
+	// int userId = userRepo.authUser(SecurityUtils.getCurrentUsername());
+	// return visaExtensionRepo.getVisaExtensionOrder(userId);
+	// }
+
+	// @Transactional
+	// public List<VisaExtensionResponseDTO> getVisaExtensionByOrder() {
+	// int userId = userRepo.authUser(SecurityUtils.getCurrentUsername());
+	// List<VisaExtensionProjectionDTO> visaList =
+	// visaExtensionRepo.getVisaExtensionOrderByUserId(userId);
+	//
+	// List<VisaExtensionResponseDTO> responseList = new ArrayList<>();
+	// for (VisaExtensionProjectionDTO dto : visaList) {
+	// List<VisaExtensionOrderResponseDTO> visaOrders =
+	// visaExtensionRepo.getVisaOrderByOrderId(dto.getId());
+	// VisaExtensionResponseDTO response = new VisaExtensionResponseDTO();
+	// response.setVisaExtension(dto);
+	// response.setVisaOrder(visaOrders);
+	// responseList.add(response);
+	// }
+	// return responseList;
+	// }
 
 	@Transactional
 	public ResponseEntity<String> cancelOrder(int orderId) {
@@ -180,14 +184,12 @@ public class VisaExtensionService {
 					.body("Error occurred while cancel 90 Day Report order: " + e.getMessage());
 		}
 	}
-	
+
 	@Transactional
 	public Page<VisaExtensionDTO> getAllVisaExtensionOrder(String searchString, String status, int page, int size) {
 		Pageable pageable = PageRequest.of(page < 1 ? 0 : page - 1, size);
 		return visaExtensionRepo.getAllVisa(status, searchString, pageable);
 	}
-	
-	
 
 	@Transactional
 	public ResponseEntity<String> onProgress(int orderId) {
@@ -228,12 +230,12 @@ public class VisaExtensionService {
 
 	@Transactional
 	public ResponseEntity<VisaExtensionDTO> getVisaExtensionOrderById(int id) {
-	    Optional<VisaExtensionDTO> visaTypeOpt = visaExtensionRepo.getVisaOrderById(id);
-	    if (!visaTypeOpt.isPresent()) {
-	        return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if not found
-	    }
-	    
-	    return new ResponseEntity<>(visaTypeOpt.get(), HttpStatus.OK); // Return the found VisaExtensionType
+		Optional<VisaExtensionDTO> visaTypeOpt = visaExtensionRepo.getVisaOrderById(id);
+		if (!visaTypeOpt.isPresent()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if not found
+		}
+
+		return new ResponseEntity<>(visaTypeOpt.get(), HttpStatus.OK); // Return the found VisaExtensionType
 	}
 
 }

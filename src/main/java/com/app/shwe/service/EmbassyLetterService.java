@@ -73,7 +73,7 @@ public class EmbassyLetterService {
 
 	@Autowired
 	private MainOrderRepository mainOrderRepository;
-	
+
 	@Autowired
 	private EmbassyVisaTypeRepository vsiaTypeRepository;
 
@@ -91,8 +91,8 @@ public class EmbassyLetterService {
 			int userId = userRepo.authUser(SecurityUtils.getCurrentUsername());
 			User user = userRepo.findById(userId)
 					.orElseThrow(() -> new RuntimeException("User not found for ID: " + userId));
-			
-			Optional<EmbassyVisaType> visaType =vsiaTypeRepository.findById(request.getVisa_id());
+
+			Optional<EmbassyVisaType> visaType = vsiaTypeRepository.findById(request.getVisa_id());
 			EmbassyLetterOrder order = new EmbassyLetterOrder();
 			String passport_bio = fileUploadService.uploadFile(passportBio);
 			String visa_page = fileUploadService.uploadFile(visaPage);
@@ -101,7 +101,7 @@ public class EmbassyLetterService {
 			embassy.setPassportBio(passport_bio);
 			embassy.setVisaPage(visa_page);
 			embassy.setVisaType(visaType.get());
-			embassy.setVisaTypeDescription(visaType.get().getDescription());
+			embassy.setVisaTypeDescription(visaType.get().getId());
 			embassy.setStatus("Pending");
 			embassy.setAddress(request.getAddress());
 			embassy.setContactNumber(request.getContactNumber());
@@ -110,7 +110,7 @@ public class EmbassyLetterService {
 			embassy.setCreatedDate(new Date());
 			embassyRepo.save(embassy);
 			mainOrder.setCreatedBy(userId);
-			mainOrder.setRecommendationLetterType(embassy.getVisaTypeDescription());
+			mainOrder.setRecommendationLetterType(visaType.get().getDescription() + visaType.get().getPrice());
 			mainOrder.setCreatedDate(embassy.getCreatedDate());
 			mainOrder.setStatus(embassy.getStatus());
 			mainOrder.setSys_key(embassy.getSyskey());
@@ -125,35 +125,36 @@ public class EmbassyLetterService {
 		}
 
 	}
-	
-//	@Transactional
-//    public List<EmbassyLetterDTO> getEmbassyLetterOrderByUserId(){
-//    	int userId = userRepo.authUser(SecurityUtils.getCurrentUsername());
-//    	return embassyRepo.getEmbassyLetterByUserId(userId);
-//    }
 
-//	@Transactional
-//	public List<EmbassyLetterResponseDTO> getEmbassyLetterOrderByUserId() {
-//		int userId = userRepo.authUser(SecurityUtils.getCurrentUsername());
-//		List<EmbassyLetterProjectionDTO> visaList = embassyRepo.getEmbassyLetterByUserId(userId);
-//
-//		List<EmbassyLetterResponseDTO> responseList = new ArrayList<>();
-//		for (EmbassyLetterProjectionDTO dto : visaList) {
-//			List<EmbassyResponseDTO> visaOrders = embassyRepo.getVisaOrderByOrderId(dto.getId());
-//			EmbassyLetterResponseDTO response = new EmbassyLetterResponseDTO();
-//			response.setEmbassyLetter(dto);
-//			response.setEmbassyLetterOrder(visaOrders);
-//			responseList.add(response);
-//		}
-//		return responseList;
-//	}
-	
+	// @Transactional
+	// public List<EmbassyLetterDTO> getEmbassyLetterOrderByUserId(){
+	// int userId = userRepo.authUser(SecurityUtils.getCurrentUsername());
+	// return embassyRepo.getEmbassyLetterByUserId(userId);
+	// }
+
+	// @Transactional
+	// public List<EmbassyLetterResponseDTO> getEmbassyLetterOrderByUserId() {
+	// int userId = userRepo.authUser(SecurityUtils.getCurrentUsername());
+	// List<EmbassyLetterProjectionDTO> visaList =
+	// embassyRepo.getEmbassyLetterByUserId(userId);
+	//
+	// List<EmbassyLetterResponseDTO> responseList = new ArrayList<>();
+	// for (EmbassyLetterProjectionDTO dto : visaList) {
+	// List<EmbassyResponseDTO> visaOrders =
+	// embassyRepo.getVisaOrderByOrderId(dto.getId());
+	// EmbassyLetterResponseDTO response = new EmbassyLetterResponseDTO();
+	// response.setEmbassyLetter(dto);
+	// response.setEmbassyLetterOrder(visaOrders);
+	// responseList.add(response);
+	// }
+	// return responseList;
+	// }
+
 	@Transactional
 	public Page<EmbassyLetterDTO> getAllEmbassyVisaOrder(String searchString, String status, int page, int size) {
 		Pageable pageable = PageRequest.of(page < 1 ? 0 : page - 1, size);
 		return embassyRepo.getAllVisa(status, searchString, pageable);
 	}
-	
 
 	@Transactional
 	public ResponseEntity<String> cancelOrder(int orderId) {
@@ -174,7 +175,7 @@ public class EmbassyLetterService {
 					.body("Error occurred while cancel Embassy Recommendation Letter order: " + e.getMessage());
 		}
 	}
-	
+
 	@Transactional
 	public ResponseEntity<String> completed(int orderId) {
 		String status = OrderStatus.COMPLETED.name();
@@ -195,7 +196,7 @@ public class EmbassyLetterService {
 					.body("Error occurred while cancel 90 Day Report order: " + e.getMessage());
 		}
 	}
-	
+
 	@Transactional
 	public ResponseEntity<String> onProgress(int orderId) {
 		String status = OrderStatus.ON_PROGRESS.name();
@@ -219,12 +220,12 @@ public class EmbassyLetterService {
 
 	@Transactional
 	public ResponseEntity<EmbassyLetterDTO> getEmbassyLetterOrderById(int id) {
-	    Optional<EmbassyLetterDTO> visaTypeOpt = embassyRepo.getVisaOrder(id);
-	    if (!visaTypeOpt.isPresent()) {
-	        return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if not found
-	    }
-	    
-	    return new ResponseEntity<>(visaTypeOpt.get(), HttpStatus.OK); // Return the found VisaExtensionType
+		Optional<EmbassyLetterDTO> visaTypeOpt = embassyRepo.getVisaOrder(id);
+		if (!visaTypeOpt.isPresent()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if not found
+		}
+
+		return new ResponseEntity<>(visaTypeOpt.get(), HttpStatus.OK); // Return the found VisaExtensionType
 	}
 
 }

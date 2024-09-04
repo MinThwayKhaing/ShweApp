@@ -82,31 +82,28 @@ public class Report90DayService {
 			int userId = userRepo.authUser(SecurityUtils.getCurrentUsername());
 			User user = userRepo.findById(userId)
 					.orElseThrow(() -> new RuntimeException("User not found for ID: " + userId));
-
-			VisaServices visaServices = visaRepo.findById(request.getVisa_id())
-					.orElseThrow(() -> new IllegalArgumentException("Visa not found with id: " + request.getVisa_id()));
-			Optional<Report90DayVisaType> visaType =report90_dayRepo.findById(request.getVisa_id());
+			Optional<Report90DayVisaType> visaType = report90_dayRepo.findById(request.getVisaType());
 			Report90DayOrder order = new Report90DayOrder();
 			String tm6_photo = fileUploadService.uploadFile(tm6Photo);
 			String expire_photo = fileUploadService.uploadFile(expireDatePhoto);
 			String passport_bio = fileUploadService.uploadFile(passportBio);
 			String visa_page = fileUploadService.uploadFile(visaPage);
 			Report90Day report = new Report90Day();
-           
+
 			report.setSyskey(orderGeneratorService.generateReport90DayOrderId());
 			report.setTm6Photo(tm6_photo);
 			report.setExpireDatePhoto(expire_photo);
 			report.setVisaType(visaType.get());
-			report.setVisaTypeDescription(visaType.get().getDescription());
+			report.setVisaTypeDescription(visaType.get().getId());
 			report.setPassportBio(passport_bio);
 			report.setVisaPage(visa_page);
 			report.setStatus("Pending");
 			report.setCreatedBy(userId);
 			report.setUser(user);
-			report.setVisa(visaServices);
+
 			reportRepo.save(report);
 			MainOrder mainOrder = new MainOrder();
-			mainOrder.setVisaType(report.getVisaTypeDescription());
+			mainOrder.setVisaType(visaType.get().getDescription() + visaType.get().getPrice());
 			mainOrder.setCreatedBy(userId);
 			mainOrder.setCreatedDate(report.getCreatedDate());
 			mainOrder.setStatus(report.getStatus());
@@ -157,7 +154,7 @@ public class Report90DayService {
 			return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 	@Transactional
 	public Page<Report90DayDTO> getAllReport90DayVisa(String searchString, String status, int page, int size) {
 		Pageable pageable = PageRequest.of(page < 1 ? 0 : page - 1, size);
@@ -184,7 +181,7 @@ public class Report90DayService {
 					.body("Error occurred while cancel 90 Day Report order: " + e.getMessage());
 		}
 	}
-	
+
 	@Transactional
 	public ResponseEntity<String> completed(int orderId) {
 		String status = OrderStatus.COMPLETED.name();
@@ -205,7 +202,7 @@ public class Report90DayService {
 					.body("Error occurred while cancel 90 Day Report order: " + e.getMessage());
 		}
 	}
-	
+
 	@Transactional
 	public ResponseEntity<String> onProgress(int orderId) {
 		String status = OrderStatus.ON_PROGRESS.name();
@@ -226,15 +223,15 @@ public class Report90DayService {
 					.body("Error occurred while cancel 90 Day Report order: " + e.getMessage());
 		}
 	}
-	
+
 	@Transactional
 	public ResponseEntity<Report90DayDTO> getReport90DayOrderById(int id) {
-	    Optional<Report90DayDTO> visaTypeOpt = reportRepo.getVisaOrderById(id);
-	    if (!visaTypeOpt.isPresent()) {
-	        return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if not found
-	    }
-	    
-	    return new ResponseEntity<>(visaTypeOpt.get(), HttpStatus.OK); // Return the found VisaExtensionType
+		Optional<Report90DayDTO> visaTypeOpt = reportRepo.getVisaOrderById(id);
+		if (!visaTypeOpt.isPresent()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if not found
+		}
+
+		return new ResponseEntity<>(visaTypeOpt.get(), HttpStatus.OK); // Return the found VisaExtensionType
 	}
 
 }
