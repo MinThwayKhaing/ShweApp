@@ -29,7 +29,7 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class EmbassyVisaTypeService {
-	
+
 	@Autowired
 	private EmbassyVisaTypeRepository vsiaTypeRepository;
 
@@ -42,35 +42,33 @@ public class EmbassyVisaTypeService {
 	@Autowired
 	private VisaServicesRepository visaService;
 
-	
 	public ResponseEntity<String> saveVisaType(EmbassyVisaTypeRequestDTO request) {
-	    if (request == null) {
-	        throw new IllegalArgumentException("Request and required fields must not be null");
-	    }
+		if (request == null) {
+			throw new IllegalArgumentException("Request and required fields must not be null");
+		}
 
-	    try {
-//	        VisaServices visaServices = visaService.findById(request.getVisa_service_id())
-//	                .orElseThrow(() -> new RuntimeException("Visa service not found for ID: " + request.getVisa_service_id()));
-//	        
-	        EmbassyVisaType visaType = new EmbassyVisaType();
-	        visaType.setDescription(request.getDescription());
-	        visaType.setPrice(request.getPrice());
-	        visaType.setDelete_status(0);
-	        visaType.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
-	        visaType.setCreatedDate(new Date());
-	        
-	        // Save the visaType first
-	        vsiaTypeRepository.save(visaType);
+		try {
+			// VisaServices visaServices =
+			// visaService.findById(request.getVisa_service_id())
+			// .orElseThrow(() -> new RuntimeException("Visa service not found for ID: " +
+			// request.getVisa_service_id()));
+			//
+			EmbassyVisaType visaType = new EmbassyVisaType();
+			visaType.setDescription(request.getDescription());
+			visaType.setPrice(request.getPrice());
+			visaType.setDeleteStatus(true);
+			visaType.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
+			visaType.setCreatedDate(new Date());
 
-	        
+			// Save the visaType first
+			vsiaTypeRepository.save(visaType);
 
-	        return ResponseEntity.status(HttpStatus.OK).body("Embassy Recommendation Letter saved successfully.");
-	    } catch (Exception e) {
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Error occurred while saving Embassy Recommendation Letter: " + e.getMessage());
-	    }
+			return ResponseEntity.status(HttpStatus.OK).body("Embassy Recommendation Letter saved successfully.");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error occurred while saving Embassy Recommendation Letter: " + e.getMessage());
+		}
 	}
-
 
 	@Transactional
 	public List<EmbassyVisaTypeResponseDTO> getVisaByType(EmbassyVisaTypeRequestDTO request) {
@@ -95,9 +93,6 @@ public class EmbassyVisaTypeService {
 
 		return response;
 	}
-
-    
-
 
 	@Transactional
 	public ResponseEntity<String> updateVisaType(int id, EmbassyVisaTypeRequestDTO request) {
@@ -139,17 +134,17 @@ public class EmbassyVisaTypeService {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 	@Transactional
 	public ResponseEntity<EmbassyVisaType> getEmbassyLetteById(int id) {
-	    Optional<EmbassyVisaType> visaTypeOpt = vsiaTypeRepository.findById(id);
-	    if (!visaTypeOpt.isPresent()) {
-	        return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if not found
-	    }
-	    
-	    return new ResponseEntity<>(visaTypeOpt.get(), HttpStatus.OK); // Return the found VisaExtensionType
+		Optional<EmbassyVisaType> visaTypeOpt = vsiaTypeRepository.findById(id);
+		if (!visaTypeOpt.isPresent()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if not found
+		}
+
+		return new ResponseEntity<>(visaTypeOpt.get(), HttpStatus.OK); // Return the found VisaExtensionType
 	}
-	
+
 	@Transactional
 	public List<EmbassyVisaType> getAllVisaType() {
 		return vsiaTypeRepository.getAllVisa();

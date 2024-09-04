@@ -11,17 +11,14 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmbassyVisaType extends CommonDTO{
-	
+public class EmbassyVisaType extends CommonDTO {
+
 	private String description;
-	
+
 	private double price;
-	
-	private int delete_status;
-	
-	
-//	@ManyToOne
-//	@JoinColumn(name = "visa_service_id")
-//	private VisaServices visa;
+
+	// @ManyToOne
+	// @JoinColumn(name = "visa_service_id")
+	// private VisaServices visa;
 
 }

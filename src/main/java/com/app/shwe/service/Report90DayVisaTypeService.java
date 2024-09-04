@@ -58,7 +58,7 @@ public class Report90DayVisaTypeService {
 			Report90DayVisaType visaType = new Report90DayVisaType();
 			visaType.setDescription(request.getDescription());
 			visaType.setPrice(request.getPrice());
-			visaType.setDelete_status(0);
+			visaType.setDeleteStatus(false);
 			visaType.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 			visaType.setCreatedDate(new Date());
 
@@ -181,7 +181,7 @@ public class Report90DayVisaTypeService {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 	@Transactional
 	public List<Report90DayVisaType> getAllVisaType() {
 		return vsiaTypeRepository.getAllVisa();

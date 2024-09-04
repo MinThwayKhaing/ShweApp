@@ -1,5 +1,6 @@
 package com.app.shwe.service;
 
+import java.util.Date;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.app.shwe.dto.MainOrderDTO;
+import com.app.shwe.dto.MainOrderDTOReponse;
 import com.app.shwe.model.MainOrder;
 import com.app.shwe.repository.MainOrderRepository;
 import com.app.shwe.utils.SecurityUtils;
@@ -23,6 +25,25 @@ public class MainOrderService {
     private MainOrderRepository mainOrderRepository;
     @Autowired
     private UserRepository userRepository;
+
+    public ResponseEntity<?> getMainOrdersPaginated(String searchString, String status, int page, int size) {
+        try {
+            Pageable pageable = PageRequest.of(page < 1 ? 0 : page - 1, size);
+            Page<Object[]> mainOrdersPage = mainOrderRepository.findBySysKeyAndUserName(searchString, status, pageable);
+
+            Page<MainOrderDTOReponse> mainOrderDTOPage = mainOrdersPage.map(result -> new MainOrderDTOReponse(
+                    (Integer) result[0],
+                    (Integer) result[1],
+                    (String) result[2],
+                    (Date) result[3],
+                    (String) result[4]));
+
+            return ResponseEntity.status(HttpStatus.OK).body(mainOrderDTOPage);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error occurred: " + e.getMessage());
+        }
+    }
 
     public ResponseEntity<?> getMainOrdersPaginated(int page, int size) {
         try {
