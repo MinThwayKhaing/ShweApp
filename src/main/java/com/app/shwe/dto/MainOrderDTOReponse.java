@@ -16,4 +16,5 @@ public class MainOrderDTOReponse {
     private String sys_key;
     private Date createdDate;
     private String userName;
+    private String status;
 }

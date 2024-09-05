@@ -1,7 +1,5 @@
 package com.app.shwe.dto;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,9 +11,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Tm30ResponseDTO {
 
-	private Tm30ProjectionDTO tm30Order;
-	
-	private List<VisaResponseDTO> visaOrder;
-
+	private int id;
+	private String syskey;
+    private String period;
+    private String passportBio;
+    private String visaPage;
+    private String userName;
+    private String contactNumber;
 
 }

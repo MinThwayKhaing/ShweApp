@@ -36,7 +36,8 @@ public class MainOrderService {
                     (Integer) result[1],
                     (String) result[2],
                     (Date) result[3],
-                    (String) result[4]));
+                    (String) result[4],
+                    (String) result[5]));
 
             return ResponseEntity.status(HttpStatus.OK).body(mainOrderDTOPage);
         } catch (Exception e) {

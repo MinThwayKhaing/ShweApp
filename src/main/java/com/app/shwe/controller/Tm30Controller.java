@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -50,6 +51,17 @@ public class Tm30Controller {
 	public ResponseEntity<Tm30> getTm30ById(@PathVariable int id) {
 		return tm30Service.getTm30ById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
+	
+	
+	 @GetMapping("/getOrderBySysKey/{sysKey}")
+	    public ResponseEntity<Tm30ResponseDTO> getOrderBySysKey(@PathVariable String sysKey) {
+	        Tm30ResponseDTO response = tm30Service.getOrderBySysKey(sysKey);
+	        if (response == null) {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+	        }
+	        return ResponseEntity.status(HttpStatus.OK).body(response);
+	    }
+	
 
 	@GetMapping("/details/{id}")
 	public ResponseEntity<?> getTm30DetailsById(@PathVariable int id) {

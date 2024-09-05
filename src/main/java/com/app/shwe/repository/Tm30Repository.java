@@ -1,6 +1,7 @@
 package com.app.shwe.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,8 +44,7 @@ public interface Tm30Repository extends JpaRepository<Tm30, Integer> {
 	VisaResponseDTO getTM30(@Param("id") int id);
 
 	@Query("SELECT new com.app.shwe.dto.Tm30DTOResponseDTO(t.id, t.createdDate, t.syskey, t.passportBio, t.visaPage, t.duration, t.contactNumber, t.status, u.userName) "
-			+
-			"FROM Tm30 t JOIN t.user u WHERE t.status = :status AND u.userName LIKE %:searchString% ORDER BY t.createdDate")
+			+ "FROM Tm30 t JOIN t.user u WHERE t.status = :status AND u.userName LIKE %:searchString% ORDER BY t.createdDate")
 	Page<Tm30DTOResponseDTO> getAllTm30(@Param("status") String status, @Param("searchString") String searchString,
 			Pageable pageable);
 
@@ -61,21 +61,15 @@ public interface Tm30Repository extends JpaRepository<Tm30, Integer> {
 	// List<Tm30ProjectionDTO> getTm30OrderByUserId(int id);
 
 	@Query("SELECT new com.app.shwe.dto.VisaResponseDTO(vo.order_id,vs.serviceName, vo.main_visa_id, vo.sub_visa_id, vt.description, svt.price, svt.duration) "
-			+ "FROM VisaType vt "
-			+ "JOIN VisaServices vs ON vt.visa.id = vs.id "
-			+ "JOIN VisaOrder vo ON vo.main_visa_id = vs.id "
-			+ "JOIN SubVisaType svt ON svt.id = vo.sub_visa_id "
+			+ "FROM VisaType vt " + "JOIN VisaServices vs ON vt.visa.id = vs.id "
+			+ "JOIN VisaOrder vo ON vo.main_visa_id = vs.id " + "JOIN SubVisaType svt ON svt.id = vo.sub_visa_id "
 			+ "WHERE vo.order_id = :orderId")
 	List<VisaResponseDTO> getVisaOrderByOrderId(@Param("orderId") int orderId);
 
-	@Query("SELECT new com.app.shwe.dto.Tm30DetailsDTO(" +
-			"t.id, t.syskey, t.passportBio, t.visaPage, t.duration, t.contactNumber, t.status, " +
-			"t.createdDate, u.userName, p.description, p.type, p.price, pr.description) " +
-			"FROM Tm30 t " +
-			"JOIN t.user u " +
-			"JOIN t.price p " +
-			"JOIN t.period pr " +
-			"WHERE t.id = :id")
+	@Query("SELECT new com.app.shwe.dto.Tm30DetailsDTO("
+			+ "t.id, t.syskey, t.passportBio, t.visaPage, t.duration, t.contactNumber, t.status, "
+			+ "t.createdDate, u.userName, p.description, p.type, p.price, pr.description) " + "FROM Tm30 t "
+			+ "JOIN t.user u " + "JOIN t.price p " + "JOIN t.period pr " + "WHERE t.id = :id")
 	Tm30DetailsDTO findTm30DetailsById(@Param("id") int id);
 	// @Query("SELECT new com.app.shwe.dto.Tm30ProjectionDTO(t.id,t.syskey,t.period,
 	// t.passportBio, t.visaPage, t.contactNumber,t.user.userName,t.status) FROM
@@ -90,5 +84,10 @@ public interface Tm30Repository extends JpaRepository<Tm30, Integer> {
 	// @Query("SELECT new com.app.shwe.dto.Tm30DTO(t.period,t.passportBio,
 	// t.visaPage, t.contactNumber) FROM Tm30 t WHERE t.user.id = :userId")
 	// List<Tm30DTO> getTm30OrderByUserId(int userId);
+
+	@Query("SELECT new com.app.shwe.dto.Tm30ResponseDTO(" + "t.id,t.syskey, "
+			+ "t.period.description || ' (฿' || t.period.price || ')', " + "t.passportBio, " + "t.visaPage, "
+			+ "t.user.userName, " + "t.contactNumber) " + "FROM Tm30 t " + "WHERE t.syskey = :syskey")
+	Tm30ResponseDTO findTm30ResponseBySyskey(@Param("syskey") String syskey);
 
 }

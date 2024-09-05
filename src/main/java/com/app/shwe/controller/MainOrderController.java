@@ -21,7 +21,7 @@ public class MainOrderController {
     @GetMapping("/paginated")
     public ResponseEntity<?> getMainOrdersPaginated(
             @RequestParam(required = false) String searchString,
-            @RequestParam(required = false) String status,
+            @RequestParam String status,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
 

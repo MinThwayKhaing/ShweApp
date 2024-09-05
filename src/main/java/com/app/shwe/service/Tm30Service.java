@@ -139,6 +139,11 @@ public class Tm30Service {
 		Optional<Tm30> tm30 = tm30Repo.findById(id);
 		return tm30;
 	}
+	
+	@Transactional
+    public Tm30ResponseDTO getOrderBySysKey(String sysKey) {
+        return tm30Repo.findTm30ResponseBySyskey(sysKey);
+    }
 
 	@Transactional
 	public Page<Tm30DTOResponseDTO> getTm30(String searchString, String status, int page, int size) {
