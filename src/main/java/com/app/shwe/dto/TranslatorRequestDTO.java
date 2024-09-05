@@ -24,9 +24,8 @@ public class TranslatorRequestDTO {
 	private Date toDate;
 	private Date meetingDate;
 	private String meetingPoint;
-	private TimeZone meetingTime;
+	private String meetingTime;
 	private String phoneNumber;
 	private String usedFor;
-	
 
 }

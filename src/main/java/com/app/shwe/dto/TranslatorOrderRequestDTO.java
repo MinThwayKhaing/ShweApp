@@ -18,9 +18,9 @@ public class TranslatorOrderRequestDTO {
     private Date toDate;
     private String usedFor;
     private String meetingPoint;
-
+    private String sysKey;
     private Date meetingDate;
-    private TimeZone meetingTime;
+    private String meetingTime;
     private String phoneNumber;
     private int translator_id;
     private String status;

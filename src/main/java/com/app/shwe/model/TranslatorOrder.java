@@ -28,5 +28,9 @@ public class TranslatorOrder extends CommonDTO {
 	private String meetingPoint;
 	private String phoneNumber;
 	private String usedFor;
-	private TimeZone meetingTime;
+	private String meetingTime;
+
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private User user;
 }

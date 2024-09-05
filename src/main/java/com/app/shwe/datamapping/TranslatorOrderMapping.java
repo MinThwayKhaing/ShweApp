@@ -3,6 +3,7 @@ package com.app.shwe.datamapping;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,8 @@ public class TranslatorOrderMapping {
 
 	@Autowired
 	private TranslatorRepository translatorRepository;
-
+	@Autowired
+	private TranslatorOrderRepostitory transOrderRepository;
 	@Autowired
 	private TranslatorOrderIdGenerator idGenerator;
 
@@ -40,8 +42,11 @@ public class TranslatorOrderMapping {
 		TranslatorOrder order = new TranslatorOrder();
 		Translator translator = translatorRepository.findById(dto.getTranslator_id())
 				.orElseThrow(() -> new RuntimeException("CarRent not found for ID: " + dto.getTranslator_id()));
+
+		Optional<User> user = userRepository.getUserById(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 		order.setStatus("Pending");
-		order.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
+		order.setCreatedBy(user.get().getId().intValue());
+		order.setUser(user.get());
 		order.setCreatedDate(new Date());
 		order.setFromDate(dto.getFromDate());
 		order.setToDate(dto.getToDate());
@@ -66,6 +71,7 @@ public class TranslatorOrderMapping {
 		order.setFromDate(dto.getFromDate());
 		order.setToDate(dto.getToDate());
 		order.setUsedFor(dto.getUsedFor());
+		order.setUser(user);
 		order.setMeetingPoint(dto.getMeetingPoint());
 		order.setMeetingDate(dto.getMeetingDate());
 		order.setMeetingTime(dto.getMeetingTime());
@@ -75,6 +81,7 @@ public class TranslatorOrderMapping {
 		order.setCreatedDate(new Date());
 
 		order.setSysKey(idGenerator.generateNextCarOrderId());
+		transOrderRepository.save(order);
 		mainOrder.setStart_date(order.getFromDate());
 		mainOrder.setEnd_date(order.getToDate());
 		mainOrder.setCreatedBy(userId);

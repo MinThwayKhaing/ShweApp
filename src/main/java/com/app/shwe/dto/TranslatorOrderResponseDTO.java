@@ -26,11 +26,11 @@ public class TranslatorOrderResponseDTO {
 	private Date toDate;
 	private Date meetingDate;
 	private String meetingPoint;
-	private TimeZone meetingTime;
+	private String meetingTime;
 	private String phoneNumber;
 	private String usedFor;
 	private String chatLink;
-	
+
 	public TranslatorOrderResponseDTO(String order_id, Date fromDate, Date toDate, String chatLink) {
 		super();
 		this.order_id = order_id;
@@ -38,9 +38,5 @@ public class TranslatorOrderResponseDTO {
 		this.toDate = toDate;
 		this.chatLink = chatLink;
 	}
-	
-	
-	
-	
 
 }

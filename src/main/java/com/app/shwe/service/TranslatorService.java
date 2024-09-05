@@ -1,9 +1,11 @@
 package com.app.shwe.service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,11 +20,13 @@ import com.app.shwe.datamapping.TranslatorOrderMapping;
 import com.app.shwe.dto.CarOrderResponseDTO;
 import com.app.shwe.dto.ResponseDTO;
 import com.app.shwe.dto.SearchDTO;
+import com.app.shwe.dto.TranslatorOrderDetailResponseDTO;
 import com.app.shwe.dto.TranslatorOrderRequestDTO;
 import com.app.shwe.dto.TranslatorOrderResponseDTO;
 import com.app.shwe.dto.TranslatorRequestDTO;
 import com.app.shwe.model.CarOrder;
 import com.app.shwe.model.CarRent;
+import com.app.shwe.model.MainOrder;
 import com.app.shwe.model.Translator;
 import com.app.shwe.model.TranslatorOrder;
 import com.app.shwe.repository.MainOrderRepository;
@@ -101,6 +105,7 @@ public class TranslatorService {
 	@Transactional
 	public ResponseEntity<String> updateTranslator(int id, MultipartFile image, TranslatorRequestDTO request) {
 		Optional<Translator> getTranslator = translatorRepo.findById(id);
+
 		if (!getTranslator.isPresent()) {
 			throw new IllegalArgumentException("ID not found");
 		}
@@ -156,10 +161,18 @@ public class TranslatorService {
 		if (dto == null) {
 			throw new IllegalArgumentException("Request and required fields must not be null");
 		}
+
 		dto.setStatus("Pending");
 		try {
 			TranslatorOrder order = orderMapping.mapToTranslatorOrder(dto);
-			transOrderRepository.save(order);
+
+			// MainOrder mainorder = new MainOrder();
+			// mainorder.setOrder_id(order.getId());
+			// mainorder.setSys_key(order.getSysKey());
+			// mainorder.setUser(order.getUser());
+			// mainorder.setDeleteStatus(false);
+			// mainorder.setStatus(order.getStatus());
+			// mainOrderRepository.save(mainorder);
 			return ResponseEntity.status(HttpStatus.OK).body("Translator order saved successfully.");
 		} catch (Exception e) {
 			return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -236,6 +249,42 @@ public class TranslatorService {
 	}
 
 	@Transactional
+	public ResponseEntity<String> updateTranslatorOrderFromAdmin(int orderId, TranslatorOrderRequestDTO request) {
+		String status = OrderStatus.ON_PROGRESS.name();
+		Optional<TranslatorOrder> getTranslatorOrder = Optional.ofNullable(getOrderForUpdate(orderId));
+		if (!getTranslatorOrder.isPresent()) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Id not found ");
+		}
+		Translator translator = translatorRepo.findById(request.getTranslator_id())
+				.orElseThrow(() -> new RuntimeException("Translator not found for ID: " + request.getTranslator_id()));
+		try {
+			TranslatorOrder order = getTranslatorOrder.get();
+			order.setStatus(status);
+			order.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
+			order.setTranslator(translator);
+
+			transOrderRepository.save(order);
+
+			Optional<MainOrder> mainorder = mainOrderRepository.findByOrderIdAndSysKey(orderId, request.getSysKey());
+
+			if (mainorder.isPresent()) {
+				MainOrder model = mainorder.get();
+				model.setStatus(status);
+				mainOrderRepository.save(model);
+			} else {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+						.body("Order Not Found: " + request.getSysKey());
+			}
+
+			return ResponseEntity.status(HttpStatus.OK).body("Update translator order successfully.");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error occurred while saving translator: " + e.getMessage());
+		}
+	}
+
+	@Transactional
 	public Page<TranslatorOrderResponseDTO> getHireTranslatorById(SearchDTO dto) {
 		String searchString = dto.getSearchString();
 		int userId = userRepo.authUser(SecurityUtils.getCurrentUsername());
@@ -243,6 +292,22 @@ public class TranslatorService {
 		int size = dto.getSize();
 		Pageable pageable = PageRequest.of(page, size);
 		return transOrderRepository.findOrderByUserId(userId, searchString, pageable);
+	}
+
+	public ResponseEntity<?> findTranslatorOrderBySysKey(String sysKey) {
+		try {
+			// Fetch the result from the repository, which returns an Object[]
+			Object[] result = transOrderRepository.findTranslatorOrderBySysKey(sysKey);
+
+			// Check if the result is null or empty
+			if (result == null || result.length == 0) {
+				return new ResponseEntity<>("Order not found with sysKey: " + sysKey, HttpStatus.NOT_FOUND);
+			}
+
+			return ResponseEntity.status(HttpStatus.OK).body(result);
+		} catch (Exception e) {
+			return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	@Transactional

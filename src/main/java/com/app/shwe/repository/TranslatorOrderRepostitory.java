@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.app.shwe.dto.TranslatorOrderDetailResponseDTO;
 import com.app.shwe.dto.TranslatorOrderResponseDTO;
 import com.app.shwe.model.CarOrder;
 import com.app.shwe.model.TranslatorOrder;
@@ -23,6 +24,21 @@ public interface TranslatorOrderRepostitory extends JpaRepository<TranslatorOrde
 			+ "o.fromDate,o.toDate,o.meetingDate,o.meetingPoint,o.meetingTime,o.phoneNumber,o.usedFor,t.chatLink)"
 			+ " FROM Translator t JOIN TranslatorOrder o ON t.id=o.translator.id WHERE o.createdBy = :id")
 	List<TranslatorOrderResponseDTO> getHireTranslator(int id);
+
+	@Query(value = "SELECT " +
+			"tr.sys_key AS sysKey, tr.status AS status, " +
+			"DATE_FORMAT(tr.from_date, '%Y-%m-%d %H:%i:%s') AS fromDate, " +
+			"DATE_FORMAT(tr.to_date, '%Y-%m-%d %H:%i:%s') AS toDate, " +
+			"DATE_FORMAT(tr.meeting_date, '%Y-%m-%d %H:%i:%s') AS meetingDate, " +
+			"tr.meeting_point AS meetingPoint, tr.phone_number AS phoneNumber, tr.used_for AS usedFor, " +
+			"tr.meeting_time AS meetingTime, " +
+			"t.name AS translatorName, t.image AS translatorImage, t.chat_link AS translatorChatLink," +
+			"u.user_name AS createdByUsername ,tr.id AS id ,tr.translator_id AS translatorId " +
+			"FROM translator_order tr " +
+			"LEFT JOIN translator t ON tr.translator_id = t.id " +
+			"JOIN user u ON tr.created_by = u.id " +
+			"WHERE tr.sys_key = :sysKey LIMIT 1", nativeQuery = true)
+	Object[] findTranslatorOrderBySysKey(@Param("sysKey") String sysKey);
 
 	@Modifying
 	@Transactional
@@ -47,11 +63,9 @@ public interface TranslatorOrderRepostitory extends JpaRepository<TranslatorOrde
 			@Param("searchString") String searchString,
 			Pageable pageable);
 
-	
-
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT t FROM TranslatorOrder t WHERE t.id = :id")
-    TranslatorOrder findByIdForUpdate(@Param("id") int id);
+	@Query("SELECT t FROM TranslatorOrder t WHERE t.id = :id")
+	TranslatorOrder findByIdForUpdate(@Param("id") int id);
 
 	@Query("SELECT COALESCE(MAX(c.sysKey), 'CR00000000') FROM TranslatorOrder c")
 	String findMaxSysKey();

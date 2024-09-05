@@ -48,6 +48,18 @@ public class TranslatorOrderController {
 		return translatorService.updateTranslatorOrder(id, request);
 	}
 
+	@PutMapping("/updateOrderFromAdmin/{id}")
+	public ResponseEntity<String> confrimOrderFromAdmin(@PathVariable int id,
+			@RequestBody TranslatorOrderRequestDTO request) {
+		return translatorService.updateTranslatorOrderFromAdmin(id, request);
+	}
+
+	// API endpoint to get TranslatorOrder by sysKey
+	@GetMapping("/find-by-syskey/{sysKey}")
+	public ResponseEntity<?> findOrderBySysKey(@PathVariable String sysKey) {
+		return translatorService.findTranslatorOrderBySysKey(sysKey);
+	}
+
 	@GetMapping("/getHireTranslatorByUserId")
 	public Page<TranslatorOrderResponseDTO> getHireTranslatorByUserId(@RequestBody SearchDTO dto) {
 		return translatorService.getHireTranslatorById(dto);
