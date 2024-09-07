@@ -39,4 +39,7 @@ public class CarOrder extends CommonDTO {
 	@JoinColumn(name = "car_id")
 	private CarRent carId;
 
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private User user;
 }

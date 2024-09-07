@@ -1,5 +1,6 @@
 package com.app.shwe.repository;
 
+import com.app.shwe.dto.CarOrderResponseAdminDTO;
 import com.app.shwe.dto.CarOrderResponseDTO;
 import com.app.shwe.dto.TranslatorOrderResponseDTO;
 import com.app.shwe.model.CarOrder;
@@ -21,18 +22,12 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CarOrderRepository extends JpaRepository<CarOrder, Integer> {
-
-        // @Query("SELECT new com.app.shwe.dto.CarOrderResponseDTO(" +
-        // "u.id, u.userName, co.fromLocation, co.toLocation, " +
-        // "co.pickUpDate, co.pickUpTime, co.fromDate, co.toDate, " +
-        // "co.carType, co.driver, co.orderConfirm, co.customerPhoneNumber, " +
-        // "co.carBrand, co.carId) " +
-        // "FROM CarOrder co " +
-        // "JOIN User u ON co.createdBy = u.id " +
-        // "WHERE u.userName LIKE %:searchString% OR co.fromLocation LIKE
-        // %:searchString%")
-        // Page<CarOrderResponseDTO> findAllWithSearch(@Param("searchString") String
-        // searchString, Pageable pageable);
+        @Query("SELECT new com.app.shwe.dto.CarOrderResponseAdminDTO(o.sysKey, o.fromLocation, o.toLocation, o.pickUpDate, o.pickUpTime, o.fromDate, o.toDate, o.carType, o.driver, o.status, o.customerPhoneNumber, o.pickUpLocation, o.carBrand, o.price, o.createdDate,c.id, c.carName, c.ownerName, c.carNo, c.status, c.license, c.image, c.driverName, c.driverPhoneNumber, c.carColor, u.id, u.userName, u.image) "
+                        + "FROM CarOrder o "
+                        + "LEFT JOIN o.carId c "
+                        + "JOIN o.user u "
+                        + "WHERE o.sysKey = :sysKey")
+        Optional<CarOrderResponseAdminDTO> findCarOrderDetailsBySysKey(@Param("sysKey") String sysKey);
 
         @Query(value = "SELECT * FROM car_order WHERE id = :id", nativeQuery = true)
         Optional<CarOrder> findCarOrderById(@Param("id") int id);

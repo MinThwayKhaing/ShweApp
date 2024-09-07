@@ -33,7 +33,7 @@ public interface TranslatorOrderRepostitory extends JpaRepository<TranslatorOrde
 			"tr.meeting_point AS meetingPoint, tr.phone_number AS phoneNumber, tr.used_for AS usedFor, " +
 			"tr.meeting_time AS meetingTime, " +
 			"t.name AS translatorName, t.image AS translatorImage, t.chat_link AS translatorChatLink," +
-			"u.user_name AS createdByUsername ,tr.id AS id ,tr.translator_id AS translatorId " +
+			"u.user_name AS createdByUsername ,tr.id AS id ,tr.translator_id AS translatorId,u.image AS userImage " +
 			"FROM translator_order tr " +
 			"LEFT JOIN translator t ON tr.translator_id = t.id " +
 			"JOIN user u ON tr.created_by = u.id " +
