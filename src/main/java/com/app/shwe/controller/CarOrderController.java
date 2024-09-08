@@ -1,5 +1,7 @@
 package com.app.shwe.controller;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.shwe.dto.CarOrderRequestDTO;
+import com.app.shwe.dto.CarOrderResponseAdminDTO;
 import com.app.shwe.dto.CarOrderResponseDTO;
 import com.app.shwe.dto.SearchDTO;
 import com.app.shwe.service.CarOrderService;
@@ -43,19 +46,25 @@ public class CarOrderController {
     public ResponseEntity<?> deleteCarOrder(@PathVariable int id) {
         return carOrderService.deleteCarOrder(id);
     }
-    
+
     @GetMapping("/showCarOrder")
-	public Page<CarOrderResponseDTO> showCarOrders(@RequestBody SearchDTO dto) {
-		return carOrderService.showCarOrders(dto);
-	}
+    public Page<CarOrderResponseDTO> showCarOrders(@RequestBody SearchDTO dto) {
+        return carOrderService.showCarOrders(dto);
+    }
 
     @PutMapping("/cancelCarOrder/{id}")
-	public ResponseEntity<String> cancelOrder(@PathVariable int id){
-		return carOrderService.cancelCarOrder(id);
-	}
-    
+    public ResponseEntity<String> cancelOrder(@PathVariable int id) {
+        return carOrderService.cancelCarOrder(id);
+    }
+
     @PutMapping("/updateCarOrder/{id}")
-   	public ResponseEntity<String> updateOrder(@PathVariable int id,@RequestBody CarOrderRequestDTO request){
-   		return carOrderService.confrimOrder(id,request);
-   	}
+    public ResponseEntity<String> updateOrder(@PathVariable int id, @RequestBody CarOrderRequestDTO request) {
+        return carOrderService.confrimOrder(id, request);
+    }
+
+    @GetMapping("/details/{sysKey}")
+    public ResponseEntity<CarOrderResponseAdminDTO> getCarOrderDetailsBySysKey(@PathVariable String sysKey) {
+        Optional<CarOrderResponseAdminDTO> carOrderDetails = carOrderService.getCarOrderDetailsBySysKey(sysKey);
+        return carOrderDetails.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
 }

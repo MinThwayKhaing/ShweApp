@@ -1,5 +1,6 @@
 package com.app.shwe.dto;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Date;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CarOrderRequestDTO {
+public class CarOrderRequestDTO implements Serializable {
 
     private int order_id;
     private String fromLocation;

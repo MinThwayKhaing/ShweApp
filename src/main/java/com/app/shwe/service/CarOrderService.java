@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.app.shwe.datamapping.CarOrderMapping;
 import com.app.shwe.dto.CarOrderRequestDTO;
+import com.app.shwe.dto.CarOrderResponseAdminDTO;
 import com.app.shwe.dto.CarOrderResponseDTO;
 import com.app.shwe.dto.SearchDTO;
 import com.app.shwe.dto.TranslatorOrderResponseDTO;
@@ -79,6 +80,12 @@ public class CarOrderService {
 		} else {
 			return new ResponseEntity<>("CarOrder not found", HttpStatus.NOT_FOUND);
 		}
+	}
+
+	public Optional<CarOrderResponseAdminDTO> getCarOrderDetailsBySysKey(String sysKey) {
+		Optional<CarOrderResponseAdminDTO> carOrderOpt = carOrderRepository.findCarOrderDetailsBySysKey(sysKey);
+		return carOrderOpt;
+
 	}
 
 	@Transactional

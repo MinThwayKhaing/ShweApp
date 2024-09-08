@@ -44,12 +44,10 @@ public class CarOrderMapping {
 	public CarOrder mapToCarOrder(CarOrderRequestDTO dto) {
 		CarOrder carOrder = new CarOrder();
 		MainOrder mainOrder = new MainOrder();
-		CarRent carRent = carRentRepository.findById(dto.getCarId())
-				.orElseThrow(() -> new RuntimeException("CarRent not found for ID: " + dto.getCarId()));
+		// CarRent carRent = carRentRepository.findById(dto.getCarId());
 		int userId = userRepository.authUser(SecurityUtils.getCurrentUsername());
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new RuntimeException("User not found for ID: " + userId));
-		carOrder.setCarId(carRent);
 		carOrder.setStatus(dto.getStatus());
 		carOrder.setFromLocation(dto.getFromLocation());
 		carOrder.setToLocation(dto.getToLocation());
@@ -65,9 +63,10 @@ public class CarOrderMapping {
 		carOrder.setSysKey(carOrderIdGeneratorService.generateNextCarOrderId());
 		carOrder.setCreatedDate(new Date());
 		carOrder.setCustomerPhoneNumber(dto.getCustomerPhoneNumber());
-		carOrder.setCarBrand(carRent.getCarName());
-		carOrder.setCarId(carRent);
+		// carOrder.setCarBrand(carRent.getCarName());
+		// carOrder.setCarId(carRent);
 		carOrder.setCreatedBy(userId);
+		carOrder.setUser(user);
 		carOrderRepository.save(carOrder);
 		mainOrder.setCar_brand(carOrder.getCarBrand());
 		mainOrder.setCar_type(carOrder.getCarType());
