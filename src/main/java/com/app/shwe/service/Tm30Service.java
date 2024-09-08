@@ -303,9 +303,9 @@ public class Tm30Service {
 	}
 
 	@Transactional
-	public ResponseEntity<String> completed(int orderId) {
+	public ResponseEntity<String> completed(String syskey) {
 		String status = OrderStatus.COMPLETED.name();
-		Optional<Tm30> getTranslatorOrder = tm30Repo.findById(orderId);
+		Optional<Tm30> getTranslatorOrder = tm30Repo.getTm30BySyskey(syskey);
 		if (!getTranslatorOrder.isPresent()) {
 			return new ResponseEntity<>("Error occurred: ", HttpStatus.INTERNAL_SERVER_ERROR);
 
@@ -313,7 +313,7 @@ public class Tm30Service {
 		try {
 			Tm30 model = getTranslatorOrder.get();
 			mainOrderRepository.updateOrderStatusToOnProgress(status, model.getSyskey());
-			tm30Repo.cancelOrder(orderId, status);
+			tm30Repo.changeOrderStatus(syskey, status);
 			return ResponseEntity.status(HttpStatus.OK).body("Cancel Tm-30 order successfully.");
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

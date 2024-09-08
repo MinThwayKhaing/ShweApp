@@ -80,6 +80,12 @@ public interface Tm30Repository extends JpaRepository<Tm30, Integer> {
 	@Transactional
 	@Query("UPDATE Tm30 t SET t.status = :status WHERE t.id = :id")
 	void cancelOrder(@Param("id") int id, @Param("status") String status);
+	
+	
+	@Modifying
+	@Transactional
+	@Query("UPDATE Tm30 t SET t.status = :status WHERE t.syskey = :syskey")
+	void changeOrderStatus(@Param("syskey") String syskey, @Param("status") String status);
 
 	// @Query("SELECT new com.app.shwe.dto.Tm30DTO(t.period,t.passportBio,
 	// t.visaPage, t.contactNumber) FROM Tm30 t WHERE t.user.id = :userId")
@@ -89,5 +95,8 @@ public interface Tm30Repository extends JpaRepository<Tm30, Integer> {
 			+ "t.period.description || ' (฿' || t.period.price || ')', " + "t.passportBio, " + "t.visaPage, "
 			+ "t.user.userName, " + "t.contactNumber) " + "FROM Tm30 t " + "WHERE t.syskey = :syskey")
 	Tm30ResponseDTO findTm30ResponseBySyskey(@Param("syskey") String syskey);
+	
+	@Query("SELECT t FROM Tm30 t WHERE t.syskey = :syskey")
+	Optional<Tm30> getTm30BySyskey(@Param("syskey")String syskey);
 
 }

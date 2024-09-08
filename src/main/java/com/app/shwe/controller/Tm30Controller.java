@@ -124,8 +124,8 @@ public class Tm30Controller {
 		return tm30Service.onProgress(id);
 	}
 
-	@PutMapping("/completed/{id}")
-	public ResponseEntity<String> completed(@PathVariable int id) {
-		return tm30Service.completed(id);
+	@PutMapping("/completed/{syskey}")
+	public ResponseEntity<String> completed(@PathVariable String syskey) {
+		return tm30Service.completed(syskey);
 	}
 }
