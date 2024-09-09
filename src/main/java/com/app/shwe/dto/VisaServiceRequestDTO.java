@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class VisaServiceRequestDTO {
 	
-	String serviceName;
-	MultipartFile image;
+	private String description;
+	private String serviceName;
 
 }

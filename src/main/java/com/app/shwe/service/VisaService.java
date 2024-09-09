@@ -44,6 +44,7 @@ public class VisaService {
 		try {
 			String imageUrl = fileUploadService.uploadFile(images);
 			VisaServices visa = new VisaServices();
+			visa.setDescription(request.getDescription());
 			visa.setServiceName(request.getServiceName());
 			visa.setImage(imageUrl);
 			visa.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));

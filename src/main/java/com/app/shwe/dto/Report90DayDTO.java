@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Report90DayDTO {
 
+	private int id;
 	private String order_id;
 	private int visaType;
 	private String passportBio;

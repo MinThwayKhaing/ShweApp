@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class VisaServices extends CommonDTO{
 
-	String serviceName;
-	String image;
+	private String description;
+	private String serviceName;
+	private String image;
 	
 }
