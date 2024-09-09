@@ -70,9 +70,9 @@ public class EmbassyLetterController {
 		return visaService.completed(id);
 	}
 	
-	 @GetMapping("/getEmbassyLetterOrderById/{id}")
-		public ResponseEntity<EmbassyLetterDTO> getVisaTypeById(@PathVariable int id) {
-		    return visaService.getEmbassyLetterOrderById(id);
+	 @GetMapping("/getEmbassyLetterOrderById/{sysKey}")
+		public ResponseEntity<EmbassyLetterDTO> getVisaTypeById(@PathVariable String sysKey) {
+		    return visaService.getEmbassyLetterOrderById(sysKey);
 		}
 
 }

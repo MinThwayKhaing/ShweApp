@@ -46,14 +46,14 @@ public interface EmbassyLetterRepository extends JpaRepository<EmbassyLetter, In
 //	@Query("SELECT new com.app.shwe.dto.EmbassyLetterDTO(v.visaType,v.passportBio, v.visaPage,v.address, v.contactNumber) FROM EmbassyLetter v WHERE v.user.id = :userId")
 //	List<EmbassyLetterDTO> getEmbassyLetterByUserId(int userId);
 	
-	@Query("SELECT new com.app.shwe.dto.EmbassyLetterDTO(v.syskey,v.visaTypeDescription,v.passportBio, v.visaPage, v.contactNumber,v.user.userName,v.status,v.createdDate) "
+	@Query("SELECT new com.app.shwe.dto.EmbassyLetterDTO(v.id,v.syskey,v.visaTypeDescription,v.passportBio, v.visaPage, v.contactNumber,v.user.userName,v.status,v.createdDate) "
 			+ "FROM EmbassyLetter v JOIN v.user u " + "WHERE v.status = :status "
 			+ "AND (:searchString IS NULL OR :searchString = '' OR u.userName LIKE %:searchString%) "
 			+ "ORDER BY v.createdDate")
 	Page<EmbassyLetterDTO> getAllVisa(@Param("status") String status, @Param("searchString") String searchString,
 			Pageable pageable);
 	
-	@Query("SELECT new com.app.shwe.dto.EmbassyLetterDTO(v.syskey,v.visaTypeDescription,v.passportBio, v.visaPage, v.contactNumber,v.user.userName,v.status,v.createdDate) "
-			+ " FROM EmbassyLetter v WHERE v.id =:id")
-	Optional<EmbassyLetterDTO> getVisaOrder(@Param("id") int id);
+	@Query("SELECT new com.app.shwe.dto.EmbassyLetterDTO(v.id,v.syskey,v.visaTypeDescription,v.passportBio, v.visaPage, v.contactNumber,v.user.userName,v.status,v.createdDate) "
+			+ " FROM EmbassyLetter v WHERE v.syskey =:sysKey")
+	Optional<EmbassyLetterDTO> getVisaOrder(@Param("sysKey") String sysKey);
 }
