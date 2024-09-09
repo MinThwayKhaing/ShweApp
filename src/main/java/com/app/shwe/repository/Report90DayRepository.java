@@ -57,6 +57,6 @@ public interface Report90DayRepository extends JpaRepository<Report90Day, Intege
 			Pageable pageable);
 	
 	@Query("SELECT new com.app.shwe.dto.Report90DayDTO(v.id,v.syskey,v.visaTypeDescription,v.passportBio, v.visaPage, v.contactNumber,v.user.userName,v.status,v.createdDate) "
-			+ " FROM Report90Day v WHERE v.id =:id")
-	Optional<Report90DayDTO> getVisaOrderById(@Param("id") int id);
+			+ " FROM Report90Day v WHERE v.syskey =:syskey")
+	Optional<Report90DayDTO> getVisaOrderById(@Param("syskey") String syskey);
 }

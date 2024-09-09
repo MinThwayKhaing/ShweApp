@@ -70,9 +70,9 @@ public class Report90DayController {
 		return reportService.completed(id);
 	}
 	
-	@GetMapping("/getReport90DayOrderById/{id}")
-	public ResponseEntity<Report90DayDTO> getVisaTypeById(@PathVariable int id) {
-		return reportService.getReport90DayOrderById(id);
+	@GetMapping("/getReport90DayOrderById/{sysKey}")
+	public ResponseEntity<Report90DayDTO> getVisaTypeById(@PathVariable String sysKey) {
+		return reportService.getReport90DayOrderById(sysKey);
 	}
 
 }

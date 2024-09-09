@@ -225,8 +225,8 @@ public class Report90DayService {
 	}
 
 	@Transactional
-	public ResponseEntity<Report90DayDTO> getReport90DayOrderById(int id) {
-		Optional<Report90DayDTO> visaTypeOpt = reportRepo.getVisaOrderById(id);
+	public ResponseEntity<Report90DayDTO> getReport90DayOrderById(String sysKey) {
+		Optional<Report90DayDTO> visaTypeOpt = reportRepo.getVisaOrderById(sysKey);
 		if (!visaTypeOpt.isPresent()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if not found
 		}
