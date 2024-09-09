@@ -66,8 +66,8 @@ public class VisaExtensionController {
 		return visaService.completed(id);
 	}
 
-	@GetMapping("/getEmbassyLetterOrderById/{id}")
-	public ResponseEntity<VisaExtensionDTO> getVisaTypeById(@PathVariable int id) {
-		return visaService.getVisaExtensionOrderById(id);
+	@GetMapping("/getEmbassyLetterOrderById/{sysKey}")
+	public ResponseEntity<VisaExtensionDTO> getVisaTypeById(@PathVariable String sysKey) {
+		return visaService.getVisaExtensionOrderById(sysKey);
 	}
 }

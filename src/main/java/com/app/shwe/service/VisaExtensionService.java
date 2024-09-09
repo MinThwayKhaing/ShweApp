@@ -229,8 +229,8 @@ public class VisaExtensionService {
 	}
 
 	@Transactional
-	public ResponseEntity<VisaExtensionDTO> getVisaExtensionOrderById(int id) {
-		Optional<VisaExtensionDTO> visaTypeOpt = visaExtensionRepo.getVisaOrderById(id);
+	public ResponseEntity<VisaExtensionDTO> getVisaExtensionOrderById(String sysKey) {
+		Optional<VisaExtensionDTO> visaTypeOpt = visaExtensionRepo.getVisaOrderById(sysKey);
 		if (!visaTypeOpt.isPresent()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if not found
 		}
