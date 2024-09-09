@@ -220,7 +220,7 @@ public class EmbassyLetterService {
 
 	@Transactional
 	public ResponseEntity<EmbassyLetterDTO> getEmbassyLetterOrderById(String sysKey) {
-		Optional<EmbassyLetterDTO> visaTypeOpt = embassyRepo.getVisaOrder(id);
+		Optional<EmbassyLetterDTO> visaTypeOpt = embassyRepo.getVisaOrder(sysKey);
 		if (!visaTypeOpt.isPresent()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if not found
 		}

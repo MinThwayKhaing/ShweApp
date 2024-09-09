@@ -62,7 +62,7 @@ public class NewsController {
 	}
 
 	@PutMapping("/updateNews/{id}")
-	public ResponseEntity<String> updateNews(@PathVariable int id, @RequestPart("images") List<MultipartFile> images,
+	public ResponseEntity<String> updateNews(@PathVariable int id,  @RequestPart(value = "images", required = false )List<MultipartFile> images,
 			@RequestPart("request") NewsRequestDTO request) {
 		return newsService.updateNews(id, images, request);
 	}
