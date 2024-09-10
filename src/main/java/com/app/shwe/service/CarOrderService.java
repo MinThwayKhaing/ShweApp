@@ -242,4 +242,28 @@ public class CarOrderService {
 		}
 	}
 
+	@Transactional
+	public ResponseEntity<String> updateCarOrderFromAdmin(String sysKey, CarOrderRequestDTO request) {
+		String status = OrderStatus.ON_PROGRESS.name();
+
+		System.out.println("sysKey::" + sysKey);
+		Optional<CarOrder> carOrderOptional = carOrderRepository.findCarOrderBySysKey(sysKey);
+		if (!carOrderOptional.isPresent()) {
+			return new ResponseEntity<>("CarOrder not found", HttpStatus.NOT_FOUND);
+		}
+		CarRent car = carRentRepository.findById(request.getCarId())
+				.orElseThrow(() -> new RuntimeException("Car not found for ID: " + request.getCarId()));
+
+		try {
+			CarOrder order = carOrderOptional.get();
+			order.setStatus(status);
+			order.setCarId(car);
+			carOrderRepository.save(order);
+			int count = mainOrderRepository.updateOrderStatusToOnProgress(status, request.getSys_key());
+			return ResponseEntity.status(HttpStatus.OK).body("Update car order successfully." + count);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error occurred while saving translator: " + e.getMessage());
+		}
+	}
 }

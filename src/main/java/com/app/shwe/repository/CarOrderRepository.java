@@ -32,6 +32,9 @@ public interface CarOrderRepository extends JpaRepository<CarOrder, Integer> {
         @Query(value = "SELECT * FROM car_order WHERE id = :id", nativeQuery = true)
         Optional<CarOrder> findCarOrderById(@Param("id") int id);
 
+        @Query(value = "SELECT * FROM car_order WHERE sys_key = :sys_key", nativeQuery = true)
+        Optional<CarOrder> findCarOrderBySysKey(@Param("sys_key") String sys_key);
+
         @Query("SELECT new com.app.shwe.dto.CarOrderResponseDTO(o.sysKey,c.id,o.createdDate,o.carType,o.carBrand,c.driverName,c.image,o.status)"
                         + " FROM CarRent c JOIN CarOrder o ON c.id = o.carId.id WHERE"
                         + " (LOWER(o.carBrand) LIKE LOWER(CONCAT('%', :searchString, '%'))"

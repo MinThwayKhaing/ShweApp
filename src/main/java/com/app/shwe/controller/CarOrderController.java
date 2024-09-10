@@ -62,6 +62,12 @@ public class CarOrderController {
         return carOrderService.confrimOrder(id, request);
     }
 
+    @PutMapping("/updateCarOrderFromAdmin/{sysKey}")
+    public ResponseEntity<String> updateOrderFromAdmin(@PathVariable String sysKey,
+            @RequestBody CarOrderRequestDTO request) {
+        return carOrderService.updateCarOrderFromAdmin(sysKey, request);
+    }
+
     @GetMapping("/details/{sysKey}")
     public ResponseEntity<CarOrderResponseAdminDTO> getCarOrderDetailsBySysKey(@PathVariable String sysKey) {
         Optional<CarOrderResponseAdminDTO> carOrderDetails = carOrderService.getCarOrderDetailsBySysKey(sysKey);
