@@ -84,8 +84,8 @@ public interface Tm30Repository extends JpaRepository<Tm30, Integer> {
 	
 	@Modifying
 	@Transactional
-	@Query("UPDATE Tm30 t SET t.status = :status WHERE t.syskey = :syskey")
-	void changeOrderStatus(@Param("syskey") String syskey, @Param("status") String status);
+	@Query("UPDATE Tm30 t SET t.status = :status WHERE t.id = :id")
+	void changeOrderStatus(@Param("id") int id, @Param("status") String status);
 
 	// @Query("SELECT new com.app.shwe.dto.Tm30DTO(t.period,t.passportBio,
 	// t.visaPage, t.contactNumber) FROM Tm30 t WHERE t.user.id = :userId")
