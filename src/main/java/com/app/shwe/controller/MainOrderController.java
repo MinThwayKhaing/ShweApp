@@ -12,7 +12,7 @@ import com.app.shwe.service.MainOrderService;
 
 @RestController
 @RequestMapping("/api/v1/main-orders")
-@CrossOrigin(origins = "http://localhost:5173")
+
 public class MainOrderController {
 
     @Autowired

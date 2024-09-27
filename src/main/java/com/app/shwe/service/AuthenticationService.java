@@ -22,6 +22,7 @@ import com.app.shwe.dto.AuthenticationResponse;
 import com.app.shwe.dto.RegisterRequest;
 import com.app.shwe.dto.UpdateUserRequest;
 import com.app.shwe.dto.UserRequest;
+import com.app.shwe.dto.UserResponseDTO;
 import com.app.shwe.model.PendingRegistration;
 import com.app.shwe.model.Role;
 import com.app.shwe.model.User;
@@ -95,7 +96,8 @@ public class AuthenticationService {
 
 	public ResponseEntity<String> registerUser(String phoneNumber) {
 		if (repository.existsByPhoneNumber(phoneNumber) || repository.existsByUserName(phoneNumber)) {
-			throw new IllegalArgumentException("User with the same phone number or username already exists");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("User with the same phone number or username already exists");
 		}
 		Optional<PendingRegistration> pendingUserOptional = pendingRegistrationRepo.findByPhoneNumber(phoneNumber);
 
@@ -175,9 +177,11 @@ public class AuthenticationService {
 	}
 
 	public ResponseEntity<?> login(AuthenticationRequest request) {
+
 		if (request == null || request.getPhoneNumber() == null || request.getPassword() == null) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("request body must not be null ");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Request body must not be null");
 		}
+
 		try {
 			User authenticatedUser = repository.findByPhoneNumber(request.getPhoneNumber());
 
@@ -195,15 +199,30 @@ public class AuthenticationService {
 			String jwtToken = jwtService.generateToken(authenticatedUser);
 			String refreshToken = jwtService.generateRefreshToken(authenticatedUser.getPhoneNumber());
 
-			AuthenticationResponse response = AuthenticationResponse.builder().token(jwtToken)
-					.refreshToken(refreshToken).user(authenticatedUser).build();
+			// Map User entity to UserResponseDTO
+			UserResponseDTO userResponseDTO = mapToUserResponseDTO(authenticatedUser);
+
+			AuthenticationResponse response = AuthenticationResponse.builder()
+					.token(jwtToken)
+					.refreshToken(refreshToken)
+					.user(userResponseDTO)
+					.build();
 
 			return ResponseEntity.ok(response);
 		} catch (Exception e) {
-
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Error occurred while login " + e.getMessage());
+					.body("Error occurred while login: " + e.getMessage());
 		}
+	}
+
+	private UserResponseDTO mapToUserResponseDTO(User user) {
+		return UserResponseDTO.builder()
+				.id(user.getId())
+				.username(user.getUsername())
+				.phoneNumber(user.getPhoneNumber())
+				.role(user.getRole()) // Assuming it's a string; adjust if Role is a custom type
+				.image(user.getImage())
+				.build();
 	}
 
 	public ResponseEntity<?> refreshToken(String refreshToken) {
@@ -227,9 +246,9 @@ public class AuthenticationService {
 
 			String newAccessToken = jwtService.generateToken(user);
 			String newRefreshToken = jwtService.generateRefreshToken(user.getPhoneNumber());
-
+			UserResponseDTO userResponseDTO = mapToUserResponseDTO(user);
 			AuthenticationResponse response = AuthenticationResponse.builder().token(newAccessToken)
-					.refreshToken(newRefreshToken).user(user).build();
+					.refreshToken(newRefreshToken).user(userResponseDTO).build();
 
 			return ResponseEntity.ok(response);
 		} else {

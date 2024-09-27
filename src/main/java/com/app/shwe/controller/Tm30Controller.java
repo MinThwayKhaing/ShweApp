@@ -34,7 +34,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/v1/tm30")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173")
+
 public class Tm30Controller {
 
 	@Autowired
@@ -51,17 +51,15 @@ public class Tm30Controller {
 	public ResponseEntity<Tm30> getTm30ById(@PathVariable int id) {
 		return tm30Service.getTm30ById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
-	
-	
-	 @GetMapping("/getOrderBySysKey/{sysKey}")
-	    public ResponseEntity<Tm30ResponseDTO> getOrderBySysKey(@PathVariable String sysKey) {
-	        Tm30ResponseDTO response = tm30Service.getOrderBySysKey(sysKey);
-	        if (response == null) {
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-	        }
-	        return ResponseEntity.status(HttpStatus.OK).body(response);
-	    }
-	
+
+	@GetMapping("/getOrderBySysKey/{sysKey}")
+	public ResponseEntity<Tm30ResponseDTO> getOrderBySysKey(@PathVariable String sysKey) {
+		Tm30ResponseDTO response = tm30Service.getOrderBySysKey(sysKey);
+		if (response == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
 
 	@GetMapping("/details/{id}")
 	public ResponseEntity<?> getTm30DetailsById(@PathVariable int id) {
