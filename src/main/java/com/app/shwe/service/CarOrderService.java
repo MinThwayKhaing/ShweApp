@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.app.shwe.datamapping.CarOrderMapping;
@@ -22,11 +23,13 @@ import com.app.shwe.dto.TranslatorRequestDTO;
 import com.app.shwe.model.CarOrder;
 import com.app.shwe.model.CarRent;
 import com.app.shwe.model.MainOrder;
+import com.app.shwe.model.NotificationTokenEntity;
 import com.app.shwe.model.Translator;
 import com.app.shwe.model.User;
 import com.app.shwe.repository.CarOrderRepository;
 import com.app.shwe.repository.CarRentRepository;
 import com.app.shwe.repository.MainOrderRepository;
+import com.app.shwe.repository.NotificationTokenRepository;
 import com.app.shwe.repository.UserRepository;
 import com.app.shwe.utils.OrderStatus;
 import com.app.shwe.utils.SecurityUtils;
@@ -57,16 +60,30 @@ public class CarOrderService {
 	@Enumerated(EnumType.STRING)
 	private OrderStatus status;
 
+	@Autowired
+	private NotificationTokenRepository notificationTokenRepository;
+
+	@Autowired
+	private FirebaseMessagingService firebaseMessagingService;
+
 	@Transactional
-	public ResponseEntity<String> createCarOrder(CarOrderRequestDTO dto) {
+	public ResponseEntity<String> createCarOrder(@RequestBody CarOrderRequestDTO dto) {
 		if (dto == null) {
 			return new ResponseEntity<>("Request data is null", HttpStatus.BAD_REQUEST);
 		}
 
 		try {
+			// Save car order (assuming carOrderMapping and other necessary services are
+			// available)
 			CarOrder carOrder = carOrderMapping.mapToCarOrder(dto);
+			carOrderRepository.save(carOrder);
 
-			return new ResponseEntity<>("CarOrder created successfully", HttpStatus.OK);
+			// Send a notification
+			firebaseMessagingService.sendNotificationToAdmins(
+					"Car Order Created",
+					"Your car order has been created successfully");
+
+			return new ResponseEntity<>("Car order created and notification sent", HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}

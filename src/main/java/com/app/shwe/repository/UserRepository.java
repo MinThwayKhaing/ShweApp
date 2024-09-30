@@ -13,12 +13,15 @@ import org.springframework.stereotype.Repository;
 import com.app.shwe.dto.ChangePasswordDTO;
 import com.app.shwe.dto.UserReportDTO;
 import com.app.shwe.model.Report;
+import com.app.shwe.model.Role;
 import com.app.shwe.model.User;
 
 import jakarta.transaction.Transactional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
+
+	List<User> findAllByRole(Role role);
 
 	Optional<User> findByUserName(String username);
 
@@ -36,9 +39,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 	boolean existsByUserName(String userName);
 
 	User findByPhoneNumber(String phoneNumber);
-	
+
 	Optional<User> getPhoneNumberById(int id);
-	
+
 	Optional<User> getUserById(int id);
 
 	Optional<User> findByPhoneNumberAndPassword(String phoneNumber, String password);
@@ -60,7 +63,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 	@Transactional
 	@Query("UPDATE User u SET u.password = :password WHERE u.id = :id")
 	void changePassword(@Param("id") int id, @Param("password") String password);
-	
+
 	Optional<User> getUserByPhoneNumber(String phoneNumber);
 
 }

@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.app.shwe.dto.AuthenticationRequest;
 import com.app.shwe.dto.AuthenticationResponse;
+import com.app.shwe.dto.NotificationTokenRequest;
 import com.app.shwe.dto.OtpVerificationRequest;
 import com.app.shwe.dto.RegisterRequest;
 import com.app.shwe.dto.UpdateUserRequest;
@@ -66,6 +67,14 @@ public class AuthenticationController {
 		} catch (Exception e) {
 			return ResponseEntity.status(500).build(); // HTTP 500 Internal Server Error
 		}
+	}
+
+	@PostMapping("/save-notif-token")
+	public ResponseEntity<?> saveNotificationToken(
+			@RequestBody NotificationTokenRequest notificationTokenRequest) {
+
+		return authenticationService.saveNotificationToken(notificationTokenRequest.getNotifToken());
+
 	}
 
 	@PostMapping("/update-user")
