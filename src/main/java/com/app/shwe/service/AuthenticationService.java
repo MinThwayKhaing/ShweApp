@@ -95,6 +95,21 @@ public class AuthenticationService {
 		String token = otpService.sendOtp(request.getPhoneNumber(), "SHWEAPPS", otpCode);
 		return ResponseEntity.status(HttpStatus.OK).body(token);
 	}
+	
+	//WWTT
+	 public ResponseEntity<?> logout() {
+	        try {
+	            // Invalidate the current user's authentication
+	            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	            if (authentication != null) {
+	                SecurityContextHolder.clearContext();
+	            }
+	            return ResponseEntity.ok("Successfully logged out");
+	        } catch (Exception e) {
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                    .body("Error occurred while logging out: " + e.getMessage());
+	        }
+	    }
 
 	// WWTT
 	public ResponseEntity<String> initiateUpdateUser(UpdateUserRequest request) {

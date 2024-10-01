@@ -53,6 +53,11 @@ public class AuthenticationController {
 		return authenticationService.login(request);
 	}
 
+	@PostMapping("/logout")
+	public ResponseEntity<?> logout() {
+		return authenticationService.logout();
+	}
+
 	@PostMapping("/refresh-token")
 	public ResponseEntity<?> refreshToken(@RequestBody Map<String, String> request) {
 		String refreshToken = request.get("refreshToken");

@@ -2,6 +2,7 @@ package com.app.shwe.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.app.shwe.dto.ChangePasswordDTO;
+import com.app.shwe.dto.UserDTO;
 import com.app.shwe.dto.UserReportDTO;
 import com.app.shwe.model.Report;
 import com.app.shwe.model.User;
@@ -164,6 +166,12 @@ public class UserService {
 	    }
 	}
 	
+	public List<UserDTO> getAllUser() {
+	    List<User> users = userRepo.findAll();
+	    return users.stream()
+	                .map(user -> new UserDTO(user.getUsername(), user.getPhoneNumber(), user.getRole()))
+	                .collect(Collectors.toList());
+	}
 	
 
 }

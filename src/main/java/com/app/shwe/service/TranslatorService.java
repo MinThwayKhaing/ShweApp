@@ -29,6 +29,7 @@ import com.app.shwe.model.CarRent;
 import com.app.shwe.model.MainOrder;
 import com.app.shwe.model.Translator;
 import com.app.shwe.model.TranslatorOrder;
+import com.app.shwe.model.VisaExtensionType;
 import com.app.shwe.repository.MainOrderRepository;
 import com.app.shwe.repository.TranslatorOrderRepostitory;
 import com.app.shwe.repository.TranslatorRepository;
@@ -94,13 +95,15 @@ public class TranslatorService {
 	}
 
 	@Transactional
-	public Optional<Translator> getTranslatorById(Integer id) {
-		if (id == null) {
-			throw new IllegalArgumentException("Id cannot be null");
-		}
+	public ResponseEntity<Translator> getTranslatorById(Integer id) {
 		Optional<Translator> translator = translatorRepo.findById(id);
-		return translator;
+		if (!translator.isPresent()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<>(translator.get(), HttpStatus.OK);
 	}
+	
+	
 
 	@Transactional
 	public ResponseEntity<String> updateTranslator(int id, MultipartFile image, TranslatorRequestDTO request) {

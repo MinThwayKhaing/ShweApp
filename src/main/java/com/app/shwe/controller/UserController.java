@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,7 +15,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.app.shwe.dto.ChangePasswordDTO;
 import com.app.shwe.dto.TranslatorRequestDTO;
+import com.app.shwe.dto.UserDTO;
 import com.app.shwe.dto.UserReportDTO;
+import com.app.shwe.model.User;
 import com.app.shwe.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -40,8 +43,12 @@ public class UserController {
 
 	@PostMapping("user-update-image")
 	public ResponseEntity<String> updateImage(@RequestPart("image") MultipartFile image) {
-
 		return userService.updateImages(image);
+	}
+	
+	@GetMapping("/getAllUser")
+	public List<UserDTO> getAllUser(){
+		return userService.getAllUser();
 	}
 
 }
