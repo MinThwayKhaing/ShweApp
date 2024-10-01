@@ -42,7 +42,7 @@ public class NewsService {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@Transactional
-	public ResponseEntity<String> saveNews(List<MultipartFile> images, NewsRequestDTO request) {
+	public ResponseEntity<?> saveNews(List<MultipartFile> images, NewsRequestDTO request) {
 		if (images == null && request == null) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Error occurred while saving news: ");
@@ -51,6 +51,7 @@ public class NewsService {
 			List<String> imageUrl = fileUploadService.uploadFiles(images);
 			String serializedIages = FilesSerializationUtil.serializeImages(imageUrl);
 			News news = new News();
+			news.setTitle(request.getTitle());
 			news.setImages(serializedIages);
 			news.setDate(new Date());
 			news.setDescription(request.getDescription());
@@ -67,7 +68,7 @@ public class NewsService {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@Transactional
-	public ResponseEntity<String> updateNews(int id, List<MultipartFile> files, NewsRequestDTO request) {
+	public ResponseEntity<?> updateNews(int id, List<MultipartFile> files, NewsRequestDTO request) {
 		Optional<News> getNews = newsRepository.findById(id);
 		if (!getNews.isPresent()) {
 			throw new IllegalArgumentException("ID not found");
@@ -80,35 +81,36 @@ public class NewsService {
 				String serializedImages = FilesSerializationUtil.serializeImages(imageUrl);
 				news.setImages(serializedImages);
 			}
+			news.setTitle(request.getTitle());
 			news.setDescription(request.getDescription());
 			news.setDate(new Date());
 			news.setUpdatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 			news.setUpdatedDate(new Date());
 			newsRepository.save(news);
-			return new ResponseEntity<>("News updated successfully", HttpStatus.OK);
+			return ResponseEntity.status(HttpStatus.OK).body("News updated successfully");
 		} catch (Exception e) {
-			return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred: " + e.getMessage());
 		}
 
 	}
 
-//	@Transactional
-//	public Optional<News> getNewsById(Integer id) {
-//		if (id == null) {
-//			throw new IllegalArgumentException("Id cannot be null");
-//		}
-//		Optional<News> news = newsRepository.findById(id);
-//		return news;
-//	}
-	
+	// @Transactional
+	// public Optional<News> getNewsById(Integer id) {
+	// if (id == null) {
+	// throw new IllegalArgumentException("Id cannot be null");
+	// }
+	// Optional<News> news = newsRepository.findById(id);
+	// return news;
+	// }
+
 	@Transactional
 	public ResponseEntity<News> getNewsById(int id) {
-	    Optional<News> visaTypeOpt = newsRepository.findById(id);
-	    if (!visaTypeOpt.isPresent()) {
-	        return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if not found
-	    }
-	    
-	    return new ResponseEntity<>(visaTypeOpt.get(), HttpStatus.OK); // Return the found VisaExtensionType
+		Optional<News> visaTypeOpt = newsRepository.findById(id);
+		if (!visaTypeOpt.isPresent()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if not found
+		}
+
+		return new ResponseEntity<>(visaTypeOpt.get(), HttpStatus.OK); // Return the found VisaExtensionType
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
@@ -128,9 +130,9 @@ public class NewsService {
 		}
 	}
 
-	public Page<News> getAllNewsByDate( int page, int size) {
+	public Page<News> getAllNewsByDate(int page, int size) {
 		Pageable pageable = PageRequest.of(page < 1 ? 0 : page - 1, size);
 		return newsRepository.getAllNewsByDate(pageable);
 	}
-	
+
 }

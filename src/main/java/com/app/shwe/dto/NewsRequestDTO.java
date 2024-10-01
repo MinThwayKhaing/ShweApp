@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NewsRequestDTO {
-	
-	
+
+	private String title;
 	private String description;
 
 }

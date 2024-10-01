@@ -60,15 +60,17 @@ public class ArticleService {
         return articleRepository.findById(id);
     }
 
-    public ResponseEntity<?> getAllArticles(int page, int size) {
-        try {
-            Pageable pageable = PageRequest.of(page, size);
-            return ResponseEntity.status(HttpStatus.OK).body(articleRepository.findDTOByArticleId(pageable));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error occurred while selecting Activities: " + e.getMessage());
-        }
-    }
+    // public ResponseEntity<?> getAllArticles(int page, int size) {
+    //     try {
+    //         Pageable pageable = PageRequest.of(page < 1 ? 0 : page - 1, size);
+    //         Page<ArticleDTO> articles = articleRepository.findDTOByArticleId(pageable);
+    //         return ResponseEntity.status(HttpStatus.OK).body(articles);
+
+    //     } catch (Exception e) {
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+    //                 .body("Error occurred while selecting Activities: " + e.getMessage());
+    //     }
+    // }
 
     public ResponseEntity<?> getArticlesByActivityId(int activityId, int page, int size) {
         try {

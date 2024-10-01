@@ -62,12 +62,12 @@ public class ArticleController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping
-    public ResponseEntity<?> getAllArticles(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return articleService.getAllArticles(page, size);
-    }
+    // @GetMapping
+    // public ResponseEntity<?> getAllArticles(
+    // @RequestParam(defaultValue = "1") int page,
+    // @RequestParam(defaultValue = "10") int size) {
+    // return articleService.getAllArticles(page, size);
+    // }
 
     @GetMapping("/getAllArticleList")
     public List<Article> getAllArticleList() {
