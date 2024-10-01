@@ -20,6 +20,7 @@ import com.app.shwe.dto.ResponseDTO;
 import com.app.shwe.dto.SearchDTO;
 import com.app.shwe.dto.TranslatorRequestDTO;
 import com.app.shwe.model.Translator;
+import com.app.shwe.model.VisaExtensionType;
 import com.app.shwe.service.TranslatorService;
 
 import lombok.RequiredArgsConstructor;
@@ -41,9 +42,9 @@ public class TranslatorController {
 
 	@GetMapping("/getTransaltorById/{id}")
 	public ResponseEntity<Translator> getTranslatorById(@PathVariable int id) {
-		return translatorService.getTranslatorById(id).map(ResponseEntity::ok)
-				.orElse(ResponseEntity.notFound().build());
+		return translatorService.getTranslatorById(id);
 	}
+	
 
 	@PutMapping("/updateTranslator/{id}")
 	public ResponseEntity<String> updateTranslator(
