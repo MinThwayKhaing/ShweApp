@@ -61,6 +61,7 @@ public class SecurityConfig {
 		};
 	}
 
+
 //	@Bean
 //	public CorsConfigurationSource corsConfigurationSource() {
 //		CorsConfiguration configuration = new CorsConfiguration();
@@ -76,5 +77,26 @@ public class SecurityConfig {
 //		source.registerCorsConfiguration("/**", configuration);
 //		return source;
 //	}
+
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList(
+                "https://admin.shweapps.com",
+                "http://localhost:5173",
+                "http://localhost:3000"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE",
+                "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("Content-Type",
+                "Authorization", "X-Requested-With", "Accept"));
+        configuration.setAllowCredentials(true);
+        configuration
+                .setExposedHeaders(Arrays.asList("Access-Control-Allow-Origin",
+                        "Access-Control-Allow-Credentials"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
 
 }

@@ -23,9 +23,11 @@ import com.app.shwe.dto.RegisterRequest;
 import com.app.shwe.dto.UpdateUserRequest;
 import com.app.shwe.dto.UserRequest;
 import com.app.shwe.dto.UserResponseDTO;
+import com.app.shwe.model.NotificationTokenEntity;
 import com.app.shwe.model.PendingRegistration;
 import com.app.shwe.model.Role;
 import com.app.shwe.model.User;
+import com.app.shwe.repository.NotificationTokenRepository;
 import com.app.shwe.repository.PendingRegistrationRepository;
 import com.app.shwe.repository.UserRepository;
 import com.app.shwe.securityConfig.JwtService;
@@ -51,6 +53,28 @@ public class AuthenticationService {
 	private OtpService otpService;
 	@Autowired
 	private PendingRegistrationRepository pendingRegistrationRepo;
+
+	@Autowired
+	private NotificationTokenRepository notificationTokenRepository;
+
+	public ResponseEntity<?> saveNotificationToken(String notifToken) {
+		// Validate the authToken (you could check the token's validity here)
+
+		// Save the notification token to the database or perform any other logic
+		try {
+			NotificationTokenEntity entity = new NotificationTokenEntity();
+			int id = repository.authUser(SecurityUtils.getCurrentUsername());
+			entity.setUserId(id);
+			entity.setNotifToken(notifToken);
+			notificationTokenRepository.save(entity);
+			return ResponseEntity.status(HttpStatus.OK).body("Success to save notification token.");
+
+		} catch (Exception e) {
+			System.out.println("Error Message" + e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Failed to save notification token." + e.getMessage());
+		}
+	}
 
 	public ResponseEntity<String> initiateRegistration(RegisterRequest request) {
 		if (repository.existsByPhoneNumber(request.getPhoneNumber())) {
