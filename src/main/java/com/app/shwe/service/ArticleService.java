@@ -73,20 +73,35 @@ public class ArticleService {
             return articleRepository.findDTOByArticleId(pageable);
         
     }
+    
+    // public ResponseEntity<?> getAllArticles(int page, int size) {
+    // try {
+    // Pageable pageable = PageRequest.of(page < 1 ? 0 : page - 1, size);
+    // Page<ArticleDTO> articles = articleRepository.findDTOByArticleId(pageable);
+    // return ResponseEntity.status(HttpStatus.OK).body(articles);
 
-    public ResponseEntity<?> getArticlesByActivityId(int activityId, int page, int size) {
-        try {
-            Pageable pageable = PageRequest.of(page, size);
-            Page<ArticleDTO> articlesPage = articleRepository.findDTOByActivityId(activityId, pageable);
-            if (articlesPage.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No articles found for the given activity ID.");
-            }
-            return ResponseEntity.status(HttpStatus.OK).body(articlesPage);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error occurred while retrieving articles: " + e.getMessage());
-        }
-    }
+    // } catch (Exception e) {
+    // return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+    // .body("Error occurred while selecting Activities: " + e.getMessage());
+    // }
+    // }
+
+    // public ResponseEntity<?> getArticlesByActivityId(int activityId, int page,
+    // int size) {
+    // try {
+    // Pageable pageable = PageRequest.of(page, size);
+    // Page<ArticleDTO> articlesPage =
+    // articleRepository.findDTOByActivityId(activityId, pageable);
+    // if (articlesPage.isEmpty()) {
+    // return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No articles found
+    // for the given activity ID.");
+    // }
+    // return ResponseEntity.status(HttpStatus.OK).body(articlesPage);
+    // } catch (Exception e) {
+    // return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+    // .body("Error occurred while retrieving articles: " + e.getMessage());
+    // }
+    // }
 
     public Article updateArticle(int id, Article updatedArticle) {
         return articleRepository.findById(id).map(article -> {

@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 public class ArticleDTO implements Serializable {
 
@@ -22,4 +21,5 @@ public class ArticleDTO implements Serializable {
     private int createdBy;
     private int updatedBy;
     private String period;
+    private String activityName;
 }

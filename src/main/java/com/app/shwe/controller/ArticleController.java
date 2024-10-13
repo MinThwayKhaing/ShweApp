@@ -32,13 +32,14 @@ public class ArticleController {
         }
     }
 
-    @GetMapping("/select")
-    public ResponseEntity<?> getArticlesByActivityId(@RequestParam("id") int activityId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        System.out.println("Hello");
-        return articleService.getArticlesByActivityId(activityId, page, size);
-    }
+    // @GetMapping("/select")
+    // public ResponseEntity<?> getArticlesByActivityId(@RequestParam("id") int
+    // activityId,
+    // @RequestParam(defaultValue = "0") int page,
+    // @RequestParam(defaultValue = "10") int size) {
+    // System.out.println("Hello");
+    // return articleService.getArticlesByActivityId(activityId, page, size);
+    // }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getArticleById(@PathVariable("id") int id) {
@@ -69,6 +70,12 @@ public class ArticleController {
             @RequestParam(defaultValue = "10") int size) {
         return articleService.getAllArticles(page, size);
     }
+    // @GetMapping
+    // public ResponseEntity<?> getAllArticles(
+    // @RequestParam(defaultValue = "1") int page,
+    // @RequestParam(defaultValue = "10") int size) {
+    // return articleService.getAllArticles(page, size);
+    // }
 
     @GetMapping("/getAllArticleList")
     public List<Article> getAllArticleList() {

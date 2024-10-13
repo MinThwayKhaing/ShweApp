@@ -19,16 +19,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class News extends CommonDTO implements Serializable{
-	
+public class News extends CommonDTO implements Serializable {
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	@Lob
-    @Column(name = "images", columnDefinition = "TEXT")
-    private String images;
+	@Column(name = "images", columnDefinition = "TEXT")
+	private String images;
+	private String title;
 	private Date date;
+
+	@Lob
+	@Column(name = "description", columnDefinition = "TEXT")
 	private String description;
 
 }

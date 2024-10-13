@@ -35,7 +35,7 @@ public class NewsController {
 	private NewsService newsService;
 
 	@PostMapping("/saveNews")
-	public ResponseEntity<String> saveNews(@RequestPart("images") List<MultipartFile> images,
+	public ResponseEntity<?> saveNews(@RequestPart("images") List<MultipartFile> images,
 			@RequestPart("request") NewsRequestDTO request) {
 		return newsService.saveNews(images, request);
 
@@ -45,24 +45,25 @@ public class NewsController {
 	public ResponseEntity<News> getNewsById(@PathVariable int id) {
 		return newsService.getNewsById(id);
 	}
-	
-//	@GetMapping("/getVisaExtensionTypeById/{id}")
-//	public ResponseEntity<VisaExtensionType> getVisaTypeById(@PathVariable int id) {
-//	    return visaTypeService.getVisaExtensionTypeById(id);
-//	}
-	
-	
+
+	// @GetMapping("/getVisaExtensionTypeById/{id}")
+	// public ResponseEntity<VisaExtensionType> getVisaTypeById(@PathVariable int
+	// id) {
+	// return visaTypeService.getVisaExtensionTypeById(id);
+	// }
+
 	@GetMapping("/showAllNews")
 	public Page<News> getAllNews(
-	    @RequestParam(defaultValue = "1") int page,
-	    @RequestParam(defaultValue = "10") int size) {
-	    Page<News> newsPage = newsService.getAllNewsByDate(page, size);
-	    System.out.println("Fetched news: " + newsPage.getContent()); // Add logging
-	    return newsPage;
+			@RequestParam(defaultValue = "1") int page,
+			@RequestParam(defaultValue = "10") int size) {
+		Page<News> newsPage = newsService.getAllNewsByDate(page, size);
+		System.out.println("Fetched news: " + newsPage.getContent()); // Add logging
+		return newsPage;
 	}
 
 	@PutMapping("/updateNews/{id}")
-	public ResponseEntity<String> updateNews(@PathVariable int id,  @RequestPart(value = "images", required = false )List<MultipartFile> images,
+	public ResponseEntity<?> updateNews(@PathVariable int id,
+			@RequestPart(value = "images", required = false) List<MultipartFile> images,
 			@RequestPart("request") NewsRequestDTO request) {
 		return newsService.updateNews(id, images, request);
 	}
