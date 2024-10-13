@@ -14,6 +14,7 @@ public class ArticleDTO implements Serializable {
 
     private int id;
     private String title;
+    private String name;
     private String description;
     private String imageUrl;
     private Date createdDate;
