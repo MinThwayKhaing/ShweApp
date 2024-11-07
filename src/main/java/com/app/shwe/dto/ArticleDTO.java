@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class ArticleDTO implements Serializable {
 
     private int id;
@@ -21,5 +22,5 @@ public class ArticleDTO implements Serializable {
     private int createdBy;
     private int updatedBy;
     private String period;
-    private String activityName;
+    // private String activityName;
 }
