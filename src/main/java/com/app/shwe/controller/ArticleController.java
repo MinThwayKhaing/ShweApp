@@ -1,5 +1,6 @@
 package com.app.shwe.controller;
 
+import com.app.shwe.dto.ArticleDTO;
 import com.app.shwe.dto.ArticleRequest;
 import com.app.shwe.model.Article;
 import com.app.shwe.service.ArticleService;
@@ -22,9 +23,9 @@ public class ArticleController {
 
     @PostMapping("/create")
     public ResponseEntity<String> createArticle(
-            @RequestPart("image") MultipartFile imageFile, @RequestPart("request") ArticleRequest article) {
+    		@RequestPart("images") List<MultipartFile> images, @RequestPart("request") ArticleRequest article) {
         try {
-            return articleService.saveArticle(imageFile, article);
+            return articleService.saveArticle(images, article);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error occurred while saving Article: " + e.getMessage());
@@ -63,6 +64,12 @@ public class ArticleController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @GetMapping
+    public Page<ArticleDTO> getAllArticles(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return articleService.getAllArticles(page, size);
+    }
     // @GetMapping
     // public ResponseEntity<?> getAllArticles(
     // @RequestParam(defaultValue = "1") int page,

@@ -14,6 +14,17 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ArticleRepository extends JpaRepository<Article, Integer> {
+    @Query("SELECT new com.app.shwe.dto.ArticleDTO(a.id, a.title,v.name, a.description, a.imageUrl, a.createdDate, a.updatedDate, a.createdBy, a.updatedBy, a.period) "
+            +
+            "FROM Article a JOIN a.activity v WHERE a.activity.id = :activityId")
+    Page<ArticleDTO> findDTOByActivityId(@Param("activityId") int activityId, Pageable pageable);
+
+    @Query("SELECT new com.app.shwe.dto.ArticleDTO(a.id, a.title,v.name, a.description, a.imageUrl, a.createdDate, a.updatedDate, a.createdBy, a.updatedBy, a.period) "
+            +
+            "FROM Article a JOIN a.activity v")
+    Page<ArticleDTO> findDTOByArticleId(Pageable pageable);
+    
+    
         // @Query("SELECT new com.app.shwe.dto.ArticleDTO(a.id, a.title, a.description,
         // a.imageUrl, a.createdDate, a.updatedDate, a.createdBy, a.updatedBy, a.period)
         // "

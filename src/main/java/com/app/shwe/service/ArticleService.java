@@ -6,6 +6,10 @@ import com.app.shwe.model.Activity;
 import com.app.shwe.model.Article;
 import com.app.shwe.repository.ActivityRepository;
 import com.app.shwe.repository.ArticleRepository;
+import com.app.shwe.repository.UserRepository;
+import com.app.shwe.utils.FilesSerializationUtil;
+import com.app.shwe.utils.SecurityUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,27 +33,31 @@ public class ArticleService {
 
     @Autowired
     private FileUploadService fileUploadService;
+    
+    @Autowired
+	private UserRepository userRepository;
 
-    public ResponseEntity<String> saveArticle(MultipartFile image, ArticleRequest article) {
+    public ResponseEntity<String> saveArticle(List<MultipartFile> images, ArticleRequest articleRequest) {
         try {
-            Article act = new Article();
-            act.setTitle(article.getTitle());
-            act.setDescription(article.getDescription());
+            Article article = new Article();
+            article.setTitle(articleRequest.getTitle());
+            article.setDescription(articleRequest.getDescription());
 
-            // Optional<Activity> activityOptional =
-            // activityRepository.findById(article.getActivity_id());
-            // Activity act1=activityOptional.get();
-            String imageUrl = fileUploadService.uploadFile(image);
-            act.setImageUrl(imageUrl);
-            // if (!activityOptional.isPresent()) {
-            // return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            // .body("Invalid activity ID: " + article.getActivity_id());
-            // }
+            Optional<Activity> activityOptional = activityRepository.findById(articleRequest.getActivity_id());
+            if (!activityOptional.isPresent()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Invalid activity ID: " + articleRequest.getActivity_id());
+            }
 
-            article.setActivity_id(article.getActivity_id());
-
-            articleRepository.save(act);
-            return ResponseEntity.status(HttpStatus.OK).body("Article save  successfully.");
+            Activity activity = activityOptional.get();
+            article.setActivity(activity);
+       
+            List<String> imageUrl = fileUploadService.uploadFiles(images);
+            String serializedImages = FilesSerializationUtil.serializeImages(imageUrl);
+            article.setImageUrl(serializedImages);
+            article.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
+            articleRepository.save(article);
+            return ResponseEntity.status(HttpStatus.OK).body("Article saved successfully.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error occurred while saving Article: " + e.getMessage());
@@ -60,6 +68,12 @@ public class ArticleService {
         return articleRepository.findById(id);
     }
 
+    public Page<ArticleDTO> getAllArticles(int page, int size) {
+            Pageable pageable = PageRequest.of(page, size);
+            return articleRepository.findDTOByArticleId(pageable);
+        
+    }
+    
     // public ResponseEntity<?> getAllArticles(int page, int size) {
     // try {
     // Pageable pageable = PageRequest.of(page < 1 ? 0 : page - 1, size);
