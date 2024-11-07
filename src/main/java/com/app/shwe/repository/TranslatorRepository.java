@@ -39,4 +39,11 @@ public interface TranslatorRepository extends JpaRepository<Translator, Integer>
 			+ "t.name LIKE %:searchString% OR t.language LIKE %:searchString% OR t.specialist LIKE %:searchString%)")
 	Page<Translator> searchTranslator(@Param("searchString") String searchString, Pageable pageable);
 
+	@Query("SELECT t FROM Translator t WHERE t.deleteStatus = false "
+			+ "AND (:searchString IS NULL OR :searchString = '' OR t.name LIKE %:searchString% OR t.language LIKE %:searchString% OR t.specialist LIKE %:searchString%) "
+			+ "AND t.id NOT IN (SELECT d.translator.id FROM DateRange d WHERE "
+			+ "STR_TO_DATE(:date, '%Y-%m-%d') BETWEEN STR_TO_DATE(d.startDate, '%Y-%m-%d') AND STR_TO_DATE(d.endDate, '%Y-%m-%d'))")
+	Page<Translator> findFreeTranslators(@Param("date") String date, @Param("searchString") String searchString,
+			Pageable pageable);
+
 }

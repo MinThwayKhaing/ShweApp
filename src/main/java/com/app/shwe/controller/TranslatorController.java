@@ -40,11 +40,10 @@ public class TranslatorController {
 		return translatorService.saveTranslator(image, request);
 	}
 
-	@GetMapping("/getTransaltorById/{id}")
+	@GetMapping("/getTranslatorById/{id}")
 	public ResponseEntity<Translator> getTranslatorById(@PathVariable int id) {
 		return translatorService.getTranslatorById(id);
 	}
-	
 
 	@PutMapping("/updateTranslator/{id}")
 	public ResponseEntity<String> updateTranslator(
@@ -66,5 +65,15 @@ public class TranslatorController {
 			@RequestParam(defaultValue = "10") int size) {
 		return translatorService.searchTranslator(searchString, page, size);
 	}
+
+	// @GetMapping("/searchTranslatorAdmin")
+	// public Page<Translator> searchTranslatorAdmin(
+	// @RequestParam("date") String date,
+	// @RequestParam(required = false) String searchString,
+	// @RequestParam(defaultValue = "1") int page,
+	// @RequestParam(defaultValue = "10") int size) {
+	// return translatorService.searchTranslatorAdmin(date, searchString, page,
+	// size);
+	// }
 
 }

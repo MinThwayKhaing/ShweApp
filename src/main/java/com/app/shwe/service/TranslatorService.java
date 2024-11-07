@@ -83,6 +83,7 @@ public class TranslatorService {
 			translator.setLanguage(request.getLanguage());
 			translator.setSpecialist(request.getSpecialist());
 			translator.setCreatedDate(new Date());
+			translator.setPhoneNumber(request.getPhoneNumber());
 			translator.setCreatedBy(userRepository.authUser(SecurityUtils.getCurrentUsername()));
 			translatorRepo.save(translator);
 			return ResponseEntity.status(HttpStatus.OK).body("Translator saved successfully.");
@@ -96,14 +97,14 @@ public class TranslatorService {
 
 	@Transactional
 	public ResponseEntity<Translator> getTranslatorById(Integer id) {
+		System.out.println(id);
 		Optional<Translator> translator = translatorRepo.findById(id);
 		if (!translator.isPresent()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
+		System.out.println(translator.get());
 		return new ResponseEntity<>(translator.get(), HttpStatus.OK);
 	}
-	
-	
 
 	@Transactional
 	public ResponseEntity<String> updateTranslator(int id, MultipartFile image, TranslatorRequestDTO request) {
@@ -118,6 +119,7 @@ public class TranslatorService {
 				String imageUrl = fileUploadService.uploadFile(image);
 				translator.setImage(imageUrl);
 			}
+			translator.setPhoneNumber(request.getPhoneNumber());
 			translator.setName(request.getName());
 			translator.setLanguage(request.getLanguage());
 			translator.setSpecialist(request.getSpecialist());
@@ -155,6 +157,12 @@ public class TranslatorService {
 
 	@Transactional
 	public Page<Translator> searchTranslator(String searchString, int page, int size) {
+		Pageable pageable = PageRequest.of(page < 1 ? 0 : page - 1, size);
+		return translatorRepo.searchTranslator(searchString, pageable);
+	}
+
+	@Transactional
+	public Page<Translator> searchTranslatorAdmin(String date, String searchString, int page, int size) {
 		Pageable pageable = PageRequest.of(page < 1 ? 0 : page - 1, size);
 		return translatorRepo.searchTranslator(searchString, pageable);
 	}
